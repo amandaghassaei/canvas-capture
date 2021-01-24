@@ -1,0 +1,28 @@
+{
+  "name": "record-canvas",
+  "version": "1.0.0",
+  "description": "A small wrapper around CCapture.js to record the canvas as video or gif",
+  "main": "dist/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amandaghassaei/RecordCanvas.git"
+  },
+  "author": "Amanda Ghassaei",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/amandaghassaei/RecordCanvas/issues"
+  },
+  "homepage": "https://github.com/amandaghassaei/RecordCanvas#readme",
+  "dependencies": {
+    "ccapture.js": "^1.1.0",
+    "micromodal": "^0.4.6"
+  },
+  "devDependencies": {
+    "@types/micromodal": "^0.3.2",
+    "typescript": "^4.1.3"
+  }
+}
