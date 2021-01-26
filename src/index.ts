@@ -1,5 +1,12 @@
+import 'webm-writer'
 // @ts-ignore
-import CCapture from 'ccapture.js';
+import CCapture from '@/../node_modules/ccapture.js/src/CCapture.js'
+// @ts-ignore
+import '@/../node_modules/ccapture.js/src/download.js'
+import '@/../node_modules/ccapture.js/src/gif.js'
+import '@/../node_modules/ccapture.js/src/gif.worker.js'
+import '@/../node_modules/ccapture.js/src/tar.js'
+import '@/../node_modules/ccapture.js/src/Whammy.js'
 import { showAlert, showDot } from './modals';
 
 let VERBOSE = true;
@@ -94,8 +101,7 @@ export function beginVideoRecord(options?: {
 		return;
 	}
 	// Create a capturer that exports a WebM video
-	// @ts-ignore
-	capturer = new window.CCapture( {
+	capturer = new CCapture( {
 		format: 'webm',
 		name: options?.name || 'WEBM_Capture',
 		framerate: options?.fps || 60,
@@ -120,7 +126,7 @@ export function beginGIFRecord(options?: {
 	}
 	// Create a capturer that exports a WebM video
 	// @ts-ignore
-	capturer = new window.CCapture({
+	capturer = new CCapture({
 		format: 'gif',
 		name: options?.name || 'GIF_Capture',
 		framerate: options?.fps || 60,
@@ -147,7 +153,7 @@ export function takePNGSnapshot(options?: {
 	}
 	// Create a capturer that exports a WebM video
 	// @ts-ignore
-	capturer = new window.CCapture({
+	capturer = new CCapture({
 		format: 'png',
 		name: options?.name || 'PNG_Capture',
 		verbose: VERBOSE,

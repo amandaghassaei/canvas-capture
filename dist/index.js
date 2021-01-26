@@ -1,6 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takePNGSnapshot = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToPNGSnapshot = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = void 0;
+require("webm-writer");
+// @ts-ignore
+var CCapture_js_1 = require("@/../node_modules/ccapture.js/src/CCapture.js");
+// @ts-ignore
+require("@/../node_modules/ccapture.js/src/download.js");
+require("@/../node_modules/ccapture.js/src/gif.js");
+require("@/../node_modules/ccapture.js/src/gif.worker.js");
+require("@/../node_modules/ccapture.js/src/tar.js");
+require("@/../node_modules/ccapture.js/src/Whammy.js");
 var modals_1 = require("./modals");
 var VERBOSE = true;
 var WORKERS_PATH = '/';
@@ -84,8 +93,7 @@ function beginVideoRecord(options) {
         return;
     }
     // Create a capturer that exports a WebM video
-    // @ts-ignore
-    capturer = new window.CCapture({
+    capturer = new CCapture_js_1.default({
         format: 'webm',
         name: (options === null || options === void 0 ? void 0 : options.name) || 'WEBM_Capture',
         framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
@@ -107,7 +115,7 @@ function beginGIFRecord(options) {
     }
     // Create a capturer that exports a WebM video
     // @ts-ignore
-    capturer = new window.CCapture({
+    capturer = new CCapture_js_1.default({
         format: 'gif',
         name: (options === null || options === void 0 ? void 0 : options.name) || 'GIF_Capture',
         framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
@@ -132,7 +140,7 @@ function takePNGSnapshot(options) {
     }
     // Create a capturer that exports a WebM video
     // @ts-ignore
-    capturer = new window.CCapture({
+    capturer = new CCapture_js_1.default({
         format: 'png',
         name: (options === null || options === void 0 ? void 0 : options.name) || 'PNG_Capture',
         verbose: VERBOSE,

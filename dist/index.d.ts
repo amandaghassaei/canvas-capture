@@ -1,3 +1,9 @@
+import 'webm-writer';
+import '@/../node_modules/ccapture.js/src/download.js';
+import '@/../node_modules/ccapture.js/src/gif.js';
+import '@/../node_modules/ccapture.js/src/gif.worker.js';
+import '@/../node_modules/ccapture.js/src/tar.js';
+import '@/../node_modules/ccapture.js/src/Whammy.js';
 export declare function init(_canvas: HTMLCanvasElement): void;
 export declare function setVerbose(state: boolean): void;
 export declare function bindKeyToVideoRecord(key: string): void;
