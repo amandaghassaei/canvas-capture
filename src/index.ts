@@ -1,12 +1,12 @@
 import 'webm-writer'
 // @ts-ignore
-import CCapture from '@/../node_modules/ccapture.js/src/CCapture.js'
+import CCapture from '../node_modules/ccapture.js/src/CCapture.js'
 // @ts-ignore
-import '@/../node_modules/ccapture.js/src/download.js'
-import '@/../node_modules/ccapture.js/src/gif.js'
-import '@/../node_modules/ccapture.js/src/gif.worker.js'
-import '@/../node_modules/ccapture.js/src/tar.js'
-import '@/../node_modules/ccapture.js/src/Whammy.js'
+import '../node_modules/ccapture.js/src/download.js'
+import '../node_modules/ccapture.js/src/gif.js'
+import '../node_modules/ccapture.js/src/gif.worker.js'
+import '../node_modules/ccapture.js/src/tar.js'
+import '../node_modules/ccapture.js/src/Whammy.js'
 import { showAlert, showDot } from './modals';
 
 let VERBOSE = true;

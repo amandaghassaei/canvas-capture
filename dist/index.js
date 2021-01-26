@@ -3,13 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takePNGSnapshot = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToPNGSnapshot = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = void 0;
 require("webm-writer");
 // @ts-ignore
-var CCapture_js_1 = require("@/../node_modules/ccapture.js/src/CCapture.js");
+var CCapture_js_1 = require("../node_modules/ccapture.js/src/CCapture.js");
 // @ts-ignore
-require("@/../node_modules/ccapture.js/src/download.js");
-require("@/../node_modules/ccapture.js/src/gif.js");
-require("@/../node_modules/ccapture.js/src/gif.worker.js");
-require("@/../node_modules/ccapture.js/src/tar.js");
-require("@/../node_modules/ccapture.js/src/Whammy.js");
+require("../node_modules/ccapture.js/src/download.js");
+require("../node_modules/ccapture.js/src/gif.js");
+require("../node_modules/ccapture.js/src/gif.worker.js");
+require("../node_modules/ccapture.js/src/tar.js");
+require("../node_modules/ccapture.js/src/Whammy.js");
 var modals_1 = require("./modals");
 var VERBOSE = true;
 var WORKERS_PATH = '/';
