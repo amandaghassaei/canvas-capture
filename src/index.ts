@@ -1,5 +1,5 @@
 // @ts-ignore
-import CCapture from 'ccapture.js';
+import { CCapture } from 'ccapture.js';
 import { showAlert, showDot } from './modals';
 
 let VERBOSE = true;
