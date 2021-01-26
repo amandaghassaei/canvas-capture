@@ -155,6 +155,7 @@ export function takePNGSnapshot(options?: {
 	});
 	capturer.start();
 	capturer.capture(canvas);
+	numFrames++;
 	stopRecord();
 }
 
