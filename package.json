@@ -19,8 +19,7 @@
   "homepage": "https://github.com/amandaghassaei/RecordCanvas#readme",
   "dependencies": {
     "ccapture.js": "git+https://github.com/aceslowman/ccapture.js.git#npm-fix",
-    "micromodal": "^0.4.6",
-    "webm-writer": "^0.3.1"
+    "micromodal": "^0.4.6"
   },
   "devDependencies": {
     "@types/micromodal": "^0.3.2",
