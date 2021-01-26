@@ -189,3 +189,7 @@ export function stopRecord() {
 	isRecordingVideo = false;
 	showDot(false);
 }
+
+export function isRecording() {
+	return isRecordingVideo || isRecordingGIF;
+}

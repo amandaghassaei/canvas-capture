@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stopRecord = exports.recordFrame = exports.takePNGSnapshot = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToPNGSnapshot = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = void 0;
+exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takePNGSnapshot = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToPNGSnapshot = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = void 0;
 // @ts-ignore
 var ccapture_js_1 = require("ccapture.js");
 var modals_1 = require("./modals");
@@ -16,6 +16,11 @@ var canvas = null;
 var numFrames = 0;
 function init(_canvas) {
     canvas = _canvas;
+    canvas.addEventListener('resize', function () {
+        if (capturer) {
+            modals_1.showAlert("Don't resize while recording canvas!!");
+        }
+    });
 }
 exports.init = init;
 function setVerbose(state) {
@@ -171,9 +176,8 @@ function stopRecord() {
     modals_1.showDot(false);
 }
 exports.stopRecord = stopRecord;
-window.addEventListener('resize', function () {
-    if (capturer) {
-        modals_1.showAlert("Don't resize window while recording canvas!!");
-    }
-});
+function isRecording() {
+    return isRecordingVideo || isRecordingGIF;
+}
+exports.isRecording = isRecording;
 //# sourceMappingURL=index.js.map

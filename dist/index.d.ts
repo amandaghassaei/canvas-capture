@@ -17,3 +17,4 @@ export declare function takePNGSnapshot(options?: {
 }): void;
 export declare function recordFrame(): void;
 export declare function stopRecord(): void;
+export declare function isRecording(): boolean;
