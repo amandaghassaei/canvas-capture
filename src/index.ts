@@ -6,6 +6,10 @@ let VERBOSE = true;
 const WORKERS_PATH = '/';
 
 let capturer: CCapture | null = null;
+
+// This is an unused variable,
+// but needed for propper import of CCapture at the moment.
+// See https://github.com/spite/ccapture.js/issues/78
 const temp = CCapture;
 
 let videoRecKey: string | null = null;
