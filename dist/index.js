@@ -86,7 +86,7 @@ function beginVideoRecord(options) {
         return;
     }
     // Create a capturer that exports a WebM video
-    capturer = new ccapture_js_1.CCapture({
+    capturer = new ccapture_js_1.default({
         format: 'webm',
         name: (options === null || options === void 0 ? void 0 : options.name) || 'WEBM_Capture',
         framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
@@ -107,7 +107,7 @@ function beginGIFRecord(options) {
         return;
     }
     // Create a capturer that exports a WebM video
-    capturer = new ccapture_js_1.CCapture({
+    capturer = new ccapture_js_1.default({
         format: 'gif',
         name: (options === null || options === void 0 ? void 0 : options.name) || 'GIF_Capture',
         framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
@@ -131,7 +131,7 @@ function takePNGSnapshot(options) {
         return;
     }
     // Create a capturer that exports a WebM video
-    capturer = new ccapture_js_1.CCapture({
+    capturer = new ccapture_js_1.default({
         format: 'png',
         name: (options === null || options === void 0 ? void 0 : options.name) || 'PNG_Capture',
         verbose: VERBOSE,
