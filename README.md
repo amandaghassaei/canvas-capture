@@ -11,7 +11,7 @@ To install this package run:
 
 You can call it by:
 
-```
+```js
 import {
 	init,
 	bindKeyToVideoRecord,
@@ -60,11 +60,11 @@ To build `src` to `dist` run:
 
 Please note there is some weirdness around importing CCapture with npm.  I'm currently grabbing CCapture from a branch at `github.com/aceslowman/ccapture.js.git#npm-fix`.  Also, in order to get the constructor to work correctly, I had to call `window.CCapture()` from within `index.ts`.  You'll also see I had to assign the default export from CCapture to an unused temp variable to get everything to work:
 
-```
+```js
 import CCapture from 'ccapture.js';
 const temp = CCapture; // This is an unused variable, but critically necessary.
 
-const capturer = new window.CCapture( {
+const capturer = new window.CCapture({
 	format: 'webm',
 	name: 'WEBM_Capture',
 	framerate: 60,
