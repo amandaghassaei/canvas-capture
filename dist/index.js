@@ -37,10 +37,16 @@ function checkCanvas() {
 }
 window.addEventListener('keydown', function (e) {
     if (videoRecKey && e.key === videoRecKey) {
-        beginVideoRecord();
+        if (isRecordingVideo)
+            stopRecord();
+        else
+            beginVideoRecord();
     }
     if (gifRecKey && e.key === gifRecKey) {
-        beginGIFRecord();
+        if (isRecordingGIF)
+            stopRecord();
+        else
+            beginGIFRecord();
     }
     if (pngRecKey && e.key === pngRecKey) {
         takePNGSnapshot();
@@ -133,7 +139,7 @@ function takePNGSnapshot(options) {
         modals_1.showAlert('You are currently recording a gif, stop recording gif before starting new png snapshot.');
         return;
     }
-    // Create a capturer that exports a WebM video
+    // Create a capturer that exports a png.
     // @ts-ignore
     capturer = new window.CCapture({
         format: 'png',
@@ -141,8 +147,7 @@ function takePNGSnapshot(options) {
         verbose: VERBOSE,
     });
     capturer.start();
-    capturer.capture(canvas);
-    numFrames++;
+    recordFrame();
     stopRecord();
 }
 exports.takePNGSnapshot = takePNGSnapshot;
