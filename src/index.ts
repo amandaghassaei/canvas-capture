@@ -20,6 +20,11 @@ let numFrames = 0;
 
 export function init(_canvas: HTMLCanvasElement) {
 	canvas = _canvas;
+	canvas.addEventListener('resize', function(){
+		if (capturer) {
+			showAlert("Don't resize while recording canvas!!");
+		}
+	});
 }
 
 export function setVerbose(state: boolean) {
@@ -184,9 +189,3 @@ export function stopRecord() {
 	isRecordingVideo = false;
 	showDot(false);
 }
-
-window.addEventListener('resize', function(){
-	if (capturer) {
-		showAlert("Don't resize window while recording canvas!!");
-	}
-});
