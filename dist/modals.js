@@ -35,6 +35,7 @@ var dotCSS = {
     top: "0",
     right: "0",
     "z-index": "10",
+    margin: "20px",
 };
 Object.assign(dot.style, dotCSS);
 document.getElementsByTagName('body')[0].appendChild(dot);
