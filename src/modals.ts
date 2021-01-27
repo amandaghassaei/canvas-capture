@@ -40,9 +40,9 @@ export function showRecordOptionsModal() {
 const dot = document.createElement('div');
 dot.id = 'recordingDot';
 const dotCSS = {
-	color: "red",
-	width: "40px",
-	height: "40px",
+	background: "red",
+	width: "20px",
+	height: "20px",
 	"border-radius": "50%",
 	display: "none",
 	position: "absolute",

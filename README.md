@@ -58,7 +58,7 @@ To build `src` to `dist` run:
 
 ```npm run build```
 
-Please note there is some weirdness around importing CCapture with npm.  I'm currently grabbing CCapture from a branch at `github.com/aceslowman/ccapture.js.git#npm-fix`.  Also, in order to get the constructor to work correctly, I had to call `window.CCapture()` from within `index.ts`.  You'll also see I had to assign the default export from CCapture to an unused temp variable to get everything to work:
+Please note there is some weirdness around importing CCapture with npm.  I'm currently grabbing CCapture from a branch at `github.com/amandaghassaei/ccapture.js.git#npm-fix`.  I'm not proud of the changes I had to make to get this to work, but it's fine for now.  Also, in order to get the constructor to work correctly, I had to call `window.CCapture()` from within `index.ts`.  You'll also see I had to assign the default export from CCapture to an unused temp variable to get everything to work:
 
 ```js
 import CCapture from 'ccapture.js';
