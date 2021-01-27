@@ -7,6 +7,9 @@ var modals_1 = require("./modals");
 var VERBOSE = true;
 var WORKERS_PATH = '/';
 var capturer = null;
+// This is an unused variable,
+// but needed for propper import of CCapture at the moment.
+// See https://github.com/spite/ccapture.js/issues/78
 var temp = ccapture_js_1.default;
 var videoRecKey = null;
 var gifRecKey = null;

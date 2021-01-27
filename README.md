@@ -64,6 +64,8 @@ Please note there is some weirdness around importing CCapture with npm.  I'm cur
 import CCapture from 'ccapture.js';
 const temp = CCapture; // This is an unused variable, but critically necessary.
 
+....
+
 const capturer = new window.CCapture({
 	format: 'webm',
 	name: 'WEBM_Capture',
