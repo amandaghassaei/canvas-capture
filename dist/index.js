@@ -6,10 +6,10 @@ var ccapture_js_1 = require("ccapture.js");
 var file_saver_1 = require("file-saver");
 var modals_1 = require("./modals");
 var gif_worker_1 = require("./gif.worker");
+require("micromodal.css");
+// Make is so we don't have to specify workersPath for CCapture.
 var workersBlob = new Blob([gif_worker_1.workerString]);
 var workersPath = URL.createObjectURL(workersBlob);
-console.log(gif_worker_1.workerString);
-console.log(workersPath);
 var VERBOSE = true;
 var capturer = null;
 // This is an unused variable,

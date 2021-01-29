@@ -3,10 +3,11 @@ import CCapture from 'ccapture.js'
 import { saveAs } from 'file-saver';
 import { showAlert, showDot } from './modals';
 import { workerString } from './gif.worker';
+import 'micromodal.css';
+
+// Make is so we don't have to specify workersPath for CCapture.
 const workersBlob = new Blob([workerString]);
 const workersPath = URL.createObjectURL(workersBlob);
-console.log(workerString);
-console.log(workersPath);
 
 let VERBOSE = true;
 
