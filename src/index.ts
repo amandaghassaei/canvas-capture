@@ -4,7 +4,6 @@ import { saveAs } from 'file-saver';
 import { showAlert, showDot } from './modals';
 
 let VERBOSE = true;
-const WORKERS_PATH = '/';
 
 let capturer: CCapture | null = null;
 
@@ -175,7 +174,7 @@ export function beginGIFRecord(options?: GIF_OPTIONS) {
 		format: 'gif',
 		name: options?.name || 'GIF_Capture',
 		framerate: options?.fps || 60,
-		workersPath: WORKERS_PATH,
+		workersPath: '', // this doesn't matter anymore.
 		verbose: VERBOSE,
 	});
 	isRecordingGIF = true;

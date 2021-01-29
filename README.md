@@ -112,8 +112,6 @@ import {
 setVerbose(false); // By default the verbosity is set to VERBOSE = true.
 ```
 
-You'll also need to copy worker.js to the index of your app - sorry this is kind of annoying for now!  Hopefully CCapture will import this itself in the future.
-
 ## Development
 
 Pull requests welcome!

@@ -6,7 +6,6 @@ var ccapture_js_1 = require("ccapture.js");
 var file_saver_1 = require("file-saver");
 var modals_1 = require("./modals");
 var VERBOSE = true;
-var WORKERS_PATH = '/';
 var capturer = null;
 // This is an unused variable,
 // but needed for propper import of CCapture at the moment.
@@ -151,7 +150,7 @@ function beginGIFRecord(options) {
         format: 'gif',
         name: (options === null || options === void 0 ? void 0 : options.name) || 'GIF_Capture',
         framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
-        workersPath: WORKERS_PATH,
+        workersPath: '',
         verbose: VERBOSE,
     });
     isRecordingGIF = true;
