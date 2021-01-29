@@ -2,7 +2,7 @@
 import CCapture from 'ccapture.js'
 import { saveAs } from 'file-saver';
 import { showAlert, showDot } from './modals';
-const workersPath = require('./gif.worker');
+const workersPath = require('./gif.worker.js');
 console.log(workersPath);
 
 let VERBOSE = true;
