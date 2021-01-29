@@ -45,7 +45,11 @@ export const css = `
 }
 
 .modal__footer {
-  text-align: 'right';
+  text-align: right;
+}
+
+.modal__footer>.modal__btn {
+  margin-right: 8px;
 }
 
 .modal__close {
@@ -96,7 +100,7 @@ export const css = `
 }
 
 .modal__btn-primary {
-  background-color: #00449e;
+  background-color: #333;
   color: #fff;
 }
 
