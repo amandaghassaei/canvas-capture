@@ -5,7 +5,7 @@ exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPE
 var ccapture_js_1 = require("ccapture.js");
 var file_saver_1 = require("file-saver");
 var modals_1 = require("./modals");
-var workersPath = require('./gif.worker');
+var workersPath = require('./gif.worker.js');
 console.log(workersPath);
 var VERBOSE = true;
 var capturer = null;
