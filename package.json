@@ -19,9 +19,11 @@
   "homepage": "https://github.com/amandaghassaei/RecordCanvas#readme",
   "dependencies": {
     "ccapture.js": "git+https://github.com/amandaghassaei/ccapture.js.git#npm-fix",
+    "file-saver": "^2.0.5",
     "micromodal": "^0.4.6"
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.1",
     "@types/micromodal": "^0.3.2",
     "typescript": "^4.1.3"
   }

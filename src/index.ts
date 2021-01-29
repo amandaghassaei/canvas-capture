@@ -1,5 +1,6 @@
 // @ts-ignore
 import CCapture from 'ccapture.js'
+import { saveAs } from 'file-saver';
 import { showAlert, showDot } from './modals';
 
 let VERBOSE = true;
@@ -144,24 +145,32 @@ export function takePNGSnapshot(options?: {
 	if (!checkCanvas()) {
 		return;
 	}
-	if (isRecordingVideo) {
-		showAlert('You are currently recording a video, stop recording video before starting new png snapshot.');
-		return;
-	}
-	if (isRecordingGIF) {
-		showAlert('You are currently recording a gif, stop recording gif before starting new png snapshot.');
-		return;
-	}
-	// Create a capturer that exports a png.
-	// @ts-ignore
-	capturer = new window.CCapture({
-		format: 'png',
-		name: options?.name || 'PNG_Capture',
-		verbose: VERBOSE,
-	});
-	capturer.start();
-	recordFrame();
-	stopRecord();
+	canvas!.toBlob((blob) => {
+		if (!blob) {
+			showAlert('Problem saving PNG, please try again!');
+			return;
+		}
+		saveAs(blob, `${options?.name || 'PNG_Capture'}.png`);
+	}, 'image/png');
+
+	// if (isRecordingVideo) {
+	// 	showAlert('You are currently recording a video, stop recording video before starting new png snapshot.');
+	// 	return;
+	// }
+	// if (isRecordingGIF) {
+	// 	showAlert('You are currently recording a gif, stop recording gif before starting new png snapshot.');
+	// 	return;
+	// }
+	// // Create a capturer that exports a png.
+	// // @ts-ignore
+	// capturer = new window.CCapture({
+	// 	format: 'png',
+	// 	name: options?.name || 'PNG_Capture',
+	// 	verbose: VERBOSE,
+	// });
+	// capturer.start();
+	// recordFrame();
+	// stopRecord();
 }
 
 export function recordFrame() {
