@@ -2,6 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.showDot = exports.showRecordOptionsModal = exports.showAlert = void 0;
 var micromodal_1 = require("micromodal");
+var micromodal_css_1 = require("./micromodal.css");
+// Add modal styling.
+var style = document.createElement('style');
+style.textContent = micromodal_css_1.css;
+document.head.append(style);
 function initModalHTML(modalID, title, content) {
     if (content === void 0) { content = ''; }
     var modalString = "<div id=\"modal-" + modalID + "\" aria-hidden=\"true\">\n\t\t<div tabindex=\"-1\" data-micromodal-close>\n\t\t\t<div role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-" + modalID + "-title\" >\n\t\t\t<header>\n\t\t\t\t<h2 id=\"modal-" + modalID + "-title\">\n\t\t\t\t" + title + "\n\t\t\t\t</h2>\n\t\t\t\t<button aria-label=\"Close modal\" data-micromodal-close></button>\n\t\t\t</header>\n\t\t\t<div id=\"modal-" + modalID + "-content\">\n\t\t\t\t" + content + "\n\t\t\t</div>\n\t\t\t</div>\n\t\t</div>\n\t</div>";

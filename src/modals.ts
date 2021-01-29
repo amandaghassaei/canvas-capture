@@ -1,4 +1,10 @@
 import MicroModal from 'micromodal';
+import { css } from './micromodal.css';
+
+// Add modal styling.
+const style = document.createElement('style');
+style.textContent = css;
+document.head.append(style);
 
 function initModalHTML(modalID: string, title: string, content: string = '') {
 	const modalString = `<div id="modal-${modalID}" aria-hidden="true">

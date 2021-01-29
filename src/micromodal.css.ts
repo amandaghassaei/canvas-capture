@@ -1,3 +1,4 @@
+export const css = `
 /**************************\
   Basic Modal Styles
 \**************************/
@@ -149,3 +150,4 @@
 .micromodal-slide .modal__overlay {
   will-change: transform;
 }
+`
