@@ -7,21 +7,29 @@ style.textContent = css;
 document.head.append(style);
 
 function initModalHTML(modalID: string, title: string, content: string = '') {
-	const modalString = `<div id="modal-${modalID}" aria-hidden="true">
-		<div tabindex="-1" data-micromodal-close>
-			<div role="dialog" aria-modal="true" aria-labelledby="modal-${modalID}-title" >
-			<header>
-				<h2 id="modal-${modalID}-title">
+	const modalString = `
+	<div class="modal micromodal-slide" id="modal-${modalID}" aria-hidden="true">
+		<div class="modal__overlay" tabindex="-1" data-micromodal-close>
+		<div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-${modalID}-title">
+			<header class="modal__header">
+			<h2 class="modal__title" id="modal-${modalID}-title">
 				${title}
-				</h2>
-				<button aria-label="Close modal" data-micromodal-close></button>
+			</h2>
+			<button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
 			</header>
-			<div id="modal-${modalID}-content">
-				${content}
-			</div>
-			</div>
+			<main class="modal__content" id="modal-${modalID}-content">
+			<p>
+			${content}
+			</p>
+			</main>
+			<footer class="modal__footer">
+			<button class="modal__btn modal__btn-primary">Continue</button>
+			<button class="modal__btn" data-micromodal-close aria-label="Close this dialog window">Close</button>
+			</footer>
 		</div>
-	</div>`;
+		</div>
+	</div>
+	`;
 	// This is a trick to create an element from string.
 	const temp = document.createElement('div');
 	temp.innerHTML = modalString;
