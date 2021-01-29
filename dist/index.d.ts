@@ -1,4 +1,3 @@
-import 'micromodal.css';
 export declare function init(_canvas: HTMLCanvasElement): void;
 export declare function setVerbose(state: boolean): void;
 declare type VIDEO_OPTIONS = {
