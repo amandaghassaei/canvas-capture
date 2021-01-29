@@ -22,10 +22,6 @@ function initModalHTML(modalID: string, title: string, content: string = '') {
 					${content}
 				</p>
 			</main>
-			<footer class="modal__footer">
-				<button class="modal__btn modal__btn-primary">Continue</button>
-				<button class="modal__btn" data-micromodal-close aria-label="Close this dialog window">Close</button>
-			</footer>
 		</div>
 		</div>
 	</div>`;
@@ -39,9 +35,18 @@ const ALERT_MODAL_ID = 'alert';
 const alertModal = initModalHTML(ALERT_MODAL_ID, 'Warning');
 document.getElementsByTagName('body')[0].appendChild(alertModal);
 
+const DIALOG_MODAL_ID = 'dialog';
+const dialogModal = initModalHTML(DIALOG_MODAL_ID, 'Message');
+document.getElementsByTagName('body')[0].appendChild(dialogModal);
+
 export function showAlert(message: string) {
 	(document.getElementById(`modal-${ALERT_MODAL_ID}-content`) as HTMLElement).innerHTML = message;
 	MicroModal.show(`modal-${ALERT_MODAL_ID}`);
+}
+
+export function showDialog(message: string) {
+	(document.getElementById(`modal-${DIALOG_MODAL_ID}-content`) as HTMLElement).innerHTML = message;
+	MicroModal.show(`modal-${DIALOG_MODAL_ID}`);
 }
 
 // export function showRecordOptionsModal() {

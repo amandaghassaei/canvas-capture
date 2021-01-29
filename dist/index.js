@@ -217,6 +217,10 @@ function stopRecord() {
     capturer.stop();
     capturer.save();
     capturer = null;
+    if (isRecordingGIF) {
+        // Tell the user that gifs take a sec to process.
+        modals_1.showDialog('GIF is processing and may take a minute to save.  You can close this window in the meantime.');
+    }
     isRecordingGIF = false;
     isRecordingVideo = false;
     modals_1.showDot(false);

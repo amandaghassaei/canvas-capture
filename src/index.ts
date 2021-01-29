@@ -1,7 +1,7 @@
 // @ts-ignore
 import CCapture from 'ccapture.js'
 import { saveAs } from 'file-saver';
-import { showAlert, showDot } from './modals';
+import { showAlert, showDialog, showDot } from './modals';
 import { workerString } from './gif.worker';
 
 // Make is so we don't have to specify workersPath for CCapture.
@@ -243,6 +243,12 @@ export function stopRecord() {
 	capturer.stop();
 	capturer.save();
 	capturer = null;
+
+	if (isRecordingGIF) {
+		// Tell the user that gifs take a sec to process.
+		showDialog('GIF is processing and may take a minute to save.  You can close this window in the meantime.');
+	}
+
 	isRecordingGIF = false;
 	isRecordingVideo = false;
 	showDot(false);
