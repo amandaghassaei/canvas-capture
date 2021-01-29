@@ -28,15 +28,17 @@ init(document.getElementById('glcanvas'));
 // Bind key presses to begin/end recordings.
 bindKeyToVideoRecord('v', { name: 'myVideo', quality: 0.6 }); // Options are optional.
 bindKeyToGIFRecord('g');
-bindKeyToPNGSnapshot('p'); // This takes a single snapshot.
-bindKeyToJPEGSnapshot('j', { name: 'myJpeg', quality: 0.8 }); // This takes a single snapshot, options are optional.
+// These take a single snapshot.
+bindKeyToPNGSnapshot('p'); 
+bindKeyToJPEGSnapshot('j', { name: 'myJpeg', quality: 0.8 }); // Options are optional.
 
 function loop() {
 	requestAnimationFrame(loop);
 
 	// Render something...
 
-	if (isRecording()) recordFrame();// You need to do this if you are recording a video or gif.
+	// You need to do this only if you are recording a video or gif.
+	if (isRecording()) recordFrame();
 }
 
 loop();
@@ -72,7 +74,8 @@ recordFrame();
 ....
 stopRecording();
 
-// Or you can call `takeXXXSnapshot` to take a single snapshot, no need to call `recordFrame` or `stopRecord`.
+// Or you can call `takeXXXSnapshot` to take a single snapshot,
+// no need to call `recordFrame` or `stopRecord`.
 takePNGSnapshot({ name: 'myPng' }); // Options are optional.
 takeJPEGSnapshot()
 
