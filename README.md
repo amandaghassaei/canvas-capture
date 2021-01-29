@@ -20,6 +20,7 @@ import {
 	beginVideoRecord,
 	beginGIFRecord,
 	takePNGSnapshot,
+	takeJPEGSnapshot,
 	recordFrame,
 	stopRecord,
 	isRecording,
@@ -32,6 +33,7 @@ init(document.getElementById('glcanvas'));
 bindKeyToGIFRecord('g');
 bindKeyToVideoRecord('v');
 bindKeyToPNGSnapshot('p'); // This takes a single snapshot.
+bindKeyToJPEGSnapshot('j'); // This takes a single snapshot.
 
 function loop() {
 	requestAnimationFrame(loop);
@@ -43,6 +45,28 @@ function loop() {
 
 loop();
 ```
+
+Available options for each capture type - this can be passed in as an optional second argument to `bindKeyTo...`, `beginXXXRecord`, or `takeXXXSnapshot`:
+
+```ts
+videoOptions = {
+	name: string, // Defaults to 'WEBM_Capture'.
+	fps: number, // The speed of the output video, defaults to 60.
+	quality: number, // A number between 0 and 1, defaults to 1.
+}
+gifOptions = {
+	name: string, // Defaults to 'GIF_Capture'.
+	fps: number, // The speed of the output gif, defaults to 60.
+}
+pngOptions = {
+	name: string, // Defaults to 'PNG_Capture'.
+}
+jpegOptions = {
+	name: string, // Defaults to 'JPEG_Capture'.
+	quality, // A number between 0 and 1, defaults to 1.
+}
+```
+
 
 You'll also need to copy worker.js to the index of your app - sorry this is kind of annoying for now!  Hopefully CCapture will import this itself in the future.
 
