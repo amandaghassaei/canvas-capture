@@ -13,9 +13,12 @@ let capturer: CCapture | null = null;
 // See https://github.com/spite/ccapture.js/issues/78
 const temp = CCapture;
 
-let videoRecKey: string | null = null;
-let gifRecKey: string | null = null;
-let pngRecKey: string | null = null;
+const hotkeys: { [key: string]: string | null} = {
+	webm: null,
+	gif: null,
+	png: null,
+	jpeg: null,
+};
 
 let isRecordingVideo = false;
 let isRecordingGIF = false;
@@ -45,54 +48,93 @@ function checkCanvas() {
 	return true;
 }
 
+// Save options for hotkey controls.
+type VIDEO_OPTIONS = {
+	fps?: number,
+	name?: string,
+	quality?: number,
+};
+type GIF_OPTIONS = {
+	fps?: number,
+	name?: string,
+};
+type PNG_OPTIONS = {
+	name?: string,
+};
+type JPEG_OPTIONS = {
+	name?: string,
+	quality?: number, // A number 0-1.
+};
+const recOptions:
+{
+	webm?: VIDEO_OPTIONS,
+	gif?: GIF_OPTIONS,
+	png?: PNG_OPTIONS,
+	jpeg?: JPEG_OPTIONS,
+} = {
+	webm: undefined,
+	gif: undefined,
+	png: undefined,
+	jpeg: undefined,
+};
+
+// Pressing key once will start record, press again to stop.
+export function bindKeyToVideoRecord(key: string, options?: VIDEO_OPTIONS) {
+	recOptions.webm = options;
+	Object.keys(hotkeys).forEach(keyName => {
+		if (hotkeys[keyName] === key) {
+			hotkeys[keyName] = null;
+		}
+	});
+	hotkeys.webm = key;
+}
+export function bindKeyToGIFRecord(key: string, options?: GIF_OPTIONS) {
+	recOptions.gif = options;
+	Object.keys(hotkeys).forEach(keyName => {
+		if (hotkeys[keyName] === key) {
+			hotkeys[keyName] = null;
+		}
+	});
+	hotkeys.gif = key;
+}
+// Snapshots just take a single shot.
+export function bindKeyToPNGSnapshot(key: string, options?: PNG_OPTIONS) {
+	recOptions.png = options;
+	Object.keys(hotkeys).forEach(keyName => {
+		if (hotkeys[keyName] === key) {
+			hotkeys[keyName] = null;
+		}
+	});
+	hotkeys.png = key;
+}
+export function bindKeyToJPEGSnapshot(key: string, options?: JPEG_OPTIONS) {
+	recOptions.jpeg = options;
+	Object.keys(hotkeys).forEach(keyName => {
+		if (hotkeys[keyName] === key) {
+			hotkeys[keyName] = null;
+		}
+	});
+	hotkeys.jpeg = key;
+}
+
 window.addEventListener('keydown', (e: KeyboardEvent) => {
-	if (videoRecKey && e.key === videoRecKey) {
+	if (hotkeys.webm && e.key === hotkeys.webm) {
 		if (isRecordingVideo) stopRecord();
-		else beginVideoRecord();
+		else beginVideoRecord(recOptions.webm);
 	}
-	if (gifRecKey && e.key === gifRecKey) {
+	if (hotkeys.gif && e.key === hotkeys.gif) {
 		if (isRecordingGIF) stopRecord();
-		else beginGIFRecord();
+		else beginGIFRecord(recOptions.gif);
 	}
-	if (pngRecKey && e.key === pngRecKey) {
-		takePNGSnapshot();
+	if (hotkeys.png && e.key === hotkeys.png) {
+		takePNGSnapshot(recOptions.png);
+	}
+	if (hotkeys.jpeg && e.key === hotkeys.jpeg) {
+		takeJPEGSnapshot(recOptions.jpeg);
 	}
 });
 
-// Pressing key once will start record, press again to stop.
-export function bindKeyToVideoRecord(key: string) {
-	if (key === gifRecKey) {
-		gifRecKey = null;
-	}
-	if (key === pngRecKey) {
-		pngRecKey = null;
-	}
-	videoRecKey = key;
-}
-export function bindKeyToGIFRecord(key: string) {
-	if (key === videoRecKey) {
-		videoRecKey = null;
-	}
-	if (key === pngRecKey) {
-		pngRecKey = null;
-	}
-	gifRecKey = key;
-}
-export function bindKeyToPNGSnapshot(key: string) {
-	if (key === gifRecKey) {
-		gifRecKey = null;
-	}
-	if (key === videoRecKey) {
-		videoRecKey = null;
-	}
-	pngRecKey = key;
-}
-
-export function beginVideoRecord(options?: {
-	fps?: number,
-	name?: string,
-	quality?: string,
-}) {
+export function beginVideoRecord(options?: VIDEO_OPTIONS) {
 	if (isRecordingGIF) {
 		showAlert('You are currently recording a gif, stop recording gif before starting new video record.');
 		return;
@@ -101,23 +143,24 @@ export function beginVideoRecord(options?: {
 		showAlert('You are currently recording a video, stop recording current video before starting new video record.');
 		return;
 	}
+	let quality = 100;
+	if (options && options.quality) {
+		quality = options.quality * 100;
+	}
 	// Create a capturer that exports a WebM video
 	// @ts-ignore
 	capturer = new window.CCapture( {
 		format: 'webm',
 		name: options?.name || 'WEBM_Capture',
 		framerate: options?.fps || 60,
-		quality: options?.quality || 63,
+		quality,
 		verbose: VERBOSE,
 	});
 	isRecordingVideo = true;
 	startRecord();
 }
 
-export function beginGIFRecord(options?: {
-	fps?: number,
-	name?: string,
-}) {
+export function beginGIFRecord(options?: GIF_OPTIONS) {
 	if (isRecordingVideo) {
 		showAlert('You are currently recording a video, stop recording video before starting new gif record.');
 		return;
@@ -139,9 +182,7 @@ export function beginGIFRecord(options?: {
 	startRecord();
 }
 
-export function takePNGSnapshot(options?: {
-	name?: string,
-}) {
+export function takePNGSnapshot(options?: PNG_OPTIONS) {
 	if (!checkCanvas()) {
 		return;
 	}
@@ -152,25 +193,19 @@ export function takePNGSnapshot(options?: {
 		}
 		saveAs(blob, `${options?.name || 'PNG_Capture'}.png`);
 	}, 'image/png');
+}
 
-	// if (isRecordingVideo) {
-	// 	showAlert('You are currently recording a video, stop recording video before starting new png snapshot.');
-	// 	return;
-	// }
-	// if (isRecordingGIF) {
-	// 	showAlert('You are currently recording a gif, stop recording gif before starting new png snapshot.');
-	// 	return;
-	// }
-	// // Create a capturer that exports a png.
-	// // @ts-ignore
-	// capturer = new window.CCapture({
-	// 	format: 'png',
-	// 	name: options?.name || 'PNG_Capture',
-	// 	verbose: VERBOSE,
-	// });
-	// capturer.start();
-	// recordFrame();
-	// stopRecord();
+export function takeJPEGSnapshot(options?: JPEG_OPTIONS) {
+	if (!checkCanvas()) {
+		return;
+	}
+	canvas!.toBlob((blob) => {
+		if (!blob) {
+			showAlert('Problem saving JPEG, please try again!');
+			return;
+		}
+		saveAs(blob, `${options?.name || 'JPEG_Capture'}.jpg`);
+	}, 'image/jpeg', options?.quality || 1);
 }
 
 export function recordFrame() {
