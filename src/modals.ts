@@ -36,7 +36,7 @@ const alertModal = initModalHTML(ALERT_MODAL_ID, 'Warning');
 document.getElementsByTagName('body')[0].appendChild(alertModal);
 
 const DIALOG_MODAL_ID = 'dialog';
-const dialogModal = initModalHTML(DIALOG_MODAL_ID, 'Message');
+const dialogModal = initModalHTML(DIALOG_MODAL_ID, 'Saving...');
 document.getElementsByTagName('body')[0].appendChild(dialogModal);
 
 export function showAlert(message: string) {
@@ -44,14 +44,14 @@ export function showAlert(message: string) {
 	MicroModal.show(`modal-${ALERT_MODAL_ID}`);
 }
 
-export function showDialog(message: string) {
+export function showDialog(title: string, message: string) {
+	(document.getElementById(`modal-${DIALOG_MODAL_ID}-title`) as HTMLElement).innerHTML = title;
 	(document.getElementById(`modal-${DIALOG_MODAL_ID}-content`) as HTMLElement).innerHTML = message;
 	MicroModal.show(`modal-${DIALOG_MODAL_ID}`);
+	setTimeout(() => {
+		MicroModal.close(`modal-${DIALOG_MODAL_ID}`);
+	}, 7000);
 }
-
-// export function showRecordOptionsModal() {
-
-// }
 
 // Create record red dot vis to overlay when recording is happening.
 const dot = document.createElement('div');

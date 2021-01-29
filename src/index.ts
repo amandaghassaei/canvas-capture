@@ -246,7 +246,7 @@ export function stopRecord() {
 
 	if (isRecordingGIF) {
 		// Tell the user that gifs take a sec to process.
-		showDialog('GIF is processing and may take a minute to save.  You can close this window in the meantime.');
+		showDialog('Processing...', 'GIF is processing and may take a minute to save.  You can close this window in the meantime.');
 	}
 
 	isRecordingGIF = false;

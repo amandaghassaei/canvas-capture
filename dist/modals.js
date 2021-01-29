@@ -20,20 +20,22 @@ var ALERT_MODAL_ID = 'alert';
 var alertModal = initModalHTML(ALERT_MODAL_ID, 'Warning');
 document.getElementsByTagName('body')[0].appendChild(alertModal);
 var DIALOG_MODAL_ID = 'dialog';
-var dialogModal = initModalHTML(DIALOG_MODAL_ID, 'Message');
+var dialogModal = initModalHTML(DIALOG_MODAL_ID, 'Saving...');
 document.getElementsByTagName('body')[0].appendChild(dialogModal);
 function showAlert(message) {
     document.getElementById("modal-" + ALERT_MODAL_ID + "-content").innerHTML = message;
     micromodal_1.default.show("modal-" + ALERT_MODAL_ID);
 }
 exports.showAlert = showAlert;
-function showDialog(message) {
+function showDialog(title, message) {
+    document.getElementById("modal-" + DIALOG_MODAL_ID + "-title").innerHTML = title;
     document.getElementById("modal-" + DIALOG_MODAL_ID + "-content").innerHTML = message;
     micromodal_1.default.show("modal-" + DIALOG_MODAL_ID);
+    setTimeout(function () {
+        micromodal_1.default.close("modal-" + DIALOG_MODAL_ID);
+    }, 7000);
 }
 exports.showDialog = showDialog;
-// export function showRecordOptionsModal() {
-// }
 // Create record red dot vis to overlay when recording is happening.
 var dot = document.createElement('div');
 dot.id = 'recordingDot';
