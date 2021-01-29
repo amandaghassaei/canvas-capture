@@ -9,7 +9,7 @@ To install this package run:
 
 ```npm install canvas-capture```
 
-You can call it by:
+To use, you can bind hotkeys to start/stop recording:
 
 ```js
 import {
@@ -17,12 +17,8 @@ import {
 	bindKeyToVideoRecord,
 	bindKeyToGIFRecord,
 	bindKeyToPNGSnapshot,
-	beginVideoRecord,
-	beginGIFRecord,
-	takePNGSnapshot,
-	takeJPEGSnapshot,
+	bindKeyToJPEGSnapshot,
 	recordFrame,
-	stopRecord,
 	isRecording,
 } from 'canvas-capture';
 
@@ -30,23 +26,59 @@ import {
 init(document.getElementById('glcanvas'));
 
 // Bind key presses to begin/end recordings.
+bindKeyToVideoRecord('v', { name: 'myVideo', quality: 0.6 }); // Options are optional.
 bindKeyToGIFRecord('g');
-bindKeyToVideoRecord('v');
 bindKeyToPNGSnapshot('p'); // This takes a single snapshot.
-bindKeyToJPEGSnapshot('j'); // This takes a single snapshot.
+bindKeyToJPEGSnapshot('j', { name: 'myJpeg', quality: 0.8 }); // This takes a single snapshot, options are optional.
 
 function loop() {
 	requestAnimationFrame(loop);
 
 	// Render something...
 
-	if (isRecording()) recordFrame();
+	if (isRecording()) recordFrame();// You need to do this if you are recording a video or gif.
 }
 
 loop();
 ```
 
-Available options for each capture type - this can be passed in as an optional second argument to `bindKeyTo...`, `beginXXXRecord`, or `takeXXXSnapshot`:
+Alternatively, you can call `beginXXXRecord` and `takeXXXSnapshot` directly:
+
+```js
+import {
+	init,
+	beginVideoRecord,
+	beginGIFRecord,
+	takePNGSnapshot,
+	takeJPEGSnapshot,
+	recordFrame,
+	stopRecord,
+} from 'canvas-capture';
+
+// Initialize and pass in canvas.
+init(document.getElementById('glcanvas'));
+
+beginGIFRecord({ fps: 10, name: 'MyGif' }); // Options are optional.
+.... // Draw something.
+recordFrame();
+.... // Draw something.
+recordFrame();
+stopRecording();
+
+
+// Now you may start another recording.
+beginVideoRecord();
+recordFrame();
+....
+stopRecording();
+
+// Or you can call `takeXXXSnapshot` to take a single snapshot, no need to call `recordFrame` or `stopRecord`.
+takePNGSnapshot({ name: 'myPng' }); // Options are optional.
+takeJPEGSnapshot()
+
+```
+
+Available options for each capture type - this can be passed in as an optional argument to `bindKeyTo...`, `beginXXXRecord`, or `takeXXXSnapshot`:
 
 ```ts
 videoOptions = {
@@ -67,6 +99,15 @@ jpegOptions = {
 }
 ```
 
+You can set the verbosity of the console output by:
+
+```js
+import {
+	setVerbose,
+} from 'canvas-capture';
+
+setVerbose(false); // By default the verbosity is set to VERBOSE = true.
+```
 
 You'll also need to copy worker.js to the index of your app - sorry this is kind of annoying for now!  Hopefully CCapture will import this itself in the future.
 
