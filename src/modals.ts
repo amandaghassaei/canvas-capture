@@ -18,7 +18,7 @@ function initModalHTML(modalID: string, title: string, content: string = '') {
 				<button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
 			</header>
 			<main class="modal__content">
-				<p id="modal-${modalID}-content>
+				<p id="modal-${modalID}-content">
 					${content}
 				</p>
 			</main>
