@@ -5,6 +5,8 @@ exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPE
 var ccapture_js_1 = require("ccapture.js");
 var file_saver_1 = require("file-saver");
 var modals_1 = require("./modals");
+var workersPath = require('./gif.worker');
+console.log(workersPath);
 var VERBOSE = true;
 var capturer = null;
 // This is an unused variable,
@@ -150,7 +152,7 @@ function beginGIFRecord(options) {
         format: 'gif',
         name: (options === null || options === void 0 ? void 0 : options.name) || 'GIF_Capture',
         framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
-        workersPath: '',
+        workersPath: workersPath,
         verbose: VERBOSE,
     });
     isRecordingGIF = true;

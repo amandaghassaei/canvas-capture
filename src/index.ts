@@ -2,6 +2,8 @@
 import CCapture from 'ccapture.js'
 import { saveAs } from 'file-saver';
 import { showAlert, showDot } from './modals';
+const workersPath = require('./gif.worker');
+console.log(workersPath);
 
 let VERBOSE = true;
 
@@ -174,7 +176,7 @@ export function beginGIFRecord(options?: GIF_OPTIONS) {
 		format: 'gif',
 		name: options?.name || 'GIF_Capture',
 		framerate: options?.fps || 60,
-		workersPath: '', // this doesn't matter anymore.
+		workersPath,
 		verbose: VERBOSE,
 	});
 	isRecordingGIF = true;
