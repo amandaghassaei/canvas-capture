@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takePNGSnapshot = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToPNGSnapshot = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = void 0;
 // @ts-ignore
 var ccapture_js_1 = require("ccapture.js");
+var file_saver_1 = require("file-saver");
 var modals_1 = require("./modals");
 var VERBOSE = true;
 var WORKERS_PATH = '/';
@@ -134,24 +135,31 @@ function takePNGSnapshot(options) {
     if (!checkCanvas()) {
         return;
     }
-    if (isRecordingVideo) {
-        modals_1.showAlert('You are currently recording a video, stop recording video before starting new png snapshot.');
-        return;
-    }
-    if (isRecordingGIF) {
-        modals_1.showAlert('You are currently recording a gif, stop recording gif before starting new png snapshot.');
-        return;
-    }
-    // Create a capturer that exports a png.
-    // @ts-ignore
-    capturer = new window.CCapture({
-        format: 'png',
-        name: (options === null || options === void 0 ? void 0 : options.name) || 'PNG_Capture',
-        verbose: VERBOSE,
-    });
-    capturer.start();
-    recordFrame();
-    stopRecord();
+    canvas.toBlob(function (blob) {
+        if (!blob) {
+            modals_1.showAlert('Problem saving PNG, please try again!');
+            return;
+        }
+        file_saver_1.saveAs(blob, ((options === null || options === void 0 ? void 0 : options.name) || 'PNG_Capture') + ".png");
+    }, 'image/png');
+    // if (isRecordingVideo) {
+    // 	showAlert('You are currently recording a video, stop recording video before starting new png snapshot.');
+    // 	return;
+    // }
+    // if (isRecordingGIF) {
+    // 	showAlert('You are currently recording a gif, stop recording gif before starting new png snapshot.');
+    // 	return;
+    // }
+    // // Create a capturer that exports a png.
+    // // @ts-ignore
+    // capturer = new window.CCapture({
+    // 	format: 'png',
+    // 	name: options?.name || 'PNG_Capture',
+    // 	verbose: VERBOSE,
+    // });
+    // capturer.start();
+    // recordFrame();
+    // stopRecord();
 }
 exports.takePNGSnapshot = takePNGSnapshot;
 function recordFrame() {
