@@ -19,7 +19,6 @@ function initModalHTML(modalID, title, content) {
 var ALERT_MODAL_ID = 'alert';
 var alertModal = initModalHTML(ALERT_MODAL_ID, 'Warning');
 document.getElementsByTagName('body')[0].appendChild(alertModal);
-// MicroModal.init();
 function showAlert(message) {
     document.getElementById("modal-" + ALERT_MODAL_ID + "-content").innerHTML = message;
     micromodal_1.default.show("modal-" + ALERT_MODAL_ID);

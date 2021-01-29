@@ -24,7 +24,6 @@ export const css = `
   padding: 30px;
   max-width: 500px;
   max-height: 100vh;
-  border-radius: 4px;
   overflow-y: auto;
   box-sizing: border-box;
 }
@@ -41,8 +40,12 @@ export const css = `
   font-weight: 600;
   font-size: 1.25rem;
   line-height: 1.25;
-  color: #00449e;
+  color: #222;
   box-sizing: border-box;
+}
+
+.modal__footer {
+  text-align: 'right';
 }
 
 .modal__close {
