@@ -32,15 +32,17 @@ const ALERT_MODAL_ID = 'alert';
 const alertModal = initModalHTML(ALERT_MODAL_ID, 'Warning');
 document.getElementsByTagName('body')[0].appendChild(alertModal);
 
+MicroModal.init();
+
 
 export function showAlert(message: string) {
 	(document.getElementById(`modal-${ALERT_MODAL_ID}-content`) as HTMLDivElement).innerHTML = message;
 	MicroModal.show(`modal-${ALERT_MODAL_ID}`);
 }
 
-export function showRecordOptionsModal() {
+// export function showRecordOptionsModal() {
 
-}
+// }
 
 // Create record red dot vis to overlay when recording is happening.
 const dot = document.createElement('div');

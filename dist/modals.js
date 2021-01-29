@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.showDot = exports.showRecordOptionsModal = exports.showAlert = void 0;
+exports.showDot = exports.showAlert = void 0;
 var micromodal_1 = require("micromodal");
 var micromodal_css_1 = require("./micromodal.css");
 // Add modal styling.
@@ -19,14 +19,14 @@ function initModalHTML(modalID, title, content) {
 var ALERT_MODAL_ID = 'alert';
 var alertModal = initModalHTML(ALERT_MODAL_ID, 'Warning');
 document.getElementsByTagName('body')[0].appendChild(alertModal);
+micromodal_1.default.init();
 function showAlert(message) {
     document.getElementById("modal-" + ALERT_MODAL_ID + "-content").innerHTML = message;
     micromodal_1.default.show("modal-" + ALERT_MODAL_ID);
 }
 exports.showAlert = showAlert;
-function showRecordOptionsModal() {
-}
-exports.showRecordOptionsModal = showRecordOptionsModal;
+// export function showRecordOptionsModal() {
+// }
 // Create record red dot vis to overlay when recording is happening.
 var dot = document.createElement('div');
 dot.id = 'recordingDot';
