@@ -7,8 +7,8 @@ style.textContent = css;
 document.head.append(style);
 
 function initModalHTML(modalID: string, title: string, content: string = '') {
-	const modalString = `
-	<div class="modal micromodal-slide" id="modal-${modalID}" aria-hidden="true">
+	const modalString =
+	`<div class="modal micromodal-slide" id="modal-${modalID}" aria-hidden="true">
 		<div class="modal__overlay" tabindex="-1" data-micromodal-close>
 		<div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-${modalID}-title">
 			<header class="modal__header">
@@ -28,8 +28,7 @@ function initModalHTML(modalID: string, title: string, content: string = '') {
 			</footer>
 		</div>
 		</div>
-	</div>
-	`;
+	</div>`;
 	// This is a trick to create an element from string.
 	const temp = document.createElement('div');
 	temp.innerHTML = modalString;
@@ -40,7 +39,7 @@ const ALERT_MODAL_ID = 'alert';
 const alertModal = initModalHTML(ALERT_MODAL_ID, 'Warning');
 document.getElementsByTagName('body')[0].appendChild(alertModal);
 
-MicroModal.init();
+// MicroModal.init();
 
 
 export function showAlert(message: string) {
