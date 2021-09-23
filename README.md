@@ -1,5 +1,5 @@
 # canvas-capture
-A small wrapper around CCapture.js to record the canvas as video or gif
+A small wrapper around CCapture.js to record the canvas a png, jpg, video (webm), or gif
 
 ## Installation
 
@@ -72,8 +72,8 @@ recordFrame();
 ....
 stopRecording();
 
-// Or you can call `takeXXXSnapshot` to take a single snapshot,
-// no need to call `recordFrame` or `stopRecord`.
+// Or you can call `takeXXXSnapshot` to take a single snapshot.
+// No need to call `recordFrame` or `stopRecord` for these methods.
 takePNGSnapshot({ name: 'myPng' }); // Options are optional.
 takeJPEGSnapshot()
 
@@ -122,7 +122,7 @@ To build `src` to `dist` run:
 
 ```npm run build```
 
-Please note there is some weirdness around importing CCapture with npm.  I'm currently grabbing CCapture from a branch at `github.com/amandaghassaei/ccapture.js.git#npm-fix`.  I'm not proud of the changes I had to make to get this to work, but it's fine for now.  Also, in order to get the constructor to work correctly, I had to call `window.CCapture()` from within `index.ts`.  You'll also see I had to assign the default export from CCapture to an unused temp variable to get everything to work:
+Please note there is some weirdness around importing CCapture with npm.  I'm currently grabbing CCapture from a branch at `github.com/amandaghassaei/ccapture.js.git#npm-fix`.  I'm not proud of the changes I had to make to get this to work, but it's fine for now.  Also, in order to get the constructor to work correctly, I had to call `window.CCapture()` rather than using the module import directly.  You'll also see I had to assign the default export from CCapture to an unused temp variable to get everything to work:
 
 ```js
 import CCapture from 'ccapture.js';
@@ -137,6 +137,14 @@ const capturer = new window.CCapture({
 	quality: 63,
 	verbose: VERBOSE,
 });
+// This didn't work:
+// const capturer = new CCapture({
+// 	format: 'webm',
+// 	name: 'WEBM_Capture',
+// 	framerate: 60,
+// 	quality: 63,
+// 	verbose: VERBOSE,
+// });
 ```
 
 Hopefully this will all be fixed in the future, see notes here:
