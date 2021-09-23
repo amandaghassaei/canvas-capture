@@ -5,7 +5,7 @@ A small wrapper around [CCapture.js](https://github.com/spite/ccapture.js) to re
 
 To install this package run:
 
-```npm install canvas-capture```
+```npm install github:amandaghassaei/canvas-capture```
 
 To use, you can bind hotkeys to start/stop recording:
 
