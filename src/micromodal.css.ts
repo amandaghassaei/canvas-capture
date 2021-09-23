@@ -57,7 +57,7 @@ export const css = `
   border: 0;
 }
 
-.modal__header .modal__close:before { content: "&#x2715"; }
+.modal__header .modal__close:before { content: "\u2715"; }
 
 .modal__content {
   margin-top: 2rem;
