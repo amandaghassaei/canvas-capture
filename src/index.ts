@@ -13,7 +13,7 @@ let VERBOSE = true;
 let capturer: CCapture | null = null;
 
 // This is an unused variable,
-// but needed for propper import of CCapture at the moment.
+// but needed for proper import of CCapture at the moment.
 // See https://github.com/spite/ccapture.js/issues/78
 const temp = CCapture;
 
