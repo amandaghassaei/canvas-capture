@@ -110,7 +110,7 @@ import {
 setVerbose(false); // By default the verbosity is set to VERBOSE = true.
 ```
 
-### TODO: ass support for mp4 export
+### TODO: add support for mp4 export
 
 - https://stackoverflow.com/questions/62863547/save-canvas-data-as-mp4-javascript
 - https://github.com/ffmpegwasm/ffmpeg.wasm/  
