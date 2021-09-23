@@ -1,6 +1,10 @@
 # canvas-capture
 A small wrapper around CCapture.js to record the canvas a png, jpg, video (webm), or gif
 
+TODO:
+https://stackoverflow.com/questions/62863547/save-canvas-data-as-mp4-javascript  
+https://github.com/ffmpegwasm/ffmpeg.wasm/  
+
 ## Installation
 
 To install this package run:
