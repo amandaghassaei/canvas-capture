@@ -96,9 +96,9 @@ CanvasCapture.setVerbose(false); // By default the verbosity is set to VERBOSE =
 
 Currently this lib only supports saving video as webm.  I recommend using [ffmpeg](https://ffmpeg.org/) to convert to mp4.  From the terminal run:
 
-```sh
+`
 ffmpeg -i PATH/FILENAME.webm -vf "crop=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264 -preset slow -crf 22 -pix_fmt yuv420p -an PATH/FILENAME.mp4
-```
+`
 
 `-vf "crop=trunc(iw/2)*2:trunc(ih/2)*2"` crops the video so that its dimensions are even numbers (required for mp4)  
 `-c:v libx264 -preset slow -crf 22` encodes as h.264 with better compression settings  
