@@ -103,7 +103,7 @@ ffmpeg -i PATH/FILENAME.webm -vf "crop=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264
 `-vf "crop=trunc(iw/2)*2:trunc(ih/2)*2"` crops the video so that its dimensions are even numbers (required for mp4)  
 `-c:v libx264 -preset slow -crf 22` encodes as h.264 with better compression settings  
 `-pix_fmt yuv420p` makes it compatible with the web browser  
-`-an` creates a video with no audio.  
+`-an` creates a video with no audio  
 If your filename has spaces in it, you can escape them with -i PATH/filename\ with\ spaces.webm  
 
 ### TODO: add support for direct mp4 export
