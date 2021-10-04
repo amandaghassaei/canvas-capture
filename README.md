@@ -23,12 +23,12 @@ CanvasCapture.bindKeyToPNGSnapshot('p');
 CanvasCapture.bindKeyToJPEGSnapshot('j', { name: 'myJpeg', quality: 0.8 }); // Options are optional.
 
 function loop() {
-	requestAnimationFrame(loop);
+   requestAnimationFrame(loop);
 
-	// Render something...
+  // Render something...
 
-	// You need to do this only if you are recording a video or gif.
-	if (CanvasCapture.isRecording()) CanvasCapture.recordFrame();
+  // You need to do this only if you are recording a video or gif.
+  if (CanvasCapture.isRecording()) CanvasCapture.recordFrame();
 }
 
 loop();
@@ -67,20 +67,20 @@ Available options for each capture type - this can be passed in as an optional a
 
 ```ts
 videoOptions = {
-	name: string, // Defaults to 'WEBM_Capture'.
-	fps: number, // The speed of the output video, defaults to 60.
-	quality: number, // A number between 0 and 1, defaults to 1.
+  name: string, // Defaults to 'WEBM_Capture'.
+  fps: number, // The speed of the output video, defaults to 60.
+  quality: number, // A number between 0 and 1, defaults to 1.
 }
 gifOptions = {
-	name: string, // Defaults to 'GIF_Capture'.
-	fps: number, // The speed of the output gif, defaults to 60.
+  name: string, // Defaults to 'GIF_Capture'.
+  fps: number, // The speed of the output gif, defaults to 60.
 }
 pngOptions = {
-	name: string, // Defaults to 'PNG_Capture'.
+  name: string, // Defaults to 'PNG_Capture'.
 }
 jpegOptions = {
-	name: string, // Defaults to 'JPEG_Capture'.
-	quality, // A number between 0 and 1, defaults to 1.
+  name: string, // Defaults to 'JPEG_Capture'.
+  quality, // A number between 0 and 1, defaults to 1.
 }
 ```
 
@@ -132,19 +132,19 @@ const temp = CCapture; // This is an unused variable, but critically necessary.
 ....
 
 const capturer = new window.CCapture({
-	format: 'webm',
-	name: 'WEBM_Capture',
-	framerate: 60,
-	quality: 63,
-	verbose: VERBOSE,
+  format: 'webm',
+  name: 'WEBM_Capture',
+  framerate: 60,
+  quality: 63,
+  verbose: VERBOSE,
 });
 // This didn't work:
 // const capturer = new CCapture({
-// 	format: 'webm',
-// 	name: 'WEBM_Capture',
-// 	framerate: 60,
-// 	quality: 63,
-// 	verbose: VERBOSE,
+//   format: 'webm',
+//   name: 'WEBM_Capture',
+//   framerate: 60,
+//   quality: 63,
+//   verbose: VERBOSE,
 // });
 ```
 
