@@ -10,25 +10,17 @@ To install this package run:
 To use, you can bind hotkeys to start/stop recording:
 
 ```js
-import {
-	init,
-	bindKeyToVideoRecord,
-	bindKeyToGIFRecord,
-	bindKeyToPNGSnapshot,
-	bindKeyToJPEGSnapshot,
-	recordFrame,
-	isRecording,
-} from 'canvas-capture';
+import * as CanvasCapture from 'canvas-capture';
 
 // Initialize and pass in canvas.
-init(document.getElementById('glcanvas'));
+CanvasCapture.init(document.getElementById('glcanvas'));
 
 // Bind key presses to begin/end recordings.
-bindKeyToVideoRecord('v', { name: 'myVideo', quality: 0.6 }); // Options are optional.
-bindKeyToGIFRecord('g');
+CanvasCapture.bindKeyToVideoRecord('v', { name: 'myVideo', quality: 0.6 }); // Options are optional.
+CanvasCapture.bindKeyToGIFRecord('g');
 // These take a single snapshot.
-bindKeyToPNGSnapshot('p'); 
-bindKeyToJPEGSnapshot('j', { name: 'myJpeg', quality: 0.8 }); // Options are optional.
+CanvasCapture.bindKeyToPNGSnapshot('p'); 
+CanvasCapture.bindKeyToJPEGSnapshot('j', { name: 'myJpeg', quality: 0.8 }); // Options are optional.
 
 function loop() {
 	requestAnimationFrame(loop);
@@ -36,7 +28,7 @@ function loop() {
 	// Render something...
 
 	// You need to do this only if you are recording a video or gif.
-	if (isRecording()) recordFrame();
+	if (CanvasCapture.isRecording()) CanvasCapture.recordFrame();
 }
 
 loop();
@@ -45,37 +37,29 @@ loop();
 Alternatively, you can call `beginXXXRecord` and `takeXXXSnapshot` directly:
 
 ```js
-import {
-	init,
-	beginVideoRecord,
-	beginGIFRecord,
-	takePNGSnapshot,
-	takeJPEGSnapshot,
-	recordFrame,
-	stopRecord,
-} from 'canvas-capture';
+import * as CanvasCapture from 'canvas-capture';
 
 // Initialize and pass in canvas.
-init(document.getElementById('glcanvas'));
+CanvasCapture.init(document.getElementById('glcanvas'));
 
-beginGIFRecord({ fps: 10, name: 'MyGif' }); // Options are optional.
+CanvasCapture.beginGIFRecord({ fps: 10, name: 'MyGif' }); // Options are optional.
 .... // Draw something.
-recordFrame();
+CanvasCapture.recordFrame();
 .... // Draw something.
-recordFrame();
-stopRecording();
+CanvasCapture.recordFrame();
+CanvasCapture.stopRecording();
 
 
 // Now you may start another recording.
-beginVideoRecord();
-recordFrame();
+CanvasCapture.beginVideoRecord();
+CanvasCapture.recordFrame();
 ....
-stopRecording();
+CanvasCapture.stopRecording();
 
 // Or you can call `takeXXXSnapshot` to take a single snapshot.
 // No need to call `recordFrame` or `stopRecord` for these methods.
-takePNGSnapshot({ name: 'myPng' }); // Options are optional.
-takeJPEGSnapshot()
+CanvasCapture.takePNGSnapshot({ name: 'myPng' }); // Options are optional.
+CanvasCapture.takeJPEGSnapshot()
 
 ```
 
@@ -103,14 +87,27 @@ jpegOptions = {
 You can set the verbosity of the console output by:
 
 ```js
-import {
-	setVerbose,
-} from 'canvas-capture';
+import * as CanvasCapture from 'canvas-capture';
 
-setVerbose(false); // By default the verbosity is set to VERBOSE = true.
+CanvasCapture.setVerbose(false); // By default the verbosity is set to VERBOSE = true.
 ```
 
-### TODO: add support for mp4 export
+## Saving MP4
+
+Currently this lib only supports saving video as webm.  I recommend using [ffmpeg](https://ffmpeg.org/) to convert to mp4.  From the terminal run:
+
+```sh
+ffmpeg -r 15 -i PATH/FILENAME.webm -vf "crop=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264 -preset slow -crf 22 -pix_fmt yuv420p -an PATH/FILENAME.mp4
+```
+
+`-r 15` sets the framerate to 15 fps  
+`-vf "crop=trunc(iw/2)*2:trunc(ih/2)*2"` crops the video so that its dimensions are even numbers (required for mp4)  
+`-c:v libx264 -preset slow -crf 22` encodes as h.264 with better compression settings  
+`-pix_fmt yuv420p` makes it compatible with the web browser  
+`-an` creates a video with no audio.  
+If your filename has spaces in it, you can escape them with -i PATH/filename\ with\ spaces.webm  
+
+### TODO: add support for direct mp4 export
 
 - https://stackoverflow.com/questions/62863547/save-canvas-data-as-mp4-javascript
 - https://github.com/ffmpegwasm/ffmpeg.wasm/  
