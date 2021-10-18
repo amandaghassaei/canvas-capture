@@ -108,7 +108,7 @@ ffmpeg -i PATH/FILENAME.webm -vf "crop=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264
 
 `-an` creates a video with no audio  
 
-If your filename has spaces in it, you can escape them with -i PATH/filename\ with\ spaces.webm  
+If your filename has spaces in it, you can escape them with `-i PATH/filename\ with\ spaces.webm`  
 
 ### TODO: add support for direct mp4 export
 
