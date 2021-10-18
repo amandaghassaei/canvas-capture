@@ -1,5 +1,5 @@
 # canvas-capture
-A small wrapper around [CCapture.js](https://github.com/spite/ccapture.js) to record the canvas a png, jpg, video (webm), or gif
+A small wrapper around [CCapture.js](https://github.com/spite/ccapture.js) to record the canvas as a png, jpg, video (webm), or gif
 
 ## Installation
 
