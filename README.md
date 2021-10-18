@@ -47,14 +47,14 @@ CanvasCapture.beginGIFRecord({ fps: 10, name: 'MyGif' }); // Options are optiona
 CanvasCapture.recordFrame();
 .... // Draw something.
 CanvasCapture.recordFrame();
-CanvasCapture.stopRecording();
+CanvasCapture.stopRecord();
 
 
 // Now you may start another recording.
 CanvasCapture.beginVideoRecord();
 CanvasCapture.recordFrame();
 ....
-CanvasCapture.stopRecording();
+CanvasCapture.stopRecord();
 
 // Or you can call `takeXXXSnapshot` to take a single snapshot.
 // No need to call `recordFrame` or `stopRecord` for these methods.
