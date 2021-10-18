@@ -17,16 +17,16 @@ CanvasCapture.init(document.getElementById('glcanvas'));
 
 // Bind key presses to begin/end recordings.
 CanvasCapture.bindKeyToVideoRecord('v', {
-  name: 'myVideo',
+  name: 'myVideo', // Options are optional.
   quality: 0.6,
-}); // Second argument (options) is optional.
+});
 CanvasCapture.bindKeyToGIFRecord('g');
 // These take a single snapshot.
 CanvasCapture.bindKeyToPNGSnapshot('p'); 
 CanvasCapture.bindKeyToJPEGSnapshot('j', {
-  name: 'myJpeg',
+  name: 'myJpeg', // Options are optional.
   quality: 0.8,
-}); // Second argument (options) is optional.
+});
 
 function loop() {
    requestAnimationFrame(loop);
@@ -74,12 +74,12 @@ Available options for each capture type - this can be passed in as an optional a
 ```ts
 videoOptions = {
   name: string, // Defaults to 'WEBM_Capture'.
-  fps: number, // The speed of the output video, defaults to 60.
+  fps: number, // The frames per second of the output video, defaults to 60.
   quality: number, // A number between 0 and 1, defaults to 1.
 }
 gifOptions = {
   name: string, // Defaults to 'GIF_Capture'.
-  fps: number, // The speed of the output gif, defaults to 60.
+  fps: number, // The frams per second of the output gif, defaults to 60.
 }
 pngOptions = {
   name: string, // Defaults to 'PNG_Capture'.
