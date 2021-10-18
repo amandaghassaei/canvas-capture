@@ -16,11 +16,17 @@ import * as CanvasCapture from 'canvas-capture';
 CanvasCapture.init(document.getElementById('glcanvas'));
 
 // Bind key presses to begin/end recordings.
-CanvasCapture.bindKeyToVideoRecord('v', { name: 'myVideo', quality: 0.6 }); // Options are optional.
+CanvasCapture.bindKeyToVideoRecord('v', {
+  name: 'myVideo',
+  quality: 0.6,
+}); // Options are optional.
 CanvasCapture.bindKeyToGIFRecord('g');
 // These take a single snapshot.
 CanvasCapture.bindKeyToPNGSnapshot('p'); 
-CanvasCapture.bindKeyToJPEGSnapshot('j', { name: 'myJpeg', quality: 0.8 }); // Options are optional.
+CanvasCapture.bindKeyToJPEGSnapshot('j', {
+  name: 'myJpeg',
+  quality: 0.8,
+}); // Options are optional.
 
 function loop() {
    requestAnimationFrame(loop);
