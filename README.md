@@ -19,14 +19,14 @@ CanvasCapture.init(document.getElementById('glcanvas'));
 CanvasCapture.bindKeyToVideoRecord('v', {
   name: 'myVideo',
   quality: 0.6,
-}); // Options are optional.
+}); // Second argument (options) is optional.
 CanvasCapture.bindKeyToGIFRecord('g');
 // These take a single snapshot.
 CanvasCapture.bindKeyToPNGSnapshot('p'); 
 CanvasCapture.bindKeyToJPEGSnapshot('j', {
   name: 'myJpeg',
   quality: 0.8,
-}); // Options are optional.
+}); // Second argument (options) is optional.
 
 function loop() {
    requestAnimationFrame(loop);
