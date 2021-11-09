@@ -242,7 +242,7 @@ function stopRecord() {
     if (isRecordingGIF) {
         // Tell the user that gifs take a sec to process.
         if (modals_1.PARAMS.SHOW_DIALOGS)
-            modals_1.showDialog('Processing...', 'GIF is processing and may take a minute to save.  You can close this window in the meantime.');
+            modals_1.showDialog('Processing...', 'GIF is processing and may take a minute to save.  You can close this window in the meantime.', { autoCloseDelay: 7000 });
     }
     isRecordingGIF = false;
     isRecordingVideo = false;

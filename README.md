@@ -135,7 +135,10 @@ CanvasCapture.setVerbose(false);
 I've also included a helper function to show a simple modal dialog with a title and message:
 
 ```js
-CanvasCapture.showDialog(title, message); // title and message are strings.
+const options = {
+  autoCloseDelay: 7000, // Set the amount of time to wait before auto-closing dialog.  Use -1 to disable auto-close, default is -1.
+}
+CanvasCapture.showDialog(title, message, options); // title and message are strings.
 ```
 
 ## Saving MP4

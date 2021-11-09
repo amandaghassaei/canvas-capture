@@ -33,28 +33,39 @@ function initModalHTML(modalID, title, content) {
     return temp.firstChild;
 }
 ;
+var alertModalInited = false;
+var dialogModalInited = false;
 var ALERT_MODAL_ID = 'alert';
 var alertModal = initModalHTML(ALERT_MODAL_ID, 'Warning');
-document.getElementsByTagName('body')[0].appendChild(alertModal);
 var DIALOG_MODAL_ID = 'dialog';
 var dialogModal = initModalHTML(DIALOG_MODAL_ID, 'Saving...');
-document.getElementsByTagName('body')[0].appendChild(dialogModal);
 function showAlert(message) {
     if (!exports.PARAMS.SHOW_ALERTS) {
         console.warn(message);
         return;
     }
+    if (!alertModalInited) {
+        alertModalInited = true;
+        document.getElementsByTagName('body')[0].appendChild(alertModal);
+    }
     document.getElementById("modal-" + ALERT_MODAL_ID + "-content").innerHTML = message;
     micromodal_1.default.show("modal-" + ALERT_MODAL_ID);
 }
 exports.showAlert = showAlert;
-function showDialog(title, message) {
+function showDialog(title, message, options) {
+    if (!dialogModalInited) {
+        dialogModalInited = true;
+        document.getElementsByTagName('body')[0].appendChild(dialogModal);
+    }
     document.getElementById("modal-" + DIALOG_MODAL_ID + "-title").innerHTML = title;
     document.getElementById("modal-" + DIALOG_MODAL_ID + "-content").innerHTML = message;
     micromodal_1.default.show("modal-" + DIALOG_MODAL_ID);
-    setTimeout(function () {
-        micromodal_1.default.close("modal-" + DIALOG_MODAL_ID);
-    }, 7000);
+    var autoCloseDelay = (options === null || options === void 0 ? void 0 : options.autoCloseDelay) !== undefined ? options.autoCloseDelay : -1;
+    if (autoCloseDelay > 0) {
+        setTimeout(function () {
+            micromodal_1.default.close("modal-" + DIALOG_MODAL_ID);
+        }, autoCloseDelay);
+    }
 }
 exports.showDialog = showDialog;
 // Create record red dot vis to overlay when recording is happening.

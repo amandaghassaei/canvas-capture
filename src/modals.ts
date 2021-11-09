@@ -38,30 +38,44 @@ function initModalHTML(modalID: string, title: string, content: string = '') {
 	return temp.firstChild as Node;
 };
 
+let alertModalInited = false;
+let dialogModalInited = false;
+
 const ALERT_MODAL_ID = 'alert';
 const alertModal = initModalHTML(ALERT_MODAL_ID, 'Warning');
-document.getElementsByTagName('body')[0].appendChild(alertModal);
 
 const DIALOG_MODAL_ID = 'dialog';
 const dialogModal = initModalHTML(DIALOG_MODAL_ID, 'Saving...');
-document.getElementsByTagName('body')[0].appendChild(dialogModal);
 
 export function showAlert(message: string) {
 	if (!PARAMS.SHOW_ALERTS) {
 		console.warn(message);
 		return;
 	}
+	if (!alertModalInited) {
+		alertModalInited = true;
+		document.getElementsByTagName('body')[0].appendChild(alertModal);
+	}
 	(document.getElementById(`modal-${ALERT_MODAL_ID}-content`) as HTMLElement).innerHTML = message;
 	MicroModal.show(`modal-${ALERT_MODAL_ID}`);
 }
 
-export function showDialog(title: string, message: string) {
+export function showDialog(title: string, message: string, options?: {
+	autoCloseDelay?: number,
+}) {
+	if (!dialogModalInited) {
+		dialogModalInited = true;
+		document.getElementsByTagName('body')[0].appendChild(dialogModal);
+	}
 	(document.getElementById(`modal-${DIALOG_MODAL_ID}-title`) as HTMLElement).innerHTML = title;
 	(document.getElementById(`modal-${DIALOG_MODAL_ID}-content`) as HTMLElement).innerHTML = message;
 	MicroModal.show(`modal-${DIALOG_MODAL_ID}`);
-	setTimeout(() => {
-		MicroModal.close(`modal-${DIALOG_MODAL_ID}`);
-	}, 7000);
+	const autoCloseDelay = options?.autoCloseDelay !== undefined ? options.autoCloseDelay : -1;
+	if (autoCloseDelay > 0) {
+		setTimeout(() => {
+			MicroModal.close(`modal-${DIALOG_MODAL_ID}`);
+		}, autoCloseDelay);
+	}
 }
 
 // Create record red dot vis to overlay when recording is happening.
