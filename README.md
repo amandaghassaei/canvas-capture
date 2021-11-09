@@ -137,7 +137,8 @@ const options = {
   // Set the amount of time to wait before auto-closing dialog, or -1 to disable auto-close.
   autoCloseDelay: 7000, // Default is -1.
 };
-CanvasCapture.showDialog(title, message, options); // title and message are strings, options are optional.
+// title and message are strings, options are optional.
+CanvasCapture.showDialog(title, message, options);
 ```
 
 ## Saving MP4
