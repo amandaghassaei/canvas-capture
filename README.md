@@ -107,9 +107,9 @@ import * as CanvasCapture from 'canvas-capture';
 CanvasCapture.init(document.getElementById('glcanvas'), {
   verbose: true, // Verbosity of console output, default is true,
   showAlerts: true, // Show alert dialogs, default is true.
-	showDialogs: true, // Show informational dialogs, default is true.
-	showRecDot: true, // Show a red dot on the screen during records, defaults is true.
-	recDotCSS: { right: '20px', top: '20px' }, // CSS to apply to record dot.
+  showDialogs: true, // Show informational dialogs, default is true.
+  showRecDot: true, // Show a red dot on the screen during records, defaults is true.
+  recDotCSS: { right: '0', top: '0', margin: '10px' }, // CSS to apply to record dot.
 });
 ```
 
