@@ -11,8 +11,6 @@ Currently, I'm not doing versions/releases in this repo, but you can reference a
 
 ```npm install github:amandaghassaei/canvas-capture#9307b47```
 
-Let me know if there is interest in making this an official npm package (with versions) in [this discussion](https://github.com/amandaghassaei/canvas-capture/discussions/2).
-
 ## Use
 
 There are a few ways to call CCapture. You can bind hotkeys to start/stop recording:
