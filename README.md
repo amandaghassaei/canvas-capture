@@ -72,7 +72,7 @@ CanvasCapture.stopRecord();
 
 // Or you can call `takeXXXSnapshot` to take a single snapshot.
 // No need to call `recordFrame` or `stopRecord` for these methods.
-CanvasCapture.takePNGSnapshot({ name: 'myPng' }); // Options are optional.
+CanvasCapture.takePNGSnapshot({ name: 'MyPng' }); // Options are optional.
 CanvasCapture.takeJPEGSnapshot()
 
 ```
@@ -87,23 +87,55 @@ videoOptions = {
 }
 gifOptions = {
   name: string, // Defaults to 'GIF_Capture'.
-  fps: number, // The frams per second of the output gif, defaults to 60.
+  fps: number, // The frames per second of the output gif, defaults to 60.
+  quality: number, // A number between 0 and 1, defaults to 1.
 }
 pngOptions = {
   name: string, // Defaults to 'PNG_Capture'.
 }
 jpegOptions = {
   name: string, // Defaults to 'JPEG_Capture'.
-  quality, // A number between 0 and 1, defaults to 1.
+  quality: number, // A number between 0 and 1, defaults to 1.
 }
 ```
 
-You can set the verbosity of the console output by:
+You can initialize `CanvasCapturer` with the following options:
 
 ```js
 import * as CanvasCapture from 'canvas-capture';
 
-CanvasCapture.setVerbose(false); // By default the verbosity is set to VERBOSE = true.
+CanvasCapture.init(document.getElementById('glcanvas'), {
+  verbose: true, // Verbosity of console output, default is true,
+  showAlerts: true, // Show alert dialogs, default is true.
+	showDialogs: true, // Show informational dialogs, default is true.
+	showRecDot: true, // Show a red dot on the screen during records, defaults is true.
+	recDotCSS: { right: '20px', top: '20px' }, // CSS to apply to record dot.
+});
+```
+
+Default CSS for the record dot is:
+```js
+background: "red",
+width: "20px",
+height: "20px",
+"border-radius": "50%", // Make circle.
+position: "absolute",
+top: "0",
+right: "0",
+"z-index": "10",
+margin: "20px",
+```
+
+Additionally, you can set the verbosity of the console output at any time by:
+
+```js
+CanvasCapture.setVerbose(false);
+```
+
+I've also included a helper function to show a simple modal dialog with a title and message:
+
+```js
+CanvasCapture.showDialog(title, message); // title and message are strings.
 ```
 
 ## Saving MP4

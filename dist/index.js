@@ -1,11 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = void 0;
+exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = exports.showDialog = void 0;
 // @ts-ignore
 var ccapture_js_1 = require("ccapture.js");
 var file_saver_1 = require("file-saver");
 var modals_1 = require("./modals");
 var gif_worker_1 = require("./gif.worker");
+// Export showDialog method in case it is useful.
+var modals_2 = require("./modals");
+Object.defineProperty(exports, "showDialog", { enumerable: true, get: function () { return modals_2.showDialog; } });
 // Make is so we don't have to specify workersPath for CCapture.
 var workersBlob = new Blob([gif_worker_1.workerString]);
 var workersPath = URL.createObjectURL(workersBlob);
@@ -25,11 +28,22 @@ var isRecordingVideo = false;
 var isRecordingGIF = false;
 var canvas = null;
 var numFrames = 0;
-function init(_canvas) {
+function init(_canvas, options) {
     canvas = _canvas;
+    if (options && options.verbose !== undefined)
+        setVerbose(options.verbose);
+    if (options && options.showAlerts !== undefined)
+        modals_1.PARAMS.SHOW_ALERTS = options.showAlerts;
+    if (options && options.showDialogs !== undefined)
+        modals_1.PARAMS.SHOW_DIALOGS = options.showDialogs;
+    if (options && options.showRecDot !== undefined)
+        modals_1.PARAMS.SHOW_REC_DOT = options.showRecDot;
+    if (modals_1.PARAMS.SHOW_REC_DOT) {
+        modals_1.initDotWithCSS(options === null || options === void 0 ? void 0 : options.recDotCSS);
+    }
     canvas.addEventListener('resize', function () {
         if (capturer) {
-            modals_1.showAlert("Don't resize while recording canvas!!");
+            modals_1.showAlert("Don't resize while recording canvas!");
         }
     });
 }
@@ -40,7 +54,7 @@ function setVerbose(state) {
 exports.setVerbose = setVerbose;
 function checkCanvas() {
     if (canvas === null) {
-        modals_1.showAlert('No canvas supplied, please call CanvasCapture.init() and pass in canvas element.');
+        console.warn('No canvas supplied, please call CanvasCapture.init() and pass in canvas element.');
         return false;
     }
     return true;
@@ -115,18 +129,19 @@ window.addEventListener('keydown', function (e) {
 });
 function beginVideoRecord(options) {
     if (isRecordingGIF) {
-        modals_1.showAlert('You are currently recording a gif, stop recording gif before starting new video record.');
+        console.warn('You are currently recording a gif, stop recording gif before starting new video record.');
         return;
     }
     if (isRecordingVideo) {
-        modals_1.showAlert('You are currently recording a video, stop recording current video before starting new video record.');
+        console.warn('You are currently recording a video, stop recording current video before starting new video record.');
         return;
     }
+    // CCapture seems to expect a quality between 0 and 100.
     var quality = 100;
     if (options && options.quality) {
         quality = options.quality * 100;
     }
-    // Create a capturer that exports a WebM video
+    // Create a capturer that exports a WebM video.
     // @ts-ignore
     capturer = new window.CCapture({
         format: 'webm',
@@ -141,20 +156,26 @@ function beginVideoRecord(options) {
 exports.beginVideoRecord = beginVideoRecord;
 function beginGIFRecord(options) {
     if (isRecordingVideo) {
-        modals_1.showAlert('You are currently recording a video, stop recording video before starting new gif record.');
+        console.warn('You are currently recording a video, stop recording video before starting new gif record.');
         return;
     }
     if (isRecordingGIF) {
-        modals_1.showAlert('You are currently recording a gif, stop recording current gif before starting new gif record.');
+        console.warn('You are currently recording a gif, stop recording current gif before starting new gif record.');
         return;
     }
-    // Create a capturer that exports a WebM video
+    // CCapture seems to expect a quality between 0 and 100.
+    var quality = 100;
+    if (options && options.quality) {
+        quality = options.quality * 100;
+    }
+    // Create a capturer that exports a GIF.
     // @ts-ignore
     capturer = new window.CCapture({
         format: 'gif',
         name: (options === null || options === void 0 ? void 0 : options.name) || 'GIF_Capture',
         framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
         workersPath: workersPath,
+        quality: quality,
         verbose: VERBOSE,
     });
     isRecordingGIF = true;
@@ -178,6 +199,7 @@ function takeJPEGSnapshot(options) {
     if (!checkCanvas()) {
         return;
     }
+    // Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
     canvas.toBlob(function (blob) {
         if (!blob) {
             modals_1.showAlert('Problem saving JPEG, please try again!');
@@ -192,7 +214,7 @@ function recordFrame() {
         return;
     }
     if (!capturer) {
-        modals_1.showAlert('No valid capturer inited, please call CanvasCapture.beginVideoRecord() or CanvasCapture.beginGIFRecord() first.');
+        console.warn('No valid capturer inited, please call CanvasCapture.beginVideoRecord() or CanvasCapture.beginGIFRecord() first.');
         return;
     }
     capturer.capture(canvas);
@@ -207,11 +229,11 @@ function startRecord() {
 }
 function stopRecord() {
     if (!capturer) {
-        modals_1.showAlert('No valid capturer inited, please call CanvasCapture.beginVideoRecord() or CanvasCapture.beginGIFRecord() first.');
+        console.warn('No valid capturer inited, please call CanvasCapture.beginVideoRecord() or CanvasCapture.beginGIFRecord() first.');
         return;
     }
     if (numFrames === 0) {
-        modals_1.showAlert('No frames recorded, call CanvasCapture.recordFrame()');
+        console.warn('No frames recorded, call CanvasCapture.recordFrame()');
         return;
     }
     capturer.stop();
@@ -219,7 +241,8 @@ function stopRecord() {
     capturer = null;
     if (isRecordingGIF) {
         // Tell the user that gifs take a sec to process.
-        modals_1.showDialog('Processing...', 'GIF is processing and may take a minute to save.  You can close this window in the meantime.');
+        if (modals_1.PARAMS.SHOW_DIALOGS)
+            modals_1.showDialog('Processing...', 'GIF is processing and may take a minute to save.  You can close this window in the meantime.');
     }
     isRecordingGIF = false;
     isRecordingVideo = false;

@@ -1,4 +1,13 @@
-export declare function init(_canvas: HTMLCanvasElement): void;
+export { showDialog } from './modals';
+export declare function init(_canvas: HTMLCanvasElement, options?: {
+    verbose?: boolean;
+    showAlerts?: boolean;
+    showDialogs?: boolean;
+    showRecDot?: boolean;
+    recDotCSS?: {
+        [key: string]: string;
+    };
+}): void;
 export declare function setVerbose(state: boolean): void;
 declare type VIDEO_OPTIONS = {
     fps?: number;
@@ -8,6 +17,7 @@ declare type VIDEO_OPTIONS = {
 declare type GIF_OPTIONS = {
     fps?: number;
     name?: string;
+    quality?: number;
 };
 declare type PNG_OPTIONS = {
     name?: string;
@@ -27,4 +37,3 @@ export declare function takeJPEGSnapshot(options?: JPEG_OPTIONS): void;
 export declare function recordFrame(): void;
 export declare function stopRecord(): void;
 export declare function isRecording(): boolean;
-export {};

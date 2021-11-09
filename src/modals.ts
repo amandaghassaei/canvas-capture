@@ -1,6 +1,13 @@
 import MicroModal from 'micromodal';
 import { css } from './micromodal.css';
 
+// Params.
+export const PARAMS = {
+	SHOW_ALERTS: true,
+	SHOW_DIALOGS: true,
+	SHOW_REC_DOT: true,
+};
+
 // Add modal styling.
 const style = document.createElement('style');
 style.textContent = css;
@@ -40,6 +47,10 @@ const dialogModal = initModalHTML(DIALOG_MODAL_ID, 'Saving...');
 document.getElementsByTagName('body')[0].appendChild(dialogModal);
 
 export function showAlert(message: string) {
+	if (!PARAMS.SHOW_ALERTS) {
+		console.warn(message);
+		return;
+	}
 	(document.getElementById(`modal-${ALERT_MODAL_ID}-content`) as HTMLElement).innerHTML = message;
 	MicroModal.show(`modal-${ALERT_MODAL_ID}`);
 }
@@ -55,23 +66,27 @@ export function showDialog(title: string, message: string) {
 
 // Create record red dot vis to overlay when recording is happening.
 const dot = document.createElement('div');
-dot.id = 'recordingDot';
-const dotCSS = {
-	background: "red",
-	width: "20px",
-	height: "20px",
-	"border-radius": "50%",
-	display: "none",
-	position: "absolute",
-	top: "0",
-	right: "0",
-	"z-index": "10",
-	margin: "20px",
-};
-Object.assign(dot.style, dotCSS);
-document.getElementsByTagName('body')[0].appendChild(dot);
+export function initDotWithCSS(css?: {[key: string]: string}){
+	dot.id = 'recordingDot';
+	const dotCSS = {
+		background: "red",
+		width: "20px",
+		height: "20px",
+		"border-radius": "50%",
+		display: "none",
+		position: "absolute",
+		top: "0",
+		right: "0",
+		"z-index": "10",
+		margin: "20px",
+		...css,
+	};
+	Object.assign(dot.style, dotCSS);
+	document.getElementsByTagName('body')[0].appendChild(dot);
+}
 
 export function showDot(visible: boolean) {
+	if (!PARAMS.SHOW_REC_DOT) return;
 	if (visible) {
 		dot.style.display = "inline-block";
 	} else {

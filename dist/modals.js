@@ -1,8 +1,25 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.showDot = exports.showDialog = exports.showAlert = void 0;
+exports.showDot = exports.initDotWithCSS = exports.showDialog = exports.showAlert = exports.PARAMS = void 0;
 var micromodal_1 = require("micromodal");
 var micromodal_css_1 = require("./micromodal.css");
+// Params.
+exports.PARAMS = {
+    SHOW_ALERTS: true,
+    SHOW_DIALOGS: true,
+    SHOW_REC_DOT: true,
+};
 // Add modal styling.
 var style = document.createElement('style');
 style.textContent = micromodal_css_1.css;
@@ -23,6 +40,10 @@ var DIALOG_MODAL_ID = 'dialog';
 var dialogModal = initModalHTML(DIALOG_MODAL_ID, 'Saving...');
 document.getElementsByTagName('body')[0].appendChild(dialogModal);
 function showAlert(message) {
+    if (!exports.PARAMS.SHOW_ALERTS) {
+        console.warn(message);
+        return;
+    }
     document.getElementById("modal-" + ALERT_MODAL_ID + "-content").innerHTML = message;
     micromodal_1.default.show("modal-" + ALERT_MODAL_ID);
 }
@@ -38,22 +59,16 @@ function showDialog(title, message) {
 exports.showDialog = showDialog;
 // Create record red dot vis to overlay when recording is happening.
 var dot = document.createElement('div');
-dot.id = 'recordingDot';
-var dotCSS = {
-    background: "red",
-    width: "20px",
-    height: "20px",
-    "border-radius": "50%",
-    display: "none",
-    position: "absolute",
-    top: "0",
-    right: "0",
-    "z-index": "10",
-    margin: "20px",
-};
-Object.assign(dot.style, dotCSS);
-document.getElementsByTagName('body')[0].appendChild(dot);
+function initDotWithCSS(css) {
+    dot.id = 'recordingDot';
+    var dotCSS = __assign({ background: "red", width: "20px", height: "20px", "border-radius": "50%", display: "none", position: "absolute", top: "0", right: "0", "z-index": "10", margin: "20px" }, css);
+    Object.assign(dot.style, dotCSS);
+    document.getElementsByTagName('body')[0].appendChild(dot);
+}
+exports.initDotWithCSS = initDotWithCSS;
 function showDot(visible) {
+    if (!exports.PARAMS.SHOW_REC_DOT)
+        return;
     if (visible) {
         dot.style.display = "inline-block";
     }
