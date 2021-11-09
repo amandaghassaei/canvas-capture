@@ -136,9 +136,10 @@ I've also included a helper function to show a simple modal dialog with a title 
 
 ```js
 const options = {
-  autoCloseDelay: 7000, // Set the amount of time to wait before auto-closing dialog.  Use -1 to disable auto-close, default is -1.
-}
-CanvasCapture.showDialog(title, message, options); // title and message are strings.
+  // Set the amount of time to wait before auto-closing dialog, or -1 to disable auto-close.
+  autoCloseDelay: 7000, // Default is -1.
+};
+CanvasCapture.showDialog(title, message, options); // title and message are strings, options are optional.
 ```
 
 ## Saving MP4
