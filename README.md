@@ -118,7 +118,7 @@ CanvasCapture.init(document.getElementById('glcanvas'), {
 ```
 
 Default CSS for the record dot is:
-```js
+```json
 background: "red",
 width: "20px",
 height: "20px",
