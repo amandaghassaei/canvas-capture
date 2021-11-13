@@ -21,10 +21,12 @@ declare type GIF_OPTIONS = {
 };
 declare type PNG_OPTIONS = {
     name?: string;
+    dpi?: number;
 };
 declare type JPEG_OPTIONS = {
     name?: string;
     quality?: number;
+    dpi?: number;
 };
 export declare function bindKeyToVideoRecord(key: string, options?: VIDEO_OPTIONS): void;
 export declare function bindKeyToGIFRecord(key: string, options?: GIF_OPTIONS): void;

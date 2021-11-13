@@ -19,6 +19,7 @@
   "homepage": "https://github.com/amandaghassaei/canvas-capture#readme",
   "dependencies": {
     "ccapture.js": "git+https://github.com/amandaghassaei/ccapture.js.git#npm-fix",
+    "changedpi": "^1.0.4",
     "file-saver": "^2.0.5",
     "micromodal": "^0.4.6"
   },

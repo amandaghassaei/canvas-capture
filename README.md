@@ -90,14 +90,18 @@ gifOptions = {
 }
 pngOptions = {
   name: string, // Defaults to 'PNG_Capture'.
+  dpi: number, // Defaults to screen resolution (72).
 }
 jpegOptions = {
   name: string, // Defaults to 'JPEG_Capture'.
   quality: number, // A number between 0 and 1, defaults to 1.
+  dpi: number, // Defaults to screen resolution (72).
 }
 ```
 
-You can initialize `CanvasCapturer` with the following options:
+Note that changing the dpi of png/jpeg does not change the amount of pixels captured, just the dimensions of the resulting image.  
+
+You can initialize `CanvasCapture` with the following options:
 
 ```js
 import * as CanvasCapture from 'canvas-capture';

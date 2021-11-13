@@ -1,6 +1,8 @@
 // @ts-ignore
 import CCapture from 'ccapture.js'
 import { saveAs } from 'file-saver';
+// @ts-ignore
+import { changeDpiBlob } from 'changedpi';
 import { initDotWithCSS, PARAMS, showAlert, showDialog, showDot } from './modals';
 import { workerString } from './gif.worker';
 
@@ -81,10 +83,12 @@ type GIF_OPTIONS = {
 };
 type PNG_OPTIONS = {
 	name?: string,
+	dpi?: number, // Default is screen dpi (72).
 };
 type JPEG_OPTIONS = {
 	name?: string,
 	quality?: number, // A number 0-1.
+	dpi?: number, // Default is screen dpi (72).
 };
 const recOptions:
 {
@@ -214,16 +218,24 @@ export function takePNGSnapshot(options?: PNG_OPTIONS) {
 	if (!checkCanvas()) {
 		return;
 	}
+	const name = options?.name || 'PNG_Capture';
 	canvas!.toBlob((blob) => {
 		if (!blob) {
 			showAlert('Problem saving PNG, please try again!');
 			return;
 		}
-		saveAs(blob, `${options?.name || 'PNG_Capture'}.png`);
+		if (options?.dpi) {
+			changeDpiBlob(blob, options?.dpi).then((blob: Blob) =>{
+				saveAs(blob, `${name}.png`);
+			});
+		} else {
+			saveAs(blob, `${name}.png`);
+		}
 	}, 'image/png');
 }
 
 export function takeJPEGSnapshot(options?: JPEG_OPTIONS) {
+	const name = options?.name || 'JPEG_Capture';
 	if (!checkCanvas()) {
 		return;
 	}
@@ -233,7 +245,13 @@ export function takeJPEGSnapshot(options?: JPEG_OPTIONS) {
 			showAlert('Problem saving JPEG, please try again!');
 			return;
 		}
-		saveAs(blob, `${options?.name || 'JPEG_Capture'}.jpg`);
+		if (options?.dpi) {
+			changeDpiBlob(blob, options?.dpi).then((blob: Blob) =>{
+				saveAs(blob, `${name}.jpg`);
+			});
+		} else {
+			saveAs(blob, `${name}.jpg`);
+		}
 	}, 'image/jpeg', options?.quality || 1);
 }
 

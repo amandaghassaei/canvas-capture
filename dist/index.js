@@ -4,6 +4,8 @@ exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPE
 // @ts-ignore
 var ccapture_js_1 = require("ccapture.js");
 var file_saver_1 = require("file-saver");
+// @ts-ignore
+var changedpi_1 = require("changedpi");
 var modals_1 = require("./modals");
 var gif_worker_1 = require("./gif.worker");
 // Export showDialog method in case it is useful.
@@ -186,16 +188,25 @@ function takePNGSnapshot(options) {
     if (!checkCanvas()) {
         return;
     }
+    var name = (options === null || options === void 0 ? void 0 : options.name) || 'PNG_Capture';
     canvas.toBlob(function (blob) {
         if (!blob) {
             modals_1.showAlert('Problem saving PNG, please try again!');
             return;
         }
-        file_saver_1.saveAs(blob, ((options === null || options === void 0 ? void 0 : options.name) || 'PNG_Capture') + ".png");
+        if (options === null || options === void 0 ? void 0 : options.dpi) {
+            changedpi_1.changeDpiBlob(blob, options === null || options === void 0 ? void 0 : options.dpi).then(function (blob) {
+                file_saver_1.saveAs(blob, name + ".png");
+            });
+        }
+        else {
+            file_saver_1.saveAs(blob, name + ".png");
+        }
     }, 'image/png');
 }
 exports.takePNGSnapshot = takePNGSnapshot;
 function takeJPEGSnapshot(options) {
+    var name = (options === null || options === void 0 ? void 0 : options.name) || 'JPEG_Capture';
     if (!checkCanvas()) {
         return;
     }
@@ -205,7 +216,14 @@ function takeJPEGSnapshot(options) {
             modals_1.showAlert('Problem saving JPEG, please try again!');
             return;
         }
-        file_saver_1.saveAs(blob, ((options === null || options === void 0 ? void 0 : options.name) || 'JPEG_Capture') + ".jpg");
+        if (options === null || options === void 0 ? void 0 : options.dpi) {
+            changedpi_1.changeDpiBlob(blob, options === null || options === void 0 ? void 0 : options.dpi).then(function (blob) {
+                file_saver_1.saveAs(blob, name + ".jpg");
+            });
+        }
+        else {
+            file_saver_1.saveAs(blob, name + ".jpg");
+        }
     }, 'image/jpeg', (options === null || options === void 0 ? void 0 : options.quality) || 1);
 }
 exports.takeJPEGSnapshot = takeJPEGSnapshot;
