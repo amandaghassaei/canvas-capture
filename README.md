@@ -25,14 +25,14 @@ CanvasCapture.init(document.getElementById('glcanvas'));
 
 // Bind key presses to begin/end recordings.
 CanvasCapture.bindKeyToVideoRecord('v', {
-  name: 'myVideo', // Options are optional.
+  name: 'myVideo', // Options are optional, more info below.
   quality: 0.6,
 });
 CanvasCapture.bindKeyToGIFRecord('g');
 // These take a single snapshot.
 CanvasCapture.bindKeyToPNGSnapshot('p'); 
 CanvasCapture.bindKeyToJPEGSnapshot('j', {
-  name: 'myJpeg', // Options are optional.
+  name: 'myJpeg', // Options are optional, more info below.
   quality: 0.8,
 });
 
