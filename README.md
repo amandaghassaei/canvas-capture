@@ -11,7 +11,7 @@ Currently, I'm not doing versions/releases in this repo, but you can reference a
 
 ```npm install github:amandaghassaei/canvas-capture#9307b47```
 
-I haven't tested it, but for browser you can also try adding `dist/canvas-capture.js` or `dist/canvas-capture.min.js` to your project and it should be available as `window.CanvasCapture` or possibly globally as `CanvasCapture`.  Please let me know if this works!
+I haven't tested it, but for browser you can also try adding (dist/canvas-capture.js)[dist/canvas-capture.js] or (dist/canvas-capture.min.js)[dist/canvas-capture.min.js] to your project and it should be available as `window.CanvasCapture` or possibly globally as `CanvasCapture`.  Please let me know if this works!
 
 ## Use
 
