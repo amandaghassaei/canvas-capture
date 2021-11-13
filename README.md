@@ -56,7 +56,7 @@ import * as CanvasCapture from 'canvas-capture';
 // Initialize and pass in canvas.
 CanvasCapture.init(document.getElementById('glcanvas'));
 
-CanvasCapture.beginGIFRecord({ fps: 10, name: 'MyGif' }); // Options are optional.
+CanvasCapture.beginGIFRecord({ fps: 10, name: 'MyGif' }); // Options are optional, more info below.
 .... // Draw something.
 CanvasCapture.recordFrame();
 .... // Draw something.
@@ -72,7 +72,7 @@ CanvasCapture.stopRecord();
 
 // Or you can call `takeXXXSnapshot` to take a single snapshot.
 // No need to call `recordFrame` or `stopRecord` for these methods.
-CanvasCapture.takePNGSnapshot({ name: 'MyPng' }); // Options are optional.
+CanvasCapture.takePNGSnapshot({ name: 'MyPng' }); // Options are optional, more info below.
 CanvasCapture.takeJPEGSnapshot()
 
 ```
