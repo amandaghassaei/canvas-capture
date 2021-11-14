@@ -56,7 +56,7 @@ import * as CanvasCapture from 'canvas-capture';
 // Initialize and pass in canvas.
 CanvasCapture.init(document.getElementById('glcanvas'));
 
-CanvasCapture.beginGIFRecord({ fps: 10, name: 'MyGif' }); // Options are optional, more info below.
+CanvasCapture.beginGIFRecord({ fps: 10 }); // Options are optional, more info below.
 .... // Draw something.
 CanvasCapture.recordFrame();
 .... // Draw something.
