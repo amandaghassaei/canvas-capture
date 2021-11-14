@@ -113,7 +113,7 @@ CanvasCapture.init(document.getElementById('glcanvas'), {
   showAlerts: true, // Show alert dialogs, default is true.
   showDialogs: true, // Show informational dialogs, default is true.
   showRecDot: true, // Show a red dot on the screen during records, defaults is true.
-  recDotCSS: { right: '0', top: '0', margin: '10px' }, // Additional CSS to apply to record dot.
+  recDotCSS: { right: '0', top: '0', margin: '10px' }, // Additional CSS for record dot.
 });
 ```
 
