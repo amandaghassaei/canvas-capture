@@ -21,7 +21,7 @@ There are a few ways to call CCapture. You can bind hotkeys to start/stop record
 import * as CanvasCapture from 'canvas-capture';
 
 // Initialize and pass in canvas.
-CanvasCapture.init(document.getElementById('glcanvas'));
+CanvasCapture.init(document.getElementById('my-canvas'));
 
 // Bind key presses to begin/end recordings.
 CanvasCapture.bindKeyToVideoRecord('v', {
@@ -54,7 +54,7 @@ Alternatively, you can call `beginXXXRecord` and `takeXXXSnapshot` directly:
 import * as CanvasCapture from 'canvas-capture';
 
 // Initialize and pass in canvas.
-CanvasCapture.init(document.getElementById('glcanvas'));
+CanvasCapture.init(document.getElementById('my-canvas'));
 
 CanvasCapture.beginGIFRecord({ fps: 10 }); // Options are optional, more info below.
 .... // Draw something.
@@ -108,7 +108,7 @@ You can initialize `CanvasCapture` with the following options:
 ```js
 import * as CanvasCapture from 'canvas-capture';
 
-CanvasCapture.init(document.getElementById('glcanvas'), {
+CanvasCapture.init(document.getElementById('my-canvas'), {
   verbose: true, // Verbosity of console output, default is true,
   showAlerts: true, // Show alert dialogs, default is true.
   showDialogs: true, // Show informational dialogs, default is true.
