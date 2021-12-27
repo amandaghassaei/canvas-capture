@@ -4709,7 +4709,7 @@ var gif_worker_1 = __webpack_require__(10);
 var ffmpeg_1 = __webpack_require__(45);
 var ffmpeg = ffmpeg_1.createFFmpeg({
     // Use public address if you don't want to host your own.
-    // TODO: fix this.
+    // TODO: host this locally.
     corePath: 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
     log: true,
 });
