@@ -9,10 +9,20 @@ export declare function init(_canvas: HTMLCanvasElement, options?: {
     };
 }): void;
 export declare function setVerbose(state: boolean): void;
-declare type VIDEO_OPTIONS = {
+declare type WEBM_OPTIONS = {
+    format?: 'webm';
     fps?: number;
     name?: string;
     quality?: number;
+};
+declare type MP4_OPTIONS = {
+    format?: 'mp4';
+    fps?: number;
+    name?: string;
+    quality?: number;
+    ffmpegOptions?: {
+        [key: string]: string;
+    };
 };
 declare type GIF_OPTIONS = {
     fps?: number;
@@ -28,14 +38,15 @@ declare type JPEG_OPTIONS = {
     quality?: number;
     dpi?: number;
 };
-export declare function bindKeyToVideoRecord(key: string, options?: VIDEO_OPTIONS): void;
+export declare function bindKeyToVideoRecord(key: string, options: WEBM_OPTIONS | MP4_OPTIONS): void;
 export declare function bindKeyToGIFRecord(key: string, options?: GIF_OPTIONS): void;
 export declare function bindKeyToPNGSnapshot(key: string, options?: PNG_OPTIONS): void;
 export declare function bindKeyToJPEGSnapshot(key: string, options?: JPEG_OPTIONS): void;
-export declare function beginVideoRecord(options?: VIDEO_OPTIONS): any;
+export declare function beginVideoRecord(options: WEBM_OPTIONS | MP4_OPTIONS): any;
 export declare function beginGIFRecord(options?: GIF_OPTIONS): any;
 export declare function takePNGSnapshot(options?: PNG_OPTIONS): void;
 export declare function takeJPEGSnapshot(options?: JPEG_OPTIONS): void;
 export declare function recordFrame(): void;
 export declare function stopRecord(): void;
 export declare function isRecording(): boolean;
+export declare function browserSupportsWEBP(): boolean;

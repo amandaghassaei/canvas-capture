@@ -8,12 +8,21 @@ CanvasCapture.init(canvas, {
 });
 
 // Bind key presses to begin/end recordings.
+const MP4_OPTIONS = {
+	name: 'demo-mp4',
+	format: 'mp4' as 'mp4',
+	quality: 1,
+	fps: 60,
+	onMP4ConversionProgress: ({ ratio }: { ratio: number }) => console.log(ratio),
+};
+CanvasCapture.bindKeyToVideoRecord('v', MP4_OPTIONS);
 const WEBM_OPTIONS = {
 	name: 'demo-webm',
+	format: 'webm' as 'webm',
 	quality: 1,
 	fps: 60,
 };
-CanvasCapture.bindKeyToVideoRecord('v', WEBM_OPTIONS);
+CanvasCapture.bindKeyToVideoRecord('w', WEBM_OPTIONS);
 const GIF_OPTIONS = {
 	name: 'demo-gif',
 	quality: 1,
@@ -75,33 +84,51 @@ document.getElementById("saveJPG")!.addEventListener('click', (e) => {
 	e.preventDefault();
 	CanvasCapture.takeJPEGSnapshot(JPEG_OPTIONS);
 });
+
+const startRecordMP4 = document.getElementById('startMP4')!;
+startRecordMP4.addEventListener('click', (e) => {
+	e.preventDefault();
+	const capturer = CanvasCapture.beginVideoRecord(MP4_OPTIONS);
+	startRecordMP4.style.display = capturer ? 'none' : 'inline';
+	stopRecordMP4.style.display = capturer ? 'inline' : 'none';
+});
+const stopRecordMP4 = document.getElementById('stopMP4')!;
+stopRecordMP4.addEventListener('click', (e) => {
+	e.preventDefault();
+	CanvasCapture.stopRecord();
+	stopRecordMP4.style.display = 'none';
+	startRecordMP4.style.display = 'inline';
+});
+stopRecordMP4.style.display = 'none';
+
 const startRecordWEBM = document.getElementById('startWEBM')!;
 startRecordWEBM.addEventListener('click', (e) => {
 	e.preventDefault();
-	CanvasCapture.beginVideoRecord(WEBM_OPTIONS);
-	startRecordWEBM.style.display = 'none';
-	stopRecordWEBM.style.display = 'block';
+	const capturer = CanvasCapture.beginVideoRecord(WEBM_OPTIONS);
+	startRecordWEBM.style.display = capturer ? 'none' : 'inline';
+	stopRecordWEBM.style.display = capturer ? 'inline' : 'none';
 });
 const stopRecordWEBM = document.getElementById('stopWEBM')!;
 stopRecordWEBM.addEventListener('click', (e) => {
 	e.preventDefault();
 	CanvasCapture.stopRecord();
 	stopRecordWEBM.style.display = 'none';
-	startRecordWEBM.style.display = 'block';
+	startRecordWEBM.style.display = 'inline';
 });
 stopRecordWEBM.style.display = 'none';
+
 const startRecordGIF = document.getElementById('startGIF')!;
 startRecordGIF.addEventListener('click', (e) => {
 	e.preventDefault();
 	CanvasCapture.beginGIFRecord(GIF_OPTIONS);
 	startRecordGIF.style.display = 'none';
-	stopRecordGIF.style.display = 'block';
+	stopRecordGIF.style.display = 'inline';
 });
 const stopRecordGIF = document.getElementById('stopGIF')!;
 stopRecordGIF.addEventListener('click', (e) => {
 	e.preventDefault();
 	CanvasCapture.stopRecord();
 	stopRecordGIF.style.display = 'none';
-	startRecordGIF.style.display = 'block';
+	startRecordGIF.style.display = 'inline';
 });
 stopRecordGIF.style.display = 'none';

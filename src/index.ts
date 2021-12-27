@@ -5,6 +5,14 @@ import { saveAs } from 'file-saver';
 import { changeDpiBlob } from 'changedpi';
 import { initDotWithCSS, PARAMS, showAlert, showDialog, showDot } from './modals';
 import { workerString } from './gif.worker';
+import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+
+const ffmpeg = createFFmpeg({
+  // Use public address if you don't want to host your own.
+//   corePath: 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
+  log: true,
+});
+const ffmpegLoadPromise = ffmpeg.load();
 
 // Export showDialog method in case it is useful.
 export { showDialog } from './modals';
@@ -16,9 +24,12 @@ const workersPath = URL.createObjectURL(workersBlob);
 let VERBOSE = true;
 
 const activeCaptures: {
+	name: string,
 	capturer: CCapture,
 	numFrames: number,
 	type: 'gif' | 'webm' | 'mp4',
+	onMP4ConversionProgress?: (progress: number) => void,
+	ffmpegOptions?: { [key: string]: string },
 }[] = [];
 
 // This is an unused variable,
@@ -70,10 +81,19 @@ function checkCanvas() {
 }
 
 // Save options for hotkey controls.
-type VIDEO_OPTIONS = {
+type WEBM_OPTIONS = {
+	format?: 'webm',
 	fps?: number,
 	name?: string,
 	quality?: number, // A number 0-1.
+};
+type MP4_OPTIONS = {
+	format?: 'mp4',
+	fps?: number,
+	name?: string,
+	quality?: number, // A number 0-1.
+	// onMP4ConversionProgress?: (progress: { ratio: number }) => void,
+	ffmpegOptions?: { [key: string]: string },
 };
 type GIF_OPTIONS = {
 	fps?: number,
@@ -91,11 +111,13 @@ type JPEG_OPTIONS = {
 };
 const recOptions:
 {
-	webm?: VIDEO_OPTIONS,
+	mp4?: MP4_OPTIONS,
+	webm?: WEBM_OPTIONS,
 	gif?: GIF_OPTIONS,
 	png?: PNG_OPTIONS,
 	jpeg?: JPEG_OPTIONS,
 } = {
+	mp4: undefined,
 	webm: undefined,
 	gif: undefined,
 	png: undefined,
@@ -103,14 +125,24 @@ const recOptions:
 };
 
 // Pressing key once will start record, press again to stop.
-export function bindKeyToVideoRecord(key: string, options?: VIDEO_OPTIONS) {
-	recOptions.webm = options;
-	Object.keys(hotkeys).forEach(keyName => {
-		if (hotkeys[keyName] === key) {
-			hotkeys[keyName] = null;
-		}
-	});
-	hotkeys.webm = key;
+export function bindKeyToVideoRecord(key: string, options: WEBM_OPTIONS | MP4_OPTIONS) {
+	if (options.format === 'webm') {
+		recOptions.webm = options as WEBM_OPTIONS;
+		Object.keys(hotkeys).forEach(keyName => {
+			if (hotkeys[keyName] === key) {
+				hotkeys[keyName] = null;
+			}
+		});
+		hotkeys.webm = key;
+	} else {
+		recOptions.mp4 = options as MP4_OPTIONS;
+		Object.keys(hotkeys).forEach(keyName => {
+			if (hotkeys[keyName] === key) {
+				hotkeys[keyName] = null;
+			}
+		});
+		hotkeys.mp4 = key;
+	}
 }
 export function bindKeyToGIFRecord(key: string, options?: GIF_OPTIONS) {
 	recOptions.gif = options;
@@ -142,10 +174,28 @@ export function bindKeyToJPEGSnapshot(key: string, options?: JPEG_OPTIONS) {
 }
 
 window.addEventListener('keydown', (e: KeyboardEvent) => {
+	if (hotkeys.mp4 && e.key === hotkeys.mp4) {
+		const MP4s = activeMP4Captures();
+		if (MP4s.length) stopRecord();
+		else {
+			// We need to generate WEBM before converting to MP4.
+			if (!browserSupportsWEBP()) {
+				showAlert(`This browser does not support video recording, please try again in Chrome.`);
+				return;
+			}
+			beginVideoRecord(recOptions.mp4!);
+		}
+	}
 	if (hotkeys.webm && e.key === hotkeys.webm) {
 		const WEBMs = activeWEBMCaptures();
 		if (WEBMs.length) stopRecord();
-		else beginVideoRecord(recOptions.webm);
+		else {
+			if (!browserSupportsWEBP()) {
+				showAlert(`This browser does not support video recording, please try again in Chrome.`);
+				return;
+			}
+			beginVideoRecord(recOptions.webm!);
+		}
 	}
 	if (hotkeys.gif && e.key === hotkeys.gif) {
 		const GIFs = activeGIFCaptures();
@@ -160,30 +210,38 @@ window.addEventListener('keydown', (e: KeyboardEvent) => {
 	}
 });
 
-export function beginVideoRecord(options?: VIDEO_OPTIONS) {
+export function beginVideoRecord(options: WEBM_OPTIONS | MP4_OPTIONS) {
+	if (!browserSupportsWEBP()) {
+		showAlert(`This browser does not support video recording, please try again in Chrome.`);
+		return false;
+	}
 	if (activeCaptures.length) {
 		showAlert(`CCapture.js only supports one video/gif capture at a time.`);
-		return;
+		return false;
 	}
 	// CCapture seems to expect a quality between 0 and 100.
 	let quality = 100;
 	if (options && options.quality) {
 		quality = options.quality * 100;
 	}
+	const name = options?.name || 'WEBM_Capture';
 	// Create a capturer that exports a WebM video.
 	// @ts-ignore
 	const capturer = new window.CCapture( {
 		format: 'webm',
-		name: options?.name || 'WEBM_Capture',
+		name,
 		framerate: options?.fps || 60,
 		quality,
 		verbose: VERBOSE,
 	});
 	capturer.start();
 	activeCaptures.push({
+		name,
 		capturer,
 		numFrames: 0,
-		type: 'webm',
+		type: options?.format || 'mp4',
+		// onMP4ConversionProgress: (options as MP4_OPTIONS)?.onMP4ConversionProgress,
+		ffmpegOptions: (options as MP4_OPTIONS)?.ffmpegOptions,
 	});
 	// For video and gif records, we should also throw up an indicator to show that we're in record mode.
 	showDot(isRecording());
@@ -193,18 +251,19 @@ export function beginVideoRecord(options?: VIDEO_OPTIONS) {
 export function beginGIFRecord(options?: GIF_OPTIONS) {
 	if (activeCaptures.length) {
 		showAlert(`CCapture.js only supports one video/gif capture at a time.`);
-		return;
+		return false;
 	}
 	// CCapture seems to expect a quality between 0 and 100.
 	let quality = 100;
 	if (options && options.quality) {
 		quality = options.quality * 100;
 	}
+	const name = options?.name || 'GIF_Capture';
 	// Create a capturer that exports a GIF.
 	// @ts-ignore
 	const capturer = new window.CCapture({
 		format: 'gif',
-		name: options?.name || 'GIF_Capture',
+		name,
 		framerate: options?.fps || 60,
 		workersPath,
 		quality,
@@ -212,6 +271,7 @@ export function beginGIFRecord(options?: GIF_OPTIONS) {
 	});
 	capturer.start();
 	activeCaptures.push({
+		name,
 		capturer,
 		numFrames: 0,
 		type: 'gif',
@@ -308,14 +368,37 @@ export function recordFrame() {
 }
 
 function stopRecordAtIndex(index: number) {
-	const { capturer, numFrames, type } = activeCaptures[index];
+	const {
+		name,
+		capturer,
+		numFrames,
+		type,
+		onMP4ConversionProgress,
+		ffmpegOptions,
+	} = activeCaptures[index];
+	capturer.stop();
+
+	// Remove ref to capturer.
+	activeCaptures.splice(index, 1);
+
 	if (numFrames === 0) {
 		showAlert('No frames recorded, call CanvasCapture.recordFrame().');
 		return;
 	}
-	capturer.stop();
-	capturer.save();
-	
+
+	if (type === 'mp4') {
+		capturer.save((blob: Blob) => {
+			convertWEBMtoMP4({
+				name,
+				blob,
+				onProgress: onMP4ConversionProgress,
+				ffmpegOptions,
+			});
+		});
+	} else {
+		capturer.save();
+	}
+
 	if (type === 'gif') {
 		// Tell the user that gifs take a sec to process.
 		if (PARAMS.SHOW_DIALOGS) showDialog(
@@ -324,9 +407,6 @@ function stopRecordAtIndex(index: number) {
 			{ autoCloseDelay: 7000 },
 		);
 	}
-
-	// Remove ref to capturer.
-	activeCaptures.splice(index, 1);
 }
 
 // export function stopRecord(capturer?: CCapture | CCapture[]) {
@@ -356,6 +436,16 @@ export function stopRecord() {
 	showDot(isRecording());
 }
 
+function activeMP4Captures() {
+	const mp4Captures: CCapture[] = [];
+	for (let i = 0; i < activeCaptures.length; i++) {
+		if (activeCaptures[i].type === 'mp4') {
+			mp4Captures.push(activeCaptures[i].capturer);
+		}
+	}
+	return mp4Captures;
+}
+
 function activeWEBMCaptures() {
 	const webmCaptures: CCapture[] = [];
 	for (let i = 0; i < activeCaptures.length; i++) {
@@ -378,4 +468,67 @@ function activeGIFCaptures() {
 
 export function isRecording() {
 	return activeCaptures.length > 0;
+}
+
+async function convertWEBMtoMP4(options: {
+	name: string,
+	blob: Blob,
+	onProgress?: (progress: number) => void,
+	ffmpegOptions?: { [key: string]: string },
+}) {
+	try {
+		await ffmpegLoadPromise;
+	} catch (e) {
+		showAlert('MP4 export not supported in this browser, try again in the latest version of Chrome.');
+		return;
+	}
+	
+	const { name, blob, onProgress, ffmpegOptions } = options;
+	// Convert blob to Uint8 array.
+	const data = await fetchFile(blob);
+	// Write data to MEMFS, need to use Uint8Array for binary data.
+	ffmpeg.FS('writeFile', `${name}.webm`, data);
+	// Convert to MP4.
+	// This is not working yet.
+	// https://github.com/ffmpegwasm/ffmpeg.wasm/issues/112
+	// if (onProgress) ffmpeg.setProgress(({ ratio }) => {
+	// 	onProgress(ratio);
+	// });
+	// -vf "crop=trunc(iw/2)*2:trunc(ih/2)*2" ensures the dimensions of the mp4 are divisible by 2.
+	// -c:v libx264 -preset slow -crf 22 encodes as h.264 with better compression settings.
+	// -pix_fmt yuv420p makes it compatible with the web browser.
+	// -an creates a video with no audio.
+	const defaultFFMPEGOptions = {
+		'-c:v': 'libx264',
+		'-preset': 'slow',
+		'-crf': '22',
+		'-pix_fmt': 'yuv420p',
+	};
+	const combinedOptions: { [key: string]: string } = {...defaultFFMPEGOptions, ...(ffmpegOptions || {})};
+	const _ffmpegOptions: string[] = [];
+	Object.keys(combinedOptions).forEach(key => {
+		_ffmpegOptions.push(key, combinedOptions[key]);
+	});
+	await ffmpeg.run(
+		'-i', `${name}.webm`,
+		..._ffmpegOptions,
+		'-vf', 'crop=trunc(iw/2)*2:trunc(ih/2)*2',
+		'-an',
+		`${name}.mp4`,
+	);
+	const output = await ffmpeg.FS('readFile', `${name}.mp4`);
+	const outputBlob = new Blob([output], { type: 'video/mp4' });
+	saveAs(outputBlob, `${name}.mp4`);
+	// Delete files in MEMFS.
+	ffmpeg.FS('unlink', `${name}.webm`);
+	ffmpeg.FS('unlink', `${name}.mp4`);
+}
+
+export function browserSupportsWEBP() {
+	checkCanvas();
+	const url = canvas!.toDataURL('image/webp', { quality: 1 });
+	if (typeof url !== "string" || !url.match(/^data:image\/webp;base64,/i)) {
+		return false;
+	}
+	return true;
 }

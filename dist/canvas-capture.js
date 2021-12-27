@@ -11,6 +11,555 @@
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 76:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+const resolveURL = __webpack_require__(72);
+const { devDependencies } = __webpack_require__(681);
+
+/*
+ * Default options for browser environment
+ */
+module.exports = {
+  corePath:  false
+    ? 0
+    : `https://unpkg.com/@ffmpeg/core@${devDependencies['@ffmpeg/core'].substring(1)}/dist/ffmpeg-core.js`,
+};
+
+
+/***/ }),
+
+/***/ 339:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+const resolveURL = __webpack_require__(72);
+
+const readFromBlobOrFile = (blob) => (
+  new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.onload = () => {
+      resolve(fileReader.result);
+    };
+    fileReader.onerror = ({ target: { error: { code } } }) => {
+      reject(Error(`File could not be read! Code=${code}`));
+    };
+    fileReader.readAsArrayBuffer(blob);
+  })
+);
+
+module.exports = async (_data) => {
+  let data = _data;
+  if (typeof _data === 'undefined') {
+    return new Uint8Array();
+  }
+
+  if (typeof _data === 'string') {
+    /* From base64 format */
+    if (/data:_data\/([a-zA-Z]*);base64,([^"]*)/.test(_data)) {
+      data = atob(_data.split(',')[1])
+        .split('')
+        .map((c) => c.charCodeAt(0));
+    /* From remote server/URL */
+    } else {
+      const res = await fetch(resolveURL(_data));
+      data = await res.arrayBuffer();
+    }
+  /* From Blob or File */
+  } else if (_data instanceof File || _data instanceof Blob) {
+    data = await readFromBlobOrFile(_data);
+  }
+
+  return new Uint8Array(data);
+};
+
+
+/***/ }),
+
+/***/ 440:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+/* eslint-disable no-undef */
+const resolveURL = __webpack_require__(72);
+const { log } = __webpack_require__(888);
+
+/*
+ * Fetch data from remote URL and convert to blob URL
+ * to avoid CORS issue
+ */
+const toBlobURL = async (url, mimeType) => {
+  log('info', `fetch ${url}`);
+  const buf = await (await fetch(url)).arrayBuffer();
+  log('info', `${url} file size = ${buf.byteLength} bytes`);
+  const blob = new Blob([buf], { type: mimeType });
+  const blobURL = URL.createObjectURL(blob);
+  log('info', `${url} blob URL = ${blobURL}`);
+  return blobURL;
+};
+
+module.exports = async ({ corePath: _corePath }) => {
+  if (typeof _corePath !== 'string') {
+    throw Error('corePath should be a string!');
+  }
+  const coreRemotePath = resolveURL(_corePath);
+  const corePath = await toBlobURL(
+    coreRemotePath,
+    'application/javascript',
+  );
+  const wasmPath = await toBlobURL(
+    coreRemotePath.replace('ffmpeg-core.js', 'ffmpeg-core.wasm'),
+    'application/wasm',
+  );
+  const workerPath = await toBlobURL(
+    coreRemotePath.replace('ffmpeg-core.js', 'ffmpeg-core.worker.js'),
+    'application/javascript',
+  );
+  if (typeof createFFmpegCore === 'undefined') {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      const eventHandler = () => {
+        script.removeEventListener('load', eventHandler);
+        log('info', 'ffmpeg-core.js script loaded');
+        resolve({
+          createFFmpegCore,
+          corePath,
+          wasmPath,
+          workerPath,
+        });
+      };
+      script.src = corePath;
+      script.type = 'text/javascript';
+      script.addEventListener('load', eventHandler);
+      document.getElementsByTagName('head')[0].appendChild(script);
+    });
+  }
+  log('info', 'ffmpeg-core.js script is loaded already');
+  return Promise.resolve({
+    createFFmpegCore,
+    corePath,
+    wasmPath,
+    workerPath,
+  });
+};
+
+
+/***/ }),
+
+/***/ 451:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+const defaultOptions = __webpack_require__(76);
+const getCreateFFmpegCore = __webpack_require__(440);
+const fetchFile = __webpack_require__(339);
+
+module.exports = {
+  defaultOptions,
+  getCreateFFmpegCore,
+  fetchFile,
+};
+
+
+/***/ }),
+
+/***/ 733:
+/***/ ((module) => {
+
+module.exports = {
+  defaultArgs: [
+    /* args[0] is always the binary path */
+    './ffmpeg',
+    /* Disable interaction mode */
+    '-nostdin',
+    /* Force to override output file */
+    '-y',
+  ],
+  baseOptions: {
+    /* Flag to turn on/off log messages in console */
+    log: false,
+    /*
+     * Custom logger to get ffmpeg.wasm output messages.
+     * a sample logger looks like this:
+     *
+     * ```
+     * logger = ({ type, message }) => {
+     *   console.log(type, message);
+     * }
+     * ```
+     *
+     * type can be one of following:
+     *
+     * info: internal workflow debug messages
+     * fferr: ffmpeg native stderr output
+     * ffout: ffmpeg native stdout output
+     */
+    logger: () => {},
+    /*
+     * Progress handler to get current progress of ffmpeg command.
+     * a sample progress handler looks like this:
+     *
+     * ```
+     * progress = ({ ratio }) => {
+     *   console.log(ratio);
+     * }
+     * ```
+     *
+     * ratio is a float number between 0 to 1.
+     */
+    progress: () => {},
+    /*
+     * Path to find/download ffmpeg.wasm-core,
+     * this value should be overwriten by `defaultOptions` in
+     * each environment.
+     */
+    corePath: '',
+  },
+};
+
+
+/***/ }),
+
+/***/ 648:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+const { defaultArgs, baseOptions } = __webpack_require__(733);
+const { setLogging, setCustomLogger, log } = __webpack_require__(888);
+const parseProgress = __webpack_require__(405);
+const parseArgs = __webpack_require__(850);
+const { defaultOptions, getCreateFFmpegCore } = __webpack_require__(451);
+const { version } = __webpack_require__(681);
+
+const NO_LOAD = Error('ffmpeg.wasm is not ready, make sure you have completed load().');
+
+module.exports = (_options = {}) => {
+  const {
+    log: logging,
+    logger,
+    progress: optProgress,
+    ...options
+  } = {
+    ...baseOptions,
+    ...defaultOptions,
+    ..._options,
+  };
+  let Core = null;
+  let ffmpeg = null;
+  let runResolve = null;
+  let running = false;
+  let progress = optProgress;
+  const detectCompletion = (message) => {
+    if (message === 'FFMPEG_END' && runResolve !== null) {
+      runResolve();
+      runResolve = null;
+      running = false;
+    }
+  };
+  const parseMessage = ({ type, message }) => {
+    log(type, message);
+    parseProgress(message, progress);
+    detectCompletion(message);
+  };
+
+  /*
+   * Load ffmpeg.wasm-core script.
+   * In browser environment, the ffmpeg.wasm-core script is fetch from
+   * CDN and can be assign to a local path by assigning `corePath`.
+   * In node environment, we use dynamic require and the default `corePath`
+   * is `$ffmpeg/core`.
+   *
+   * Typically the load() func might take few seconds to minutes to complete,
+   * better to do it as early as possible.
+   *
+   */
+  const load = async () => {
+    log('info', 'load ffmpeg-core');
+    if (Core === null) {
+      log('info', 'loading ffmpeg-core');
+      /*
+       * In node environment, all paths are undefined as there
+       * is no need to set them.
+       */
+      const {
+        createFFmpegCore,
+        corePath,
+        workerPath,
+        wasmPath,
+      } = await getCreateFFmpegCore(options);
+      Core = await createFFmpegCore({
+        /*
+         * Assign mainScriptUrlOrBlob fixes chrome extension web worker issue
+         * as there is no document.currentScript in the context of content_scripts
+         */
+        mainScriptUrlOrBlob: corePath,
+        printErr: (message) => parseMessage({ type: 'fferr', message }),
+        print: (message) => parseMessage({ type: 'ffout', message }),
+        /*
+         * locateFile overrides paths of files that is loaded by main script (ffmpeg-core.js).
+         * It is critical for browser environment and we override both wasm and worker paths
+         * as we are using blob URL instead of original URL to avoid cross origin issues.
+         */
+        locateFile: (path, prefix) => {
+          if (typeof window !== 'undefined') {
+            if (typeof wasmPath !== 'undefined'
+              && path.endsWith('ffmpeg-core.wasm')) {
+              return wasmPath;
+            }
+            if (typeof workerPath !== 'undefined'
+              && path.endsWith('ffmpeg-core.worker.js')) {
+              return workerPath;
+            }
+          }
+          return prefix + path;
+        },
+      });
+      ffmpeg = Core.cwrap('proxy_main', 'number', ['number', 'number']);
+      log('info', 'ffmpeg-core loaded');
+    } else {
+      throw Error('ffmpeg.wasm was loaded, you should not load it again, use ffmpeg.isLoaded() to check next time.');
+    }
+  };
+
+  /*
+   * Determine whether the Core is loaded.
+   */
+  const isLoaded = () => Core !== null;
+
+  /*
+   * Run ffmpeg command.
+   * This is the major function in ffmpeg.wasm, you can just imagine it
+   * as ffmpeg native cli and what you need to pass is the same.
+   *
+   * For example, you can convert native command below:
+   *
+   * ```
+   * $ ffmpeg -i video.avi -c:v libx264 video.mp4
+   * ```
+   *
+   * To
+   *
+   * ```
+   * await ffmpeg.run('-i', 'video.avi', '-c:v', 'libx264', 'video.mp4');
+   * ```
+   *
+   */
+  const run = (..._args) => {
+    log('info', `run ffmpeg command: ${_args.join(' ')}`);
+    if (Core === null) {
+      throw NO_LOAD;
+    } else if (running) {
+      throw Error('ffmpeg.wasm can only run one command at a time');
+    } else {
+      running = true;
+      return new Promise((resolve) => {
+        const args = [...defaultArgs, ..._args].filter((s) => s.length !== 0);
+        runResolve = resolve;
+        ffmpeg(...parseArgs(Core, args));
+      });
+    }
+  };
+
+  /*
+   * Run FS operations.
+   * For input/output file of ffmpeg.wasm, it is required to save them to MEMFS
+   * first so that ffmpeg.wasm is able to consume them. Here we rely on the FS
+   * methods provided by Emscripten.
+   *
+   * Common methods to use are:
+   * ffmpeg.FS('writeFile', 'video.avi', new Uint8Array(...)): writeFile writes
+   * data to MEMFS. You need to use Uint8Array for binary data.
+   * ffmpeg.FS('readFile', 'video.mp4'): readFile from MEMFS.
+   * ffmpeg.FS('unlink', 'video.map'): delete file from MEMFS.
+   *
+   * For more info, check https://emscripten.org/docs/api_reference/Filesystem-API.html
+   *
+   */
+  const FS = (method, ...args) => {
+    log('info', `run FS.${method} ${args.map((arg) => (typeof arg === 'string' ? arg : `<${arg.length} bytes binary file>`)).join(' ')}`);
+    if (Core === null) {
+      throw NO_LOAD;
+    } else {
+      let ret = null;
+      try {
+        ret = Core.FS[method](...args);
+      } catch (e) {
+        if (method === 'readdir') {
+          throw Error(`ffmpeg.FS('readdir', '${args[0]}') error. Check if the path exists, ex: ffmpeg.FS('readdir', '/')`);
+        } else if (method === 'readFile') {
+          throw Error(`ffmpeg.FS('readFile', '${args[0]}') error. Check if the path exists`);
+        } else {
+          throw Error('Oops, something went wrong in FS operation.');
+        }
+      }
+      return ret;
+    }
+  };
+
+  /**
+   * forcibly terminate the ffmpeg program.
+   */
+  const exit = () => {
+    if (Core === null) {
+      throw NO_LOAD;
+    } else {
+      running = false;
+      Core.exit(1);
+      Core = null;
+      ffmpeg = null;
+      runResolve = null;
+    }
+  };
+
+  const setProgress = (_progress) => {
+    progress = _progress;
+  };
+
+  const setLogger = (_logger) => {
+    setCustomLogger(_logger);
+  };
+
+  setLogging(logging);
+  setCustomLogger(logger);
+
+  log('info', `use ffmpeg.wasm v${version}`);
+
+  return {
+    setProgress,
+    setLogger,
+    setLogging,
+    load,
+    isLoaded,
+    run,
+    exit,
+    FS,
+  };
+};
+
+
+/***/ }),
+
+/***/ 45:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+__webpack_require__(666);
+const createFFmpeg = __webpack_require__(648);
+const { fetchFile } = __webpack_require__(451);
+
+module.exports = {
+  /*
+   * Create ffmpeg instance.
+   * Each ffmpeg instance owns an isolated MEMFS and works
+   * independently.
+   *
+   * For example:
+   *
+   * ```
+   * const ffmpeg = createFFmpeg({
+   *  log: true,
+   *  logger: () => {},
+   *  progress: () => {},
+   *  corePath: '',
+   * })
+   * ```
+   *
+   * For the usage of these four arguments, check config.js
+   *
+   */
+  createFFmpeg,
+  /*
+   * Helper function for fetching files from various resource.
+   * Sometimes the video/audio file you want to process may located
+   * in a remote URL and somewhere in your local file system.
+   *
+   * This helper function helps you to fetch to file and return an
+   * Uint8Array variable for ffmpeg.wasm to consume.
+   *
+   */
+  fetchFile,
+};
+
+
+/***/ }),
+
+/***/ 888:
+/***/ ((module) => {
+
+let logging = false;
+let customLogger = () => {};
+
+const setLogging = (_logging) => {
+  logging = _logging;
+};
+
+const setCustomLogger = (logger) => {
+  customLogger = logger;
+};
+
+const log = (type, message) => {
+  customLogger({ type, message });
+  if (logging) {
+    console.log(`[${type}] ${message}`);
+  }
+};
+
+module.exports = {
+  logging,
+  setLogging,
+  setCustomLogger,
+  log,
+};
+
+
+/***/ }),
+
+/***/ 850:
+/***/ ((module) => {
+
+module.exports = (Core, args) => {
+  const argsPtr = Core._malloc(args.length * Uint32Array.BYTES_PER_ELEMENT);
+  args.forEach((s, idx) => {
+    const buf = Core._malloc(s.length + 1);
+    Core.writeAsciiToMemory(s, buf);
+    Core.setValue(argsPtr + (Uint32Array.BYTES_PER_ELEMENT * idx), buf, 'i32');
+  });
+  return [args.length, argsPtr];
+};
+
+
+/***/ }),
+
+/***/ 405:
+/***/ ((module) => {
+
+let duration = 0;
+let ratio = 0;
+
+const ts2sec = (ts) => {
+  const [h, m, s] = ts.split(':');
+  return (parseFloat(h) * 60 * 60) + (parseFloat(m) * 60) + parseFloat(s);
+};
+
+module.exports = (message, progress) => {
+  if (typeof message === 'string') {
+    if (message.startsWith('  Duration')) {
+      const ts = message.split(', ')[0].split(': ')[1];
+      const d = ts2sec(ts);
+      progress({ duration: d, ratio });
+      if (duration === 0 || duration > d) {
+        duration = d;
+      }
+    } else if (message.startsWith('frame') || message.startsWith('size')) {
+      const ts = message.split('time=')[1].split(' ')[0];
+      const t = ts2sec(ts);
+      ratio = t / duration;
+      progress({ ratio, time: t });
+    } else if (message.startsWith('video:')) {
+      progress({ ratio: 1 });
+      duration = 0;
+    }
+  }
+};
+
+
+/***/ }),
+
 /***/ 583:
 /***/ ((module, exports, __webpack_require__) => {
 
@@ -3261,6 +3810,821 @@ window.MicroModal = MicroModal;
 
 /***/ }),
 
+/***/ 666:
+/***/ ((module) => {
+
+/**
+ * Copyright (c) 2014-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+var runtime = (function (exports) {
+  "use strict";
+
+  var Op = Object.prototype;
+  var hasOwn = Op.hasOwnProperty;
+  var undefined; // More compressible than void 0.
+  var $Symbol = typeof Symbol === "function" ? Symbol : {};
+  var iteratorSymbol = $Symbol.iterator || "@@iterator";
+  var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
+  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+  function define(obj, key, value) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+    return obj[key];
+  }
+  try {
+    // IE 8 has a broken Object.defineProperty that only works on DOM objects.
+    define({}, "");
+  } catch (err) {
+    define = function(obj, key, value) {
+      return obj[key] = value;
+    };
+  }
+
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
+    var generator = Object.create(protoGenerator.prototype);
+    var context = new Context(tryLocsList || []);
+
+    // The ._invoke method unifies the implementations of the .next,
+    // .throw, and .return methods.
+    generator._invoke = makeInvokeMethod(innerFn, self, context);
+
+    return generator;
+  }
+  exports.wrap = wrap;
+
+  // Try/catch helper to minimize deoptimizations. Returns a completion
+  // record like context.tryEntries[i].completion. This interface could
+  // have been (and was previously) designed to take a closure to be
+  // invoked without arguments, but in all the cases we care about we
+  // already have an existing method we want to call, so there's no need
+  // to create a new function object. We can even get away with assuming
+  // the method takes exactly one argument, since that happens to be true
+  // in every case, so we don't have to touch the arguments object. The
+  // only additional allocation required is the completion record, which
+  // has a stable shape and so hopefully should be cheap to allocate.
+  function tryCatch(fn, obj, arg) {
+    try {
+      return { type: "normal", arg: fn.call(obj, arg) };
+    } catch (err) {
+      return { type: "throw", arg: err };
+    }
+  }
+
+  var GenStateSuspendedStart = "suspendedStart";
+  var GenStateSuspendedYield = "suspendedYield";
+  var GenStateExecuting = "executing";
+  var GenStateCompleted = "completed";
+
+  // Returning this object from the innerFn has the same effect as
+  // breaking out of the dispatch switch statement.
+  var ContinueSentinel = {};
+
+  // Dummy constructor functions that we use as the .constructor and
+  // .constructor.prototype properties for functions that return Generator
+  // objects. For full spec compliance, you may wish to configure your
+  // minifier not to mangle the names of these two functions.
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+
+  // This is a polyfill for %IteratorPrototype% for environments that
+  // don't natively support it.
+  var IteratorPrototype = {};
+  define(IteratorPrototype, iteratorSymbol, function () {
+    return this;
+  });
+
+  var getProto = Object.getPrototypeOf;
+  var NativeIteratorPrototype = getProto && getProto(getProto(values([])));
+  if (NativeIteratorPrototype &&
+      NativeIteratorPrototype !== Op &&
+      hasOwn.call(NativeIteratorPrototype, iteratorSymbol)) {
+    // This environment has a native %IteratorPrototype%; use it instead
+    // of the polyfill.
+    IteratorPrototype = NativeIteratorPrototype;
+  }
+
+  var Gp = GeneratorFunctionPrototype.prototype =
+    Generator.prototype = Object.create(IteratorPrototype);
+  GeneratorFunction.prototype = GeneratorFunctionPrototype;
+  define(Gp, "constructor", GeneratorFunctionPrototype);
+  define(GeneratorFunctionPrototype, "constructor", GeneratorFunction);
+  GeneratorFunction.displayName = define(
+    GeneratorFunctionPrototype,
+    toStringTagSymbol,
+    "GeneratorFunction"
+  );
+
+  // Helper for defining the .next, .throw, and .return methods of the
+  // Iterator interface in terms of a single ._invoke method.
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function(method) {
+      define(prototype, method, function(arg) {
+        return this._invoke(method, arg);
+      });
+    });
+  }
+
+  exports.isGeneratorFunction = function(genFun) {
+    var ctor = typeof genFun === "function" && genFun.constructor;
+    return ctor
+      ? ctor === GeneratorFunction ||
+        // For the native GeneratorFunction constructor, the best we can
+        // do is to check its .name property.
+        (ctor.displayName || ctor.name) === "GeneratorFunction"
+      : false;
+  };
+
+  exports.mark = function(genFun) {
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
+    } else {
+      genFun.__proto__ = GeneratorFunctionPrototype;
+      define(genFun, toStringTagSymbol, "GeneratorFunction");
+    }
+    genFun.prototype = Object.create(Gp);
+    return genFun;
+  };
+
+  // Within the body of any async function, `await x` is transformed to
+  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
+  // `hasOwn.call(value, "__await")` to determine if the yielded value is
+  // meant to be awaited.
+  exports.awrap = function(arg) {
+    return { __await: arg };
+  };
+
+  function AsyncIterator(generator, PromiseImpl) {
+    function invoke(method, arg, resolve, reject) {
+      var record = tryCatch(generator[method], generator, arg);
+      if (record.type === "throw") {
+        reject(record.arg);
+      } else {
+        var result = record.arg;
+        var value = result.value;
+        if (value &&
+            typeof value === "object" &&
+            hasOwn.call(value, "__await")) {
+          return PromiseImpl.resolve(value.__await).then(function(value) {
+            invoke("next", value, resolve, reject);
+          }, function(err) {
+            invoke("throw", err, resolve, reject);
+          });
+        }
+
+        return PromiseImpl.resolve(value).then(function(unwrapped) {
+          // When a yielded Promise is resolved, its final value becomes
+          // the .value of the Promise<{value,done}> result for the
+          // current iteration.
+          result.value = unwrapped;
+          resolve(result);
+        }, function(error) {
+          // If a rejected Promise was yielded, throw the rejection back
+          // into the async generator function so it can be handled there.
+          return invoke("throw", error, resolve, reject);
+        });
+      }
+    }
+
+    var previousPromise;
+
+    function enqueue(method, arg) {
+      function callInvokeWithMethodAndArg() {
+        return new PromiseImpl(function(resolve, reject) {
+          invoke(method, arg, resolve, reject);
+        });
+      }
+
+      return previousPromise =
+        // If enqueue has been called before, then we want to wait until
+        // all previous Promises have been resolved before calling invoke,
+        // so that results are always delivered in the correct order. If
+        // enqueue has not been called before, then it is important to
+        // call invoke immediately, without waiting on a callback to fire,
+        // so that the async generator function has the opportunity to do
+        // any necessary setup in a predictable way. This predictability
+        // is why the Promise constructor synchronously invokes its
+        // executor callback, and why async functions synchronously
+        // execute code before the first await. Since we implement simple
+        // async functions in terms of async generators, it is especially
+        // important to get this right, even though it requires care.
+        previousPromise ? previousPromise.then(
+          callInvokeWithMethodAndArg,
+          // Avoid propagating failures to Promises returned by later
+          // invocations of the iterator.
+          callInvokeWithMethodAndArg
+        ) : callInvokeWithMethodAndArg();
+    }
+
+    // Define the unified helper method that is used to implement .next,
+    // .throw, and .return (see defineIteratorMethods).
+    this._invoke = enqueue;
+  }
+
+  defineIteratorMethods(AsyncIterator.prototype);
+  define(AsyncIterator.prototype, asyncIteratorSymbol, function () {
+    return this;
+  });
+  exports.AsyncIterator = AsyncIterator;
+
+  // Note that simple async functions are implemented on top of
+  // AsyncIterator objects; they just return a Promise for the value of
+  // the final result produced by the iterator.
+  exports.async = function(innerFn, outerFn, self, tryLocsList, PromiseImpl) {
+    if (PromiseImpl === void 0) PromiseImpl = Promise;
+
+    var iter = new AsyncIterator(
+      wrap(innerFn, outerFn, self, tryLocsList),
+      PromiseImpl
+    );
+
+    return exports.isGeneratorFunction(outerFn)
+      ? iter // If outerFn is a generator, return the full iterator.
+      : iter.next().then(function(result) {
+          return result.done ? result.value : iter.next();
+        });
+  };
+
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = GenStateSuspendedStart;
+
+    return function invoke(method, arg) {
+      if (state === GenStateExecuting) {
+        throw new Error("Generator is already running");
+      }
+
+      if (state === GenStateCompleted) {
+        if (method === "throw") {
+          throw arg;
+        }
+
+        // Be forgiving, per 25.3.3.3.3 of the spec:
+        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
+        return doneResult();
+      }
+
+      context.method = method;
+      context.arg = arg;
+
+      while (true) {
+        var delegate = context.delegate;
+        if (delegate) {
+          var delegateResult = maybeInvokeDelegate(delegate, context);
+          if (delegateResult) {
+            if (delegateResult === ContinueSentinel) continue;
+            return delegateResult;
+          }
+        }
+
+        if (context.method === "next") {
+          // Setting context._sent for legacy support of Babel's
+          // function.sent implementation.
+          context.sent = context._sent = context.arg;
+
+        } else if (context.method === "throw") {
+          if (state === GenStateSuspendedStart) {
+            state = GenStateCompleted;
+            throw context.arg;
+          }
+
+          context.dispatchException(context.arg);
+
+        } else if (context.method === "return") {
+          context.abrupt("return", context.arg);
+        }
+
+        state = GenStateExecuting;
+
+        var record = tryCatch(innerFn, self, context);
+        if (record.type === "normal") {
+          // If an exception is thrown from innerFn, we leave state ===
+          // GenStateExecuting and loop back for another invocation.
+          state = context.done
+            ? GenStateCompleted
+            : GenStateSuspendedYield;
+
+          if (record.arg === ContinueSentinel) {
+            continue;
+          }
+
+          return {
+            value: record.arg,
+            done: context.done
+          };
+
+        } else if (record.type === "throw") {
+          state = GenStateCompleted;
+          // Dispatch the exception by looping back around to the
+          // context.dispatchException(context.arg) call above.
+          context.method = "throw";
+          context.arg = record.arg;
+        }
+      }
+    };
+  }
+
+  // Call delegate.iterator[context.method](context.arg) and handle the
+  // result, either by returning a { value, done } result from the
+  // delegate iterator, or by modifying context.method and context.arg,
+  // setting context.delegate to null, and returning the ContinueSentinel.
+  function maybeInvokeDelegate(delegate, context) {
+    var method = delegate.iterator[context.method];
+    if (method === undefined) {
+      // A .throw or .return when the delegate iterator has no .throw
+      // method always terminates the yield* loop.
+      context.delegate = null;
+
+      if (context.method === "throw") {
+        // Note: ["return"] must be used for ES3 parsing compatibility.
+        if (delegate.iterator["return"]) {
+          // If the delegate iterator has a return method, give it a
+          // chance to clean up.
+          context.method = "return";
+          context.arg = undefined;
+          maybeInvokeDelegate(delegate, context);
+
+          if (context.method === "throw") {
+            // If maybeInvokeDelegate(context) changed context.method from
+            // "return" to "throw", let that override the TypeError below.
+            return ContinueSentinel;
+          }
+        }
+
+        context.method = "throw";
+        context.arg = new TypeError(
+          "The iterator does not provide a 'throw' method");
+      }
+
+      return ContinueSentinel;
+    }
+
+    var record = tryCatch(method, delegate.iterator, context.arg);
+
+    if (record.type === "throw") {
+      context.method = "throw";
+      context.arg = record.arg;
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    var info = record.arg;
+
+    if (! info) {
+      context.method = "throw";
+      context.arg = new TypeError("iterator result is not an object");
+      context.delegate = null;
+      return ContinueSentinel;
+    }
+
+    if (info.done) {
+      // Assign the result of the finished delegate to the temporary
+      // variable specified by delegate.resultName (see delegateYield).
+      context[delegate.resultName] = info.value;
+
+      // Resume execution at the desired location (see delegateYield).
+      context.next = delegate.nextLoc;
+
+      // If context.method was "throw" but the delegate handled the
+      // exception, let the outer generator proceed normally. If
+      // context.method was "next", forget context.arg since it has been
+      // "consumed" by the delegate iterator. If context.method was
+      // "return", allow the original .return call to continue in the
+      // outer generator.
+      if (context.method !== "return") {
+        context.method = "next";
+        context.arg = undefined;
+      }
+
+    } else {
+      // Re-yield the result returned by the delegate method.
+      return info;
+    }
+
+    // The delegate iterator is finished, so forget it and continue with
+    // the outer generator.
+    context.delegate = null;
+    return ContinueSentinel;
+  }
+
+  // Define Generator.prototype.{next,throw,return} in terms of the
+  // unified ._invoke helper method.
+  defineIteratorMethods(Gp);
+
+  define(Gp, toStringTagSymbol, "Generator");
+
+  // A Generator should always return itself as the iterator object when the
+  // @@iterator function is called on it. Some browsers' implementations of the
+  // iterator prototype chain incorrectly implement this, causing the Generator
+  // object to not be returned from this call. This ensures that doesn't happen.
+  // See https://github.com/facebook/regenerator/issues/274 for more details.
+  define(Gp, iteratorSymbol, function() {
+    return this;
+  });
+
+  define(Gp, "toString", function() {
+    return "[object Generator]";
+  });
+
+  function pushTryEntry(locs) {
+    var entry = { tryLoc: locs[0] };
+
+    if (1 in locs) {
+      entry.catchLoc = locs[1];
+    }
+
+    if (2 in locs) {
+      entry.finallyLoc = locs[2];
+      entry.afterLoc = locs[3];
+    }
+
+    this.tryEntries.push(entry);
+  }
+
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal";
+    delete record.arg;
+    entry.completion = record;
+  }
+
+  function Context(tryLocsList) {
+    // The root entry object (effectively a try statement without a catch
+    // or a finally block) gives us a place to store values thrown from
+    // locations where there is no enclosing try statement.
+    this.tryEntries = [{ tryLoc: "root" }];
+    tryLocsList.forEach(pushTryEntry, this);
+    this.reset(true);
+  }
+
+  exports.keys = function(object) {
+    var keys = [];
+    for (var key in object) {
+      keys.push(key);
+    }
+    keys.reverse();
+
+    // Rather than returning an object with a next method, we keep
+    // things simple and return the next function itself.
+    return function next() {
+      while (keys.length) {
+        var key = keys.pop();
+        if (key in object) {
+          next.value = key;
+          next.done = false;
+          return next;
+        }
+      }
+
+      // To avoid creating an additional object, we just hang the .value
+      // and .done properties off the next function object itself. This
+      // also ensures that the minifier will not anonymize the function.
+      next.done = true;
+      return next;
+    };
+  };
+
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) {
+        return iteratorMethod.call(iterable);
+      }
+
+      if (typeof iterable.next === "function") {
+        return iterable;
+      }
+
+      if (!isNaN(iterable.length)) {
+        var i = -1, next = function next() {
+          while (++i < iterable.length) {
+            if (hasOwn.call(iterable, i)) {
+              next.value = iterable[i];
+              next.done = false;
+              return next;
+            }
+          }
+
+          next.value = undefined;
+          next.done = true;
+
+          return next;
+        };
+
+        return next.next = next;
+      }
+    }
+
+    // Return an iterator with no values.
+    return { next: doneResult };
+  }
+  exports.values = values;
+
+  function doneResult() {
+    return { value: undefined, done: true };
+  }
+
+  Context.prototype = {
+    constructor: Context,
+
+    reset: function(skipTempReset) {
+      this.prev = 0;
+      this.next = 0;
+      // Resetting context._sent for legacy support of Babel's
+      // function.sent implementation.
+      this.sent = this._sent = undefined;
+      this.done = false;
+      this.delegate = null;
+
+      this.method = "next";
+      this.arg = undefined;
+
+      this.tryEntries.forEach(resetTryEntry);
+
+      if (!skipTempReset) {
+        for (var name in this) {
+          // Not sure about the optimal order of these conditions:
+          if (name.charAt(0) === "t" &&
+              hasOwn.call(this, name) &&
+              !isNaN(+name.slice(1))) {
+            this[name] = undefined;
+          }
+        }
+      }
+    },
+
+    stop: function() {
+      this.done = true;
+
+      var rootEntry = this.tryEntries[0];
+      var rootRecord = rootEntry.completion;
+      if (rootRecord.type === "throw") {
+        throw rootRecord.arg;
+      }
+
+      return this.rval;
+    },
+
+    dispatchException: function(exception) {
+      if (this.done) {
+        throw exception;
+      }
+
+      var context = this;
+      function handle(loc, caught) {
+        record.type = "throw";
+        record.arg = exception;
+        context.next = loc;
+
+        if (caught) {
+          // If the dispatched exception was caught by a catch block,
+          // then let that catch block handle the exception normally.
+          context.method = "next";
+          context.arg = undefined;
+        }
+
+        return !! caught;
+      }
+
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        var record = entry.completion;
+
+        if (entry.tryLoc === "root") {
+          // Exception thrown outside of any try block that could handle
+          // it, so set the completion value of the entire function to
+          // throw the exception.
+          return handle("end");
+        }
+
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc");
+          var hasFinally = hasOwn.call(entry, "finallyLoc");
+
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            } else if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            }
+
+          } else if (hasFinally) {
+            if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else {
+            throw new Error("try statement without catch or finally");
+          }
+        }
+      }
+    },
+
+    abrupt: function(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc <= this.prev &&
+            hasOwn.call(entry, "finallyLoc") &&
+            this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+
+      if (finallyEntry &&
+          (type === "break" ||
+           type === "continue") &&
+          finallyEntry.tryLoc <= arg &&
+          arg <= finallyEntry.finallyLoc) {
+        // Ignore the finally entry if control is not jumping to a
+        // location outside the try/catch block.
+        finallyEntry = null;
+      }
+
+      var record = finallyEntry ? finallyEntry.completion : {};
+      record.type = type;
+      record.arg = arg;
+
+      if (finallyEntry) {
+        this.method = "next";
+        this.next = finallyEntry.finallyLoc;
+        return ContinueSentinel;
+      }
+
+      return this.complete(record);
+    },
+
+    complete: function(record, afterLoc) {
+      if (record.type === "throw") {
+        throw record.arg;
+      }
+
+      if (record.type === "break" ||
+          record.type === "continue") {
+        this.next = record.arg;
+      } else if (record.type === "return") {
+        this.rval = this.arg = record.arg;
+        this.method = "return";
+        this.next = "end";
+      } else if (record.type === "normal" && afterLoc) {
+        this.next = afterLoc;
+      }
+
+      return ContinueSentinel;
+    },
+
+    finish: function(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) {
+          this.complete(entry.completion, entry.afterLoc);
+          resetTryEntry(entry);
+          return ContinueSentinel;
+        }
+      }
+    },
+
+    "catch": function(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+          if (record.type === "throw") {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+          return thrown;
+        }
+      }
+
+      // The context.catch method must only be called with a location
+      // argument that corresponds to a known catch block.
+      throw new Error("illegal catch attempt");
+    },
+
+    delegateYield: function(iterable, resultName, nextLoc) {
+      this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      };
+
+      if (this.method === "next") {
+        // Deliberately forget the last sent value so that we don't
+        // accidentally pass it on to the delegate.
+        this.arg = undefined;
+      }
+
+      return ContinueSentinel;
+    }
+  };
+
+  // Regardless of whether this script is executing as a CommonJS module
+  // or not, return the runtime object so that we can declare the variable
+  // regeneratorRuntime in the outer scope, which allows this module to be
+  // injected easily by `bin/regenerator --include-runtime script.js`.
+  return exports;
+
+}(
+  // If this script is executing as a CommonJS module, use module.exports
+  // as the regeneratorRuntime namespace. Otherwise create a new empty
+  // object. Either way, the resulting object will be used to initialize
+  // the regeneratorRuntime variable at the top of this file.
+   true ? module.exports : 0
+));
+
+try {
+  regeneratorRuntime = runtime;
+} catch (accidentalStrictMode) {
+  // This module should not be running in strict mode, so the above
+  // assignment should always work unless something is misconfigured. Just
+  // in case runtime.js accidentally runs in strict mode, in modern engines
+  // we can explicitly access globalThis. In older engines we can escape
+  // strict mode using a global Function call. This could conceivably fail
+  // if a Content Security Policy forbids using Function, but in that case
+  // the proper solution is to fix the accidental strict mode problem. If
+  // you've misconfigured your bundler to force strict mode and applied a
+  // CSP to forbid Function, and you're not willing to fix either of those
+  // problems, please detail your unique predicament in a GitHub issue.
+  if (typeof globalThis === "object") {
+    globalThis.regeneratorRuntime = runtime;
+  } else {
+    Function("r", "regeneratorRuntime = r")(runtime);
+  }
+}
+
+
+/***/ }),
+
+/***/ 72:
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;// Copyright 2014 Simon Lydell
+// X11 (“MIT”) Licensed. (See LICENSE.)
+
+void (function(root, factory) {
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+		__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+		(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
+		__WEBPACK_AMD_DEFINE_FACTORY__),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))
+  } else {}
+}(this, function() {
+
+  function resolveUrl(/* ...urls */) {
+    var numUrls = arguments.length
+
+    if (numUrls === 0) {
+      throw new Error("resolveUrl requires at least one argument; got none.")
+    }
+
+    var base = document.createElement("base")
+    base.href = arguments[0]
+
+    if (numUrls === 1) {
+      return base.href
+    }
+
+    var head = document.getElementsByTagName("head")[0]
+    head.insertBefore(base, head.firstChild)
+
+    var a = document.createElement("a")
+    var resolved
+
+    for (var index = 1; index < numUrls; index++) {
+      a.href = arguments[index]
+      resolved = a.href
+      base.href = resolved
+    }
+
+    head.removeChild(base)
+
+    return resolved
+  }
+
+  return resolveUrl
+
+}));
+
+
+/***/ }),
+
 /***/ 10:
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -3270,6 +4634,536 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.workerString = void 0;
 exports.workerString = "(function(b){function a(b,d){if({}.hasOwnProperty.call(a.cache,b))return a.cache[b];var e=a.resolve(b);if(!e)throw new Error('Failed to resolve module '+b);var c={id:b,require:a,filename:b,exports:{},loaded:!1,parent:d,children:[]};d&&d.children.push(c);var f=b.slice(0,b.lastIndexOf('/')+1);return a.cache[b]=c.exports,e.call(c.exports,c,c.exports,f,b),c.loaded=!0,a.cache[b]=c.exports}a.modules={},a.cache={},a.resolve=function(b){return{}.hasOwnProperty.call(a.modules,b)?a.modules[b]:void 0},a.define=function(b,c){a.modules[b]=c},a.define('/gif.worker.coffee',function(d,e,f,g){var b,c;b=a('/GIFEncoder.js',d),c=function(a){var c,e,d,f;return c=new b(a.width,a.height),a.index===0?c.writeHeader():c.firstFrame=!1,c.setTransparent(a.transparent),c.setRepeat(a.repeat),c.setDelay(a.delay),c.setQuality(a.quality),c.addFrame(a.data),a.last&&c.finish(),d=c.stream(),a.data=d.pages,a.cursor=d.cursor,a.pageSize=d.constructor.pageSize,a.canTransfer?(f=function(c){for(var b=0,d=a.data.length;b<d;++b)e=a.data[b],c.push(e.buffer);return c}.call(this,[]),self.postMessage(a,f)):self.postMessage(a)},self.onmessage=function(a){return c(a.data)}}),a.define('/GIFEncoder.js',function(e,h,i,j){function c(){this.page=-1,this.pages=[],this.newPage()}function b(a,b){this.width=~~a,this.height=~~b,this.transparent=null,this.transIndex=0,this.repeat=-1,this.delay=0,this.image=null,this.pixels=null,this.indexedPixels=null,this.colorDepth=null,this.colorTab=null,this.usedEntry=new Array,this.palSize=7,this.dispose=-1,this.firstFrame=!0,this.sample=10,this.out=new c}var f=a('/TypedNeuQuant.js',e),g=a('/LZWEncoder.js',e);c.pageSize=4096,c.charMap={};for(var d=0;d<256;d++)c.charMap[d]=String.fromCharCode(d);c.prototype.newPage=function(){this.pages[++this.page]=new Uint8Array(c.pageSize),this.cursor=0},c.prototype.getData=function(){var d='';for(var a=0;a<this.pages.length;a++)for(var b=0;b<c.pageSize;b++)d+=c.charMap[this.pages[a][b]];return d},c.prototype.writeByte=function(a){this.cursor>=c.pageSize&&this.newPage(),this.pages[this.page][this.cursor++]=a},c.prototype.writeUTFBytes=function(b){for(var c=b.length,a=0;a<c;a++)this.writeByte(b.charCodeAt(a))},c.prototype.writeBytes=function(b,d,e){for(var c=e||b.length,a=d||0;a<c;a++)this.writeByte(b[a])},b.prototype.setDelay=function(a){this.delay=Math.round(a/10)},b.prototype.setFrameRate=function(a){this.delay=Math.round(100/a)},b.prototype.setDispose=function(a){a>=0&&(this.dispose=a)},b.prototype.setRepeat=function(a){this.repeat=a},b.prototype.setTransparent=function(a){this.transparent=a},b.prototype.addFrame=function(a){this.image=a,this.getImagePixels(),this.analyzePixels(),this.firstFrame&&(this.writeLSD(),this.writePalette(),this.repeat>=0&&this.writeNetscapeExt()),this.writeGraphicCtrlExt(),this.writeImageDesc(),this.firstFrame||this.writePalette(),this.writePixels(),this.firstFrame=!1},b.prototype.finish=function(){this.out.writeByte(59)},b.prototype.setQuality=function(a){a<1&&(a=1),this.sample=a},b.prototype.writeHeader=function(){this.out.writeUTFBytes('GIF89a')},b.prototype.analyzePixels=function(){var g=this.pixels.length,d=g/3;this.indexedPixels=new Uint8Array(d);var a=new f(this.pixels,this.sample);a.buildColormap(),this.colorTab=a.getColormap();var b=0;for(var c=0;c<d;c++){var e=a.lookupRGB(this.pixels[b++]&255,this.pixels[b++]&255,this.pixels[b++]&255);this.usedEntry[e]=!0,this.indexedPixels[c]=e}this.pixels=null,this.colorDepth=8,this.palSize=7,this.transparent!==null&&(this.transIndex=this.findClosest(this.transparent))},b.prototype.findClosest=function(e){if(this.colorTab===null)return-1;var k=(e&16711680)>>16,l=(e&65280)>>8,m=e&255,c=0,d=16777216,j=this.colorTab.length;for(var a=0;a<j;){var f=k-(this.colorTab[a++]&255),g=l-(this.colorTab[a++]&255),h=m-(this.colorTab[a]&255),i=f*f+g*g+h*h,b=parseInt(a/3);this.usedEntry[b]&&i<d&&(d=i,c=b),a++}return c},b.prototype.getImagePixels=function(){var a=this.width,g=this.height;this.pixels=new Uint8Array(a*g*3);var b=this.image,c=0;for(var d=0;d<g;d++)for(var e=0;e<a;e++){var f=d*a*4+e*4;this.pixels[c++]=b[f],this.pixels[c++]=b[f+1],this.pixels[c++]=b[f+2]}},b.prototype.writeGraphicCtrlExt=function(){this.out.writeByte(33),this.out.writeByte(249),this.out.writeByte(4);var b,a;this.transparent===null?(b=0,a=0):(b=1,a=2),this.dispose>=0&&(a=dispose&7),a<<=2,this.out.writeByte(0|a|0|b),this.writeShort(this.delay),this.out.writeByte(this.transIndex),this.out.writeByte(0)},b.prototype.writeImageDesc=function(){this.out.writeByte(44),this.writeShort(0),this.writeShort(0),this.writeShort(this.width),this.writeShort(this.height),this.firstFrame?this.out.writeByte(0):this.out.writeByte(128|this.palSize)},b.prototype.writeLSD=function(){this.writeShort(this.width),this.writeShort(this.height),this.out.writeByte(240|this.palSize),this.out.writeByte(0),this.out.writeByte(0)},b.prototype.writeNetscapeExt=function(){this.out.writeByte(33),this.out.writeByte(255),this.out.writeByte(11),this.out.writeUTFBytes('NETSCAPE2.0'),this.out.writeByte(3),this.out.writeByte(1),this.writeShort(this.repeat),this.out.writeByte(0)},b.prototype.writePalette=function(){this.out.writeBytes(this.colorTab);var b=768-this.colorTab.length;for(var a=0;a<b;a++)this.out.writeByte(0)},b.prototype.writeShort=function(a){this.out.writeByte(a&255),this.out.writeByte(a>>8&255)},b.prototype.writePixels=function(){var a=new g(this.width,this.height,this.indexedPixels,this.colorDepth);a.encode(this.out)},b.prototype.stream=function(){return this.out},e.exports=b}),a.define('/LZWEncoder.js',function(e,g,h,i){function f(y,D,C,B){function w(a,b){r[f++]=a,f>=254&&t(b)}function x(b){u(a),k=i+2,j=!0,l(i,b)}function u(b){for(var a=0;a<b;++a)h[a]=-1}function A(z,r){var g,t,d,e,y,w,s;for(q=z,j=!1,n_bits=q,m=p(n_bits),i=1<<z-1,o=i+1,k=i+2,f=0,e=v(),s=0,g=a;g<65536;g*=2)++s;s=8-s,w=a,u(w),l(i,r);a:while((t=v())!=c){if(g=(t<<b)+e,d=t<<s^e,h[d]===g){e=n[d];continue}if(h[d]>=0){y=w-d,d===0&&(y=1);do if((d-=y)<0&&(d+=w),h[d]===g){e=n[d];continue a}while(h[d]>=0)}l(e,r),e=t,k<1<<b?(n[d]=k++,h[d]=g):x(r)}l(e,r),l(o,r)}function z(a){a.writeByte(s),remaining=y*D,curPixel=0,A(s+1,a),a.writeByte(0)}function t(a){f>0&&(a.writeByte(f),a.writeBytes(r,0,f),f=0)}function p(a){return(1<<a)-1}function v(){if(remaining===0)return c;--remaining;var a=C[curPixel++];return a&255}function l(a,c){g&=d[e],e>0?g|=a<<e:g=a,e+=n_bits;while(e>=8)w(g&255,c),g>>=8,e-=8;if((k>m||j)&&(j?(m=p(n_bits=q),j=!1):(++n_bits,n_bits==b?m=1<<b:m=p(n_bits))),a==o){while(e>0)w(g&255,c),g>>=8,e-=8;t(c)}}var s=Math.max(2,B),r=new Uint8Array(256),h=new Int32Array(a),n=new Int32Array(a),g,e=0,f,k=0,m,j=!1,q,i,o;this.encode=z}var c=-1,b=12,a=5003,d=[0,1,3,7,15,31,63,127,255,511,1023,2047,4095,8191,16383,32767,65535];e.exports=f}),a.define('/TypedNeuQuant.js',function(A,F,E,D){function C(A,B){function I(){o=[],q=new Int32Array(256),t=new Int32Array(a),y=new Int32Array(a),z=new Int32Array(a>>3);var c,d;for(c=0;c<a;c++)d=(c<<b+8)/a,o[c]=new Float64Array([d,d,d,0]),y[c]=e/a,t[c]=0}function J(){for(var c=0;c<a;c++)o[c][0]>>=b,o[c][1]>>=b,o[c][2]>>=b,o[c][3]=c}function K(b,a,c,e,f){o[a][0]-=b*(o[a][0]-c)/d,o[a][1]-=b*(o[a][1]-e)/d,o[a][2]-=b*(o[a][2]-f)/d}function L(j,e,n,l,k){var h=Math.abs(e-j),i=Math.min(e+j,a),g=e+1,f=e-1,m=1,b,d;while(g<i||f>h)d=z[m++],g<i&&(b=o[g++],b[0]-=d*(b[0]-n)/c,b[1]-=d*(b[1]-l)/c,b[2]-=d*(b[2]-k)/c),f>h&&(b=o[f--],b[0]-=d*(b[0]-n)/c,b[1]-=d*(b[1]-l)/c,b[2]-=d*(b[2]-k)/c)}function C(p,s,q){var h=2147483647,k=h,d=-1,m=d,c,j,e,n,l;for(c=0;c<a;c++)j=o[c],e=Math.abs(j[0]-p)+Math.abs(j[1]-s)+Math.abs(j[2]-q),e<h&&(h=e,d=c),n=e-(t[c]>>i-b),n<k&&(k=n,m=c),l=y[c]>>g,y[c]-=l,t[c]+=l<<f;return y[d]+=x,t[d]-=r,m}function D(){var d,b,e,c,h,g,f=0,i=0;for(d=0;d<a;d++){for(e=o[d],h=d,g=e[1],b=d+1;b<a;b++)c=o[b],c[1]<g&&(h=b,g=c[1]);if(c=o[h],d!=h&&(b=c[0],c[0]=e[0],e[0]=b,b=c[1],c[1]=e[1],e[1]=b,b=c[2],c[2]=e[2],e[2]=b,b=c[3],c[3]=e[3],e[3]=b),g!=f){for(q[f]=i+d>>1,b=f+1;b<g;b++)q[b]=d;f=g,i=d}}for(q[f]=i+n>>1,b=f+1;b<256;b++)q[b]=n}function E(j,i,k){var b,d,c,e=1e3,h=-1,f=q[i],g=f-1;while(f<a||g>=0)f<a&&(d=o[f],c=d[1]-i,c>=e?f=a:(f++,c<0&&(c=-c),b=d[0]-j,b<0&&(b=-b),c+=b,c<e&&(b=d[2]-k,b<0&&(b=-b),c+=b,c<e&&(e=c,h=d[3])))),g>=0&&(d=o[g],c=i-d[1],c>=e?g=-1:(g--,c<0&&(c=-c),b=d[0]-j,b<0&&(b=-b),c+=b,c<e&&(b=d[2]-k,b<0&&(b=-b),c+=b,c<e&&(e=c,h=d[3]))));return h}function F(){var c,f=A.length,D=30+(B-1)/3,y=f/(3*B),q=~~(y/w),n=d,o=u,a=o>>h;for(a<=1&&(a=0),c=0;c<a;c++)z[c]=n*((a*a-c*c)*m/(a*a));var i;f<s?(B=1,i=3):f%l!==0?i=3*l:f%k!==0?i=3*k:f%p!==0?i=3*p:i=3*j;var r,t,x,e,g=0;c=0;while(c<y)if(r=(A[g]&255)<<b,t=(A[g+1]&255)<<b,x=(A[g+2]&255)<<b,e=C(r,t,x),K(n,e,r,t,x),a!==0&&L(a,e,r,t,x),g+=i,g>=f&&(g-=f),c++,q===0&&(q=1),c%q===0)for(n-=n/D,o-=o/v,a=o>>h,a<=1&&(a=0),e=0;e<a;e++)z[e]=n*((a*a-e*e)*m/(a*a))}function G(){I(),F(),J(),D()}function H(){var b=[],g=[];for(var c=0;c<a;c++)g[o[c][3]]=c;var d=0;for(var e=0;e<a;e++){var f=g[e];b[d++]=o[f][0],b[d++]=o[f][1],b[d++]=o[f][2]}return b}var o,q,t,y,z;this.buildColormap=G,this.getColormap=H,this.lookupRGB=E}var w=100,a=256,n=a-1,b=4,i=16,e=1<<i,f=10,B=1<<f,g=10,x=e>>g,r=e<<f-g,z=a>>3,h=6,t=1<<h,u=z*t,v=30,o=10,d=1<<o,q=8,m=1<<q,y=o+q,c=1<<y,l=499,k=491,p=487,j=503,s=3*j;A.exports=C}),a('/gif.worker.coffee')}.call(this,this))//# sourceMappingURL=gif.worker.js.map";
 // gif.worker.js 0.1.6 - https://github.com/jnordberg/gif.js
+
+
+/***/ }),
+
+/***/ 607:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.browserSupportsWEBP = exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = exports.showDialog = void 0;
+// @ts-ignore
+var ccapture_js_1 = __webpack_require__(583);
+var file_saver_1 = __webpack_require__(162);
+// @ts-ignore
+var changedpi_1 = __webpack_require__(809);
+var modals_1 = __webpack_require__(330);
+var gif_worker_1 = __webpack_require__(10);
+var ffmpeg_1 = __webpack_require__(45);
+var ffmpeg = ffmpeg_1.createFFmpeg({
+    // Use public address if you don't want to host your own.
+    //   corePath: 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
+    log: true,
+});
+var ffmpegLoadPromise = ffmpeg.load();
+// Export showDialog method in case it is useful.
+var modals_2 = __webpack_require__(330);
+Object.defineProperty(exports, "showDialog", ({ enumerable: true, get: function () { return modals_2.showDialog; } }));
+// Make is so we don't have to specify workersPath for CCapture.
+var workersBlob = new Blob([gif_worker_1.workerString]);
+var workersPath = URL.createObjectURL(workersBlob);
+var VERBOSE = true;
+var activeCaptures = [];
+// This is an unused variable,
+// but needed for proper import of CCapture at the moment.
+// See https://github.com/spite/ccapture.js/issues/78
+var temp = ccapture_js_1.default;
+var hotkeys = {
+    webm: null,
+    gif: null,
+    png: null,
+    jpeg: null,
+};
+var canvas = null;
+function init(_canvas, options) {
+    canvas = _canvas;
+    if (options && options.verbose !== undefined)
+        setVerbose(options.verbose);
+    if (options && options.showAlerts !== undefined)
+        modals_1.PARAMS.SHOW_ALERTS = options.showAlerts;
+    if (options && options.showDialogs !== undefined)
+        modals_1.PARAMS.SHOW_DIALOGS = options.showDialogs;
+    if (options && options.showRecDot !== undefined)
+        modals_1.PARAMS.SHOW_REC_DOT = options.showRecDot;
+    if (modals_1.PARAMS.SHOW_REC_DOT) {
+        modals_1.initDotWithCSS(options === null || options === void 0 ? void 0 : options.recDotCSS);
+    }
+    canvas.addEventListener('resize', function () {
+        if (activeCaptures.length) {
+            modals_1.showAlert("Don't resize while recording canvas!");
+        }
+    });
+}
+exports.init = init;
+function setVerbose(state) {
+    VERBOSE = !!state;
+}
+exports.setVerbose = setVerbose;
+function checkCanvas() {
+    if (canvas === null) {
+        modals_1.showAlert('No canvas supplied, please call CanvasCapture.init() and pass in canvas element.');
+        return false;
+    }
+    return true;
+}
+var recOptions = {
+    mp4: undefined,
+    webm: undefined,
+    gif: undefined,
+    png: undefined,
+    jpeg: undefined,
+};
+// Pressing key once will start record, press again to stop.
+function bindKeyToVideoRecord(key, options) {
+    if (options.format === 'webm') {
+        recOptions.webm = options;
+        Object.keys(hotkeys).forEach(function (keyName) {
+            if (hotkeys[keyName] === key) {
+                hotkeys[keyName] = null;
+            }
+        });
+        hotkeys.webm = key;
+    }
+    else {
+        recOptions.mp4 = options;
+        Object.keys(hotkeys).forEach(function (keyName) {
+            if (hotkeys[keyName] === key) {
+                hotkeys[keyName] = null;
+            }
+        });
+        hotkeys.mp4 = key;
+    }
+}
+exports.bindKeyToVideoRecord = bindKeyToVideoRecord;
+function bindKeyToGIFRecord(key, options) {
+    recOptions.gif = options;
+    Object.keys(hotkeys).forEach(function (keyName) {
+        if (hotkeys[keyName] === key) {
+            hotkeys[keyName] = null;
+        }
+    });
+    hotkeys.gif = key;
+}
+exports.bindKeyToGIFRecord = bindKeyToGIFRecord;
+// Snapshots just take a single shot.
+function bindKeyToPNGSnapshot(key, options) {
+    recOptions.png = options;
+    Object.keys(hotkeys).forEach(function (keyName) {
+        if (hotkeys[keyName] === key) {
+            hotkeys[keyName] = null;
+        }
+    });
+    hotkeys.png = key;
+}
+exports.bindKeyToPNGSnapshot = bindKeyToPNGSnapshot;
+function bindKeyToJPEGSnapshot(key, options) {
+    recOptions.jpeg = options;
+    Object.keys(hotkeys).forEach(function (keyName) {
+        if (hotkeys[keyName] === key) {
+            hotkeys[keyName] = null;
+        }
+    });
+    hotkeys.jpeg = key;
+}
+exports.bindKeyToJPEGSnapshot = bindKeyToJPEGSnapshot;
+window.addEventListener('keydown', function (e) {
+    if (hotkeys.mp4 && e.key === hotkeys.mp4) {
+        var MP4s = activeMP4Captures();
+        if (MP4s.length)
+            stopRecord();
+        else {
+            // We need to generate WEBM before converting to MP4.
+            if (!browserSupportsWEBP()) {
+                modals_1.showAlert("This browser does not support video recording, please try again in Chrome.");
+                return;
+            }
+            beginVideoRecord(recOptions.mp4);
+        }
+    }
+    if (hotkeys.webm && e.key === hotkeys.webm) {
+        var WEBMs = activeWEBMCaptures();
+        if (WEBMs.length)
+            stopRecord();
+        else {
+            if (!browserSupportsWEBP()) {
+                modals_1.showAlert("This browser does not support video recording, please try again in Chrome.");
+                return;
+            }
+            beginVideoRecord(recOptions.webm);
+        }
+    }
+    if (hotkeys.gif && e.key === hotkeys.gif) {
+        var GIFs = activeGIFCaptures();
+        if (GIFs.length)
+            stopRecord();
+        else
+            beginGIFRecord(recOptions.gif);
+    }
+    if (hotkeys.png && e.key === hotkeys.png) {
+        takePNGSnapshot(recOptions.png);
+    }
+    if (hotkeys.jpeg && e.key === hotkeys.jpeg) {
+        takeJPEGSnapshot(recOptions.jpeg);
+    }
+});
+function beginVideoRecord(options) {
+    var _a;
+    if (!browserSupportsWEBP()) {
+        modals_1.showAlert("This browser does not support video recording, please try again in Chrome.");
+        return false;
+    }
+    if (activeCaptures.length) {
+        modals_1.showAlert("CCapture.js only supports one video/gif capture at a time.");
+        return false;
+    }
+    // CCapture seems to expect a quality between 0 and 100.
+    var quality = 100;
+    if (options && options.quality) {
+        quality = options.quality * 100;
+    }
+    var name = (options === null || options === void 0 ? void 0 : options.name) || 'WEBM_Capture';
+    // Create a capturer that exports a WebM video.
+    // @ts-ignore
+    var capturer = new window.CCapture({
+        format: 'webm',
+        name: name,
+        framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
+        quality: quality,
+        verbose: VERBOSE,
+    });
+    capturer.start();
+    activeCaptures.push({
+        name: name,
+        capturer: capturer,
+        numFrames: 0,
+        type: (options === null || options === void 0 ? void 0 : options.format) || 'mp4',
+        // onMP4ConversionProgress: (options as MP4_OPTIONS)?.onMP4ConversionProgress,
+        ffmpegOptions: (_a = options) === null || _a === void 0 ? void 0 : _a.ffmpegOptions,
+    });
+    // For video and gif records, we should also throw up an indicator to show that we're in record mode.
+    modals_1.showDot(isRecording());
+    return capturer;
+}
+exports.beginVideoRecord = beginVideoRecord;
+function beginGIFRecord(options) {
+    if (activeCaptures.length) {
+        modals_1.showAlert("CCapture.js only supports one video/gif capture at a time.");
+        return false;
+    }
+    // CCapture seems to expect a quality between 0 and 100.
+    var quality = 100;
+    if (options && options.quality) {
+        quality = options.quality * 100;
+    }
+    var name = (options === null || options === void 0 ? void 0 : options.name) || 'GIF_Capture';
+    // Create a capturer that exports a GIF.
+    // @ts-ignore
+    var capturer = new window.CCapture({
+        format: 'gif',
+        name: name,
+        framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
+        workersPath: workersPath,
+        quality: quality,
+        verbose: VERBOSE,
+    });
+    capturer.start();
+    activeCaptures.push({
+        name: name,
+        capturer: capturer,
+        numFrames: 0,
+        type: 'gif',
+    });
+    // For video and gif records, we should also throw up an indicator to show that we're in record mode.
+    modals_1.showDot(isRecording());
+    return capturer;
+}
+exports.beginGIFRecord = beginGIFRecord;
+function takePNGSnapshot(options) {
+    if (!checkCanvas()) {
+        return;
+    }
+    var name = (options === null || options === void 0 ? void 0 : options.name) || 'PNG_Capture';
+    canvas.toBlob(function (blob) {
+        if (!blob) {
+            modals_1.showAlert('Problem saving PNG, please try again!');
+            return;
+        }
+        if (options === null || options === void 0 ? void 0 : options.dpi) {
+            changedpi_1.changeDpiBlob(blob, options === null || options === void 0 ? void 0 : options.dpi).then(function (blob) {
+                file_saver_1.saveAs(blob, name + ".png");
+            });
+        }
+        else {
+            file_saver_1.saveAs(blob, name + ".png");
+        }
+    }, 'image/png');
+}
+exports.takePNGSnapshot = takePNGSnapshot;
+function takeJPEGSnapshot(options) {
+    var name = (options === null || options === void 0 ? void 0 : options.name) || 'JPEG_Capture';
+    if (!checkCanvas()) {
+        return;
+    }
+    // Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+    canvas.toBlob(function (blob) {
+        if (!blob) {
+            modals_1.showAlert('Problem saving JPEG, please try again!');
+            return;
+        }
+        if (options === null || options === void 0 ? void 0 : options.dpi) {
+            changedpi_1.changeDpiBlob(blob, options === null || options === void 0 ? void 0 : options.dpi).then(function (blob) {
+                file_saver_1.saveAs(blob, name + ".jpg");
+            });
+        }
+        else {
+            file_saver_1.saveAs(blob, name + ".jpg");
+        }
+    }, 'image/jpeg', (options === null || options === void 0 ? void 0 : options.quality) || 1);
+}
+exports.takeJPEGSnapshot = takeJPEGSnapshot;
+function getIndexOfCapturer(capturer, methodName) {
+    var index = -1;
+    // Find capturer in activeCaptures.
+    for (var i = 0; i < activeCaptures.length; i++) {
+        if (activeCaptures[i].capturer == capturer) {
+            index = i;
+            break;
+        }
+    }
+    if (index < 0) {
+        modals_1.showAlert("Invalid capturer passed into CanvasCapture." + methodName + ".");
+    }
+    return index;
+}
+// export function recordFrame(capturer?: CCapture | CCapture[]) {
+function recordFrame() {
+    if (!checkCanvas()) {
+        return;
+    }
+    if (activeCaptures.length === 0) {
+        modals_1.showAlert('No valid capturer inited, please call CanvasCapture.beginVideoRecord() or CanvasCapture.beginGIFRecord() first.');
+        return;
+    }
+    // Either record frame on passed in capturer, or on all active capturers.
+    // if (capturer) {
+    // 	if (!Array.isArray(capturer)) {
+    // 		capturer = [capturer];
+    // 	}
+    // 	for (let i = 0; i < capturer.length; i++) {
+    // 		const index = getIndexOfCapturer(capturer, 'recordFrame');
+    // 		if (index >= 0) {
+    // 			activeCaptures[index].capturer.capture(canvas);
+    // 			activeCaptures[index].numFrames += 1;
+    // 		}
+    // 	}
+    // } else {
+    for (var i = 0; i < activeCaptures.length; i++) {
+        activeCaptures[i].capturer.capture(canvas);
+        activeCaptures[i].numFrames += 1;
+    }
+    // }
+}
+exports.recordFrame = recordFrame;
+function stopRecordAtIndex(index) {
+    var _a = activeCaptures[index], name = _a.name, capturer = _a.capturer, numFrames = _a.numFrames, type = _a.type, onMP4ConversionProgress = _a.onMP4ConversionProgress, ffmpegOptions = _a.ffmpegOptions;
+    capturer.stop();
+    // Remove ref to capturer.
+    activeCaptures.splice(index, 1);
+    if (numFrames === 0) {
+        modals_1.showAlert('No frames recorded, call CanvasCapture.recordFrame().');
+        return;
+    }
+    if (type === 'mp4') {
+        capturer.save(function (blob) {
+            convertWEBMtoMP4({
+                name: name,
+                blob: blob,
+                onProgress: onMP4ConversionProgress,
+                ffmpegOptions: ffmpegOptions,
+            });
+        });
+    }
+    else {
+        capturer.save();
+    }
+    if (type === 'gif') {
+        // Tell the user that gifs take a sec to process.
+        if (modals_1.PARAMS.SHOW_DIALOGS)
+            modals_1.showDialog('Processing...', 'GIF is processing and may take a minute to save.  You can close this window in the meantime.', { autoCloseDelay: 7000 });
+    }
+}
+// export function stopRecord(capturer?: CCapture | CCapture[]) {
+function stopRecord() {
+    if (activeCaptures.length === 0) {
+        modals_1.showAlert('No valid capturer inited, please call CanvasCapture.beginVideoRecord() or CanvasCapture.beginGIFRecord() first.');
+        return;
+    }
+    // // Either stop record on passed in capturer, or on all active capturers.
+    // if (capturer) {
+    // 	if (!Array.isArray(capturer)) {
+    // 		capturer = [capturer];
+    // 	}
+    // 	for (let i = 0; i < capturer.length; i++) {
+    // 		const index = getIndexOfCapturer(capturer[i], 'stopRecord');
+    // 		if (index >= 0) {
+    // 			stopRecordAtIndex(index);
+    // 		}
+    // 	}
+    // } else {
+    for (var i = activeCaptures.length - 1; i >= 0; i--) {
+        stopRecordAtIndex(i);
+    }
+    // }
+    modals_1.showDot(isRecording());
+}
+exports.stopRecord = stopRecord;
+function activeMP4Captures() {
+    var mp4Captures = [];
+    for (var i = 0; i < activeCaptures.length; i++) {
+        if (activeCaptures[i].type === 'mp4') {
+            mp4Captures.push(activeCaptures[i].capturer);
+        }
+    }
+    return mp4Captures;
+}
+function activeWEBMCaptures() {
+    var webmCaptures = [];
+    for (var i = 0; i < activeCaptures.length; i++) {
+        if (activeCaptures[i].type === 'webm') {
+            webmCaptures.push(activeCaptures[i].capturer);
+        }
+    }
+    return webmCaptures;
+}
+function activeGIFCaptures() {
+    var gifCaptures = [];
+    for (var i = 0; i < activeCaptures.length; i++) {
+        if (activeCaptures[i].type === 'gif') {
+            gifCaptures.push(activeCaptures[i].capturer);
+        }
+    }
+    return gifCaptures;
+}
+function isRecording() {
+    return activeCaptures.length > 0;
+}
+exports.isRecording = isRecording;
+function convertWEBMtoMP4(options) {
+    return __awaiter(this, void 0, void 0, function () {
+        var e_1, name, blob, onProgress, ffmpegOptions, data, defaultFFMPEGOptions, combinedOptions, _ffmpegOptions, output, outputBlob;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, ffmpegLoadPromise];
+                case 1:
+                    _a.sent();
+                    return [3 /*break*/, 3];
+                case 2:
+                    e_1 = _a.sent();
+                    modals_1.showAlert('MP4 export not supported in this browser, try again in the latest version of Chrome.');
+                    return [2 /*return*/];
+                case 3:
+                    name = options.name, blob = options.blob, onProgress = options.onProgress, ffmpegOptions = options.ffmpegOptions;
+                    return [4 /*yield*/, ffmpeg_1.fetchFile(blob)];
+                case 4:
+                    data = _a.sent();
+                    // Write data to MEMFS, need to use Uint8Array for binary data.
+                    ffmpeg.FS('writeFile', name + ".webm", data);
+                    defaultFFMPEGOptions = {
+                        '-c:v': 'libx264',
+                        '-preset': 'slow',
+                        '-crf': '22',
+                        '-pix_fmt': 'yuv420p',
+                    };
+                    combinedOptions = __assign(__assign({}, defaultFFMPEGOptions), (ffmpegOptions || {}));
+                    _ffmpegOptions = [];
+                    Object.keys(combinedOptions).forEach(function (key) {
+                        _ffmpegOptions.push(key, combinedOptions[key]);
+                    });
+                    return [4 /*yield*/, ffmpeg.run.apply(ffmpeg, __spreadArrays(['-i', name + ".webm"], _ffmpegOptions, ['-vf', 'crop=trunc(iw/2)*2:trunc(ih/2)*2',
+                            '-an', name + ".mp4"]))];
+                case 5:
+                    _a.sent();
+                    return [4 /*yield*/, ffmpeg.FS('readFile', name + ".mp4")];
+                case 6:
+                    output = _a.sent();
+                    outputBlob = new Blob([output], { type: 'video/mp4' });
+                    file_saver_1.saveAs(outputBlob, name + ".mp4");
+                    // Delete files in MEMFS.
+                    ffmpeg.FS('unlink', name + ".webm");
+                    ffmpeg.FS('unlink', name + ".mp4");
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+function browserSupportsWEBP() {
+    checkCanvas();
+    var url = canvas.toDataURL('image/webp', { quality: 1 });
+    if (typeof url !== "string" || !url.match(/^data:image\/webp;base64,/i)) {
+        return false;
+    }
+    return true;
+}
+exports.browserSupportsWEBP = browserSupportsWEBP;
 
 
 /***/ }),
@@ -3382,6 +5276,14 @@ function showDot(visible) {
 exports.showDot = showDot;
 
 
+/***/ }),
+
+/***/ 681:
+/***/ ((module) => {
+
+"use strict";
+module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.10.1","_inBundle":false,"_integrity":"sha512-ChQkH7Rh57hmVo1LhfQFibWX/xqneolJKSwItwZdKPcLZuKigtYAYDIvB55pDfP17VtR1R77SxgkB2/UApB+Og==","_location":"/@ffmpeg/ffmpeg","_phantomChildren":{},"_requested":{"type":"tag","registry":true,"raw":"@ffmpeg/ffmpeg","name":"@ffmpeg/ffmpeg","escapedName":"@ffmpeg%2fffmpeg","scope":"@ffmpeg","rawSpec":"","saveSpec":null,"fetchSpec":"latest"},"_requiredBy":["#USER","/"],"_resolved":"https://registry.npmjs.org/@ffmpeg/ffmpeg/-/ffmpeg-0.10.1.tgz","_shasum":"3dacf3985de9c83a95fbf79fe709920cc009b00a","_spec":"@ffmpeg/ffmpeg","_where":"/Users/amandaghassaei/Projects/canvas-capture","author":{"name":"Jerome Wu","email":"jeromewus@gmail.com"},"browser":{"./src/node/index.js":"./src/browser/index.js"},"bugs":{"url":"https://github.com/ffmpegwasm/ffmpeg.wasm/issues"},"bundleDependencies":false,"dependencies":{"is-url":"^1.2.4","node-fetch":"^2.6.1","regenerator-runtime":"^0.13.7","resolve-url":"^0.2.1"},"deprecated":false,"description":"FFmpeg WebAssembly version","devDependencies":{"@babel/core":"^7.12.3","@babel/preset-env":"^7.12.1","@ffmpeg/core":"^0.10.0","@types/emscripten":"^1.39.4","babel-loader":"^8.1.0","chai":"^4.2.0","cors":"^2.8.5","eslint":"^7.12.1","eslint-config-airbnb-base":"^14.1.0","eslint-plugin-import":"^2.22.1","express":"^4.17.1","mocha":"^8.2.1","mocha-headless-chrome":"^2.0.3","npm-run-all":"^4.1.5","wait-on":"^5.3.0","webpack":"^5.3.2","webpack-cli":"^4.1.0","webpack-dev-middleware":"^4.0.0"},"directories":{"example":"examples"},"engines":{"node":">=12.16.1"},"homepage":"https://github.com/ffmpegwasm/ffmpeg.wasm#readme","keywords":["ffmpeg","WebAssembly","video"],"license":"MIT","main":"src/index.js","name":"@ffmpeg/ffmpeg","repository":{"type":"git","url":"git+https://github.com/ffmpegwasm/ffmpeg.wasm.git"},"scripts":{"build":"rimraf dist && webpack --config scripts/webpack.config.prod.js","lint":"eslint src","prepublishOnly":"npm run build","start":"node scripts/server.js","test":"npm-run-all -p -r start test:all","test:all":"npm-run-all wait test:browser:ffmpeg test:node:all","test:browser":"mocha-headless-chrome -a allow-file-access-from-files -a incognito -a no-sandbox -a disable-setuid-sandbox -a disable-logging -t 300000","test:browser:ffmpeg":"npm run test:browser -- -f ./tests/ffmpeg.test.html","test:node":"node --experimental-wasm-threads --experimental-wasm-bulk-memory node_modules/.bin/_mocha --exit --bail --require ./scripts/test-helper.js","test:node:all":"npm run test:node -- ./tests/*.test.js","wait":"rimraf dist && wait-on http://localhost:3000/dist/ffmpeg.dev.js"},"types":"src/index.d.ts","version":"0.10.1"}');
+
 /***/ })
 
 /******/ 	});
@@ -3464,354 +5366,12 @@ exports.showDot = showDot;
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
-(() => {
-"use strict";
-var exports = __webpack_exports__;
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = exports.showDialog = void 0;
-// @ts-ignore
-var ccapture_js_1 = __webpack_require__(583);
-var file_saver_1 = __webpack_require__(162);
-// @ts-ignore
-var changedpi_1 = __webpack_require__(809);
-var modals_1 = __webpack_require__(330);
-var gif_worker_1 = __webpack_require__(10);
-// Export showDialog method in case it is useful.
-var modals_2 = __webpack_require__(330);
-Object.defineProperty(exports, "showDialog", ({ enumerable: true, get: function () { return modals_2.showDialog; } }));
-// Make is so we don't have to specify workersPath for CCapture.
-var workersBlob = new Blob([gif_worker_1.workerString]);
-var workersPath = URL.createObjectURL(workersBlob);
-var VERBOSE = true;
-var activeCaptures = [];
-// This is an unused variable,
-// but needed for proper import of CCapture at the moment.
-// See https://github.com/spite/ccapture.js/issues/78
-var temp = ccapture_js_1.default;
-var hotkeys = {
-    webm: null,
-    gif: null,
-    png: null,
-    jpeg: null,
-};
-var canvas = null;
-function init(_canvas, options) {
-    canvas = _canvas;
-    if (options && options.verbose !== undefined)
-        setVerbose(options.verbose);
-    if (options && options.showAlerts !== undefined)
-        modals_1.PARAMS.SHOW_ALERTS = options.showAlerts;
-    if (options && options.showDialogs !== undefined)
-        modals_1.PARAMS.SHOW_DIALOGS = options.showDialogs;
-    if (options && options.showRecDot !== undefined)
-        modals_1.PARAMS.SHOW_REC_DOT = options.showRecDot;
-    if (modals_1.PARAMS.SHOW_REC_DOT) {
-        modals_1.initDotWithCSS(options === null || options === void 0 ? void 0 : options.recDotCSS);
-    }
-    canvas.addEventListener('resize', function () {
-        if (activeCaptures.length) {
-            modals_1.showAlert("Don't resize while recording canvas!");
-        }
-    });
-}
-exports.init = init;
-function setVerbose(state) {
-    VERBOSE = !!state;
-}
-exports.setVerbose = setVerbose;
-function checkCanvas() {
-    if (canvas === null) {
-        modals_1.showAlert('No canvas supplied, please call CanvasCapture.init() and pass in canvas element.');
-        return false;
-    }
-    return true;
-}
-var recOptions = {
-    webm: undefined,
-    gif: undefined,
-    png: undefined,
-    jpeg: undefined,
-};
-// Pressing key once will start record, press again to stop.
-function bindKeyToVideoRecord(key, options) {
-    recOptions.webm = options;
-    Object.keys(hotkeys).forEach(function (keyName) {
-        if (hotkeys[keyName] === key) {
-            hotkeys[keyName] = null;
-        }
-    });
-    hotkeys.webm = key;
-}
-exports.bindKeyToVideoRecord = bindKeyToVideoRecord;
-function bindKeyToGIFRecord(key, options) {
-    recOptions.gif = options;
-    Object.keys(hotkeys).forEach(function (keyName) {
-        if (hotkeys[keyName] === key) {
-            hotkeys[keyName] = null;
-        }
-    });
-    hotkeys.gif = key;
-}
-exports.bindKeyToGIFRecord = bindKeyToGIFRecord;
-// Snapshots just take a single shot.
-function bindKeyToPNGSnapshot(key, options) {
-    recOptions.png = options;
-    Object.keys(hotkeys).forEach(function (keyName) {
-        if (hotkeys[keyName] === key) {
-            hotkeys[keyName] = null;
-        }
-    });
-    hotkeys.png = key;
-}
-exports.bindKeyToPNGSnapshot = bindKeyToPNGSnapshot;
-function bindKeyToJPEGSnapshot(key, options) {
-    recOptions.jpeg = options;
-    Object.keys(hotkeys).forEach(function (keyName) {
-        if (hotkeys[keyName] === key) {
-            hotkeys[keyName] = null;
-        }
-    });
-    hotkeys.jpeg = key;
-}
-exports.bindKeyToJPEGSnapshot = bindKeyToJPEGSnapshot;
-window.addEventListener('keydown', function (e) {
-    if (hotkeys.webm && e.key === hotkeys.webm) {
-        var WEBMs = activeWEBMCaptures();
-        if (WEBMs.length)
-            stopRecord();
-        else
-            beginVideoRecord(recOptions.webm);
-    }
-    if (hotkeys.gif && e.key === hotkeys.gif) {
-        var GIFs = activeGIFCaptures();
-        if (GIFs.length)
-            stopRecord();
-        else
-            beginGIFRecord(recOptions.gif);
-    }
-    if (hotkeys.png && e.key === hotkeys.png) {
-        takePNGSnapshot(recOptions.png);
-    }
-    if (hotkeys.jpeg && e.key === hotkeys.jpeg) {
-        takeJPEGSnapshot(recOptions.jpeg);
-    }
-});
-function beginVideoRecord(options) {
-    if (activeCaptures.length) {
-        modals_1.showAlert("CCapture.js only supports one video/gif capture at a time.");
-        return;
-    }
-    // CCapture seems to expect a quality between 0 and 100.
-    var quality = 100;
-    if (options && options.quality) {
-        quality = options.quality * 100;
-    }
-    // Create a capturer that exports a WebM video.
-    // @ts-ignore
-    var capturer = new window.CCapture({
-        format: 'webm',
-        name: (options === null || options === void 0 ? void 0 : options.name) || 'WEBM_Capture',
-        framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
-        quality: quality,
-        verbose: VERBOSE,
-    });
-    capturer.start();
-    activeCaptures.push({
-        capturer: capturer,
-        numFrames: 0,
-        type: 'webm',
-    });
-    // For video and gif records, we should also throw up an indicator to show that we're in record mode.
-    modals_1.showDot(isRecording());
-    return capturer;
-}
-exports.beginVideoRecord = beginVideoRecord;
-function beginGIFRecord(options) {
-    if (activeCaptures.length) {
-        modals_1.showAlert("CCapture.js only supports one video/gif capture at a time.");
-        return;
-    }
-    // CCapture seems to expect a quality between 0 and 100.
-    var quality = 100;
-    if (options && options.quality) {
-        quality = options.quality * 100;
-    }
-    // Create a capturer that exports a GIF.
-    // @ts-ignore
-    var capturer = new window.CCapture({
-        format: 'gif',
-        name: (options === null || options === void 0 ? void 0 : options.name) || 'GIF_Capture',
-        framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
-        workersPath: workersPath,
-        quality: quality,
-        verbose: VERBOSE,
-    });
-    capturer.start();
-    activeCaptures.push({
-        capturer: capturer,
-        numFrames: 0,
-        type: 'gif',
-    });
-    // For video and gif records, we should also throw up an indicator to show that we're in record mode.
-    modals_1.showDot(isRecording());
-    return capturer;
-}
-exports.beginGIFRecord = beginGIFRecord;
-function takePNGSnapshot(options) {
-    if (!checkCanvas()) {
-        return;
-    }
-    var name = (options === null || options === void 0 ? void 0 : options.name) || 'PNG_Capture';
-    canvas.toBlob(function (blob) {
-        if (!blob) {
-            modals_1.showAlert('Problem saving PNG, please try again!');
-            return;
-        }
-        if (options === null || options === void 0 ? void 0 : options.dpi) {
-            changedpi_1.changeDpiBlob(blob, options === null || options === void 0 ? void 0 : options.dpi).then(function (blob) {
-                file_saver_1.saveAs(blob, name + ".png");
-            });
-        }
-        else {
-            file_saver_1.saveAs(blob, name + ".png");
-        }
-    }, 'image/png');
-}
-exports.takePNGSnapshot = takePNGSnapshot;
-function takeJPEGSnapshot(options) {
-    var name = (options === null || options === void 0 ? void 0 : options.name) || 'JPEG_Capture';
-    if (!checkCanvas()) {
-        return;
-    }
-    // Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
-    canvas.toBlob(function (blob) {
-        if (!blob) {
-            modals_1.showAlert('Problem saving JPEG, please try again!');
-            return;
-        }
-        if (options === null || options === void 0 ? void 0 : options.dpi) {
-            changedpi_1.changeDpiBlob(blob, options === null || options === void 0 ? void 0 : options.dpi).then(function (blob) {
-                file_saver_1.saveAs(blob, name + ".jpg");
-            });
-        }
-        else {
-            file_saver_1.saveAs(blob, name + ".jpg");
-        }
-    }, 'image/jpeg', (options === null || options === void 0 ? void 0 : options.quality) || 1);
-}
-exports.takeJPEGSnapshot = takeJPEGSnapshot;
-function getIndexOfCapturer(capturer, methodName) {
-    var index = -1;
-    // Find capturer in activeCaptures.
-    for (var i = 0; i < activeCaptures.length; i++) {
-        if (activeCaptures[i].capturer == capturer) {
-            index = i;
-            break;
-        }
-    }
-    if (index < 0) {
-        modals_1.showAlert("Invalid capturer passed into CanvasCapture." + methodName + ".");
-    }
-    return index;
-}
-// export function recordFrame(capturer?: CCapture | CCapture[]) {
-function recordFrame() {
-    if (!checkCanvas()) {
-        return;
-    }
-    if (activeCaptures.length === 0) {
-        modals_1.showAlert('No valid capturer inited, please call CanvasCapture.beginVideoRecord() or CanvasCapture.beginGIFRecord() first.');
-        return;
-    }
-    // Either record frame on passed in capturer, or on all active capturers.
-    // if (capturer) {
-    // 	if (!Array.isArray(capturer)) {
-    // 		capturer = [capturer];
-    // 	}
-    // 	for (let i = 0; i < capturer.length; i++) {
-    // 		const index = getIndexOfCapturer(capturer, 'recordFrame');
-    // 		if (index >= 0) {
-    // 			activeCaptures[index].capturer.capture(canvas);
-    // 			activeCaptures[index].numFrames += 1;
-    // 		}
-    // 	}
-    // } else {
-    for (var i = 0; i < activeCaptures.length; i++) {
-        activeCaptures[i].capturer.capture(canvas);
-        activeCaptures[i].numFrames += 1;
-    }
-    // }
-}
-exports.recordFrame = recordFrame;
-function stopRecordAtIndex(index) {
-    var _a = activeCaptures[index], capturer = _a.capturer, numFrames = _a.numFrames, type = _a.type;
-    if (numFrames === 0) {
-        modals_1.showAlert('No frames recorded, call CanvasCapture.recordFrame().');
-        return;
-    }
-    capturer.stop();
-    capturer.save();
-    if (type === 'gif') {
-        // Tell the user that gifs take a sec to process.
-        if (modals_1.PARAMS.SHOW_DIALOGS)
-            modals_1.showDialog('Processing...', 'GIF is processing and may take a minute to save.  You can close this window in the meantime.', { autoCloseDelay: 7000 });
-    }
-    // Remove ref to capturer.
-    activeCaptures.splice(index, 1);
-}
-// export function stopRecord(capturer?: CCapture | CCapture[]) {
-function stopRecord() {
-    if (activeCaptures.length === 0) {
-        modals_1.showAlert('No valid capturer inited, please call CanvasCapture.beginVideoRecord() or CanvasCapture.beginGIFRecord() first.');
-        return;
-    }
-    // // Either stop record on passed in capturer, or on all active capturers.
-    // if (capturer) {
-    // 	if (!Array.isArray(capturer)) {
-    // 		capturer = [capturer];
-    // 	}
-    // 	for (let i = 0; i < capturer.length; i++) {
-    // 		const index = getIndexOfCapturer(capturer[i], 'stopRecord');
-    // 		if (index >= 0) {
-    // 			stopRecordAtIndex(index);
-    // 		}
-    // 	}
-    // } else {
-    for (var i = activeCaptures.length - 1; i >= 0; i--) {
-        stopRecordAtIndex(i);
-    }
-    // }
-    modals_1.showDot(isRecording());
-}
-exports.stopRecord = stopRecord;
-function activeWEBMCaptures() {
-    var webmCaptures = [];
-    for (var i = 0; i < activeCaptures.length; i++) {
-        if (activeCaptures[i].type === 'webm') {
-            webmCaptures.push(activeCaptures[i].capturer);
-        }
-    }
-    return webmCaptures;
-}
-function activeGIFCaptures() {
-    var gifCaptures = [];
-    for (var i = 0; i < activeCaptures.length; i++) {
-        if (activeCaptures[i].type === 'gif') {
-            gifCaptures.push(activeCaptures[i].capturer);
-        }
-    }
-    return gifCaptures;
-}
-function isRecording() {
-    return activeCaptures.length > 0;
-}
-exports.isRecording = isRecording;
-
-})();
-
+/******/ 	
+/******/ 	// startup
+/******/ 	// Load entry module and return exports
+/******/ 	// This entry module is referenced by other modules so it can't be inlined
+/******/ 	var __webpack_exports__ = __webpack_require__(607);
+/******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()
 ;
