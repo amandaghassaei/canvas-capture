@@ -4,8 +4,9 @@ import { saveAs } from 'file-saver';
 // @ts-ignore
 import { changeDpiBlob } from 'changedpi';
 import { initDotWithCSS, PARAMS, showAlert, showDialog, showDot } from './modals';
-import { workerString } from './gif.worker';
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
+// @ts-ignore
+import workerString from 'raw-loader!../node_modules/ccapture.js/src/gif.worker.js';
 
 const ffmpeg = createFFmpeg({
   // Use public address if you don't want to host your own.
@@ -17,7 +18,7 @@ const ffmpeg = createFFmpeg({
 // Export showDialog method in case it is useful.
 export { showDialog } from './modals';
 
-// Make is so we don't have to specify workersPath for CCapture.
+// Make it so we don't have to specify workersPath for CCapture.
 const workersBlob = new Blob([workerString]);
 const workersPath = URL.createObjectURL(workersBlob);
 
