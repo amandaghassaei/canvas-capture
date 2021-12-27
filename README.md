@@ -93,8 +93,8 @@ videoOptions = {
   ffmpegOptions?: { [key: string]: string }, // Defaults to
   // { '-c:v': 'libx264', '-preset': 'slow', '-crf': '22', '-pix_fmt': 'yuv420p' }
   // Internally the ffmpeg conversion runs with additional flags to crop to an even
-  //number of px dimensions ('-vf crop=trunc(iw/2)*2:trunc(ih/2)*2', required for mp4)
-  //and export no audio channel ('-an').
+  // number of px dimensions ('-vf crop=trunc(iw/2)*2:trunc(ih/2)*2', required for mp4)
+  // and export no audio channel ('-an').
 }
 gifOptions = {
   name: string, // Defaults to 'GIF_Capture'.
