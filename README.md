@@ -240,7 +240,7 @@ Hopefully this will all be fixed in the future, see notes here:
 https://github.com/spite/ccapture.js/issues/78  
 
 
-### Demo
+<!-- ### Demo
 
 This repo also includes a demo for testing, currently hosted at [apps.amandaghassaei.com/canvas-capture/demo/](https://apps.amandaghassaei.com/canvas-capture/demo/).  You can find the demo source code at [demo/src/index.ts](demo/src/index.ts).
 
@@ -254,4 +254,4 @@ To run the demo locally, run:
 
 This will boot up a local server with the correct Cross-Origin policies to support ffmpeg.wasm (a dependency for exporting mp4 video).  Navigate to the following address in your browser:
 
-```localhost:8080```
+```localhost:8080``` -->
