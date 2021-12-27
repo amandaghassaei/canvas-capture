@@ -9,7 +9,8 @@ import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 
 const ffmpeg = createFFmpeg({
   // Use public address if you don't want to host your own.
-//   corePath: 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
+  // TODO: fix this.
+  corePath: 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
   log: true,
 });
 const ffmpegLoadPromise = ffmpeg.load();
