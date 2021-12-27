@@ -176,9 +176,15 @@ In order for MP4 export to work, you need to configure your (local or remote) se
 
 >SharedArrayBuffer is only available to pages that are [cross-origin isolated](https://developer.chrome.com/blog/enabling-shared-array-buffer/#cross-origin-isolation). So you need to host your own server with `Cross-Origin-Embedder-Policy: require-corp` and `Cross-Origin-Opener-Policy: same-origin` headers to use ffmpeg.wasm.
 
-I've included a script for initializing a local server with the correct Cross-Origin policy at [canvas-capture/server.js](https://github.com/amandaghassaei/canvas-capture/blob/main/server.js).  This node server is currently set to serve the `demo` directory of this repo.  
+I've included a script for initializing a local server with the correct Cross-Origin policy at [canvas-capture/server.js](https://github.com/amandaghassaei/canvas-capture/blob/main/server.js).  If you need to start up your own server for testing, try running:
 
-You can test for browser support with the following methods:
+```sh
+node node_modules/canvas-capture/server.js
+```
+
+This will boot up a server as `localhost:8080`.
+
+Additionally, you can test for browser support with the following methods:
 
 ```js
 CanvasCapture.browserSupportsWEBM(); // Returns true if the browser supports webm recording.
@@ -189,6 +195,8 @@ CanvasCapture.browserSupportsGIF(); // Returns true if the browser supports gif 
 ```
 
 I'm not aware of any browser limitations for the image export options (obviously, the browser must [support canvas](https://caniuse.com/?search=canvas) as a bare minimum).
+
+Another thing to be aware of: this library currently pulls a copy of ffmpeg.wasm from [unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js](https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js), so it requires an internet connection to export mp4.  I'm still looking at how to best package `@ffmpeg/core` up with the rest of this library (so that it will work with e.g. webpack).  
 
 
 ## Additional Notes
@@ -277,8 +285,8 @@ To build the `demo` folder, run:
 
 To run the demo locally, run:
 
-```node server.js```
+```npm run start```
 
 This will boot up a local server with the correct Cross-Origin policies to support ffmpeg.wasm (a dependency for exporting mp4 video).  Navigate to the following address in your browser:
 
-```localhost:8080``` -->
+```localhost:8080/demo/``` -->

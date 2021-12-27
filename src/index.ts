@@ -9,11 +9,10 @@ import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 
 const ffmpeg = createFFmpeg({
   // Use public address if you don't want to host your own.
-  // TODO: fix this.
+  // TODO: host this locally.
   corePath: 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
   log: true,
 });
-const ffmpegLoadPromise = ffmpeg.load();
 
 // Export showDialog method in case it is useful.
 export { showDialog } from './modals';
@@ -481,19 +480,22 @@ export function isRecording() {
 	return activeCaptures.length > 0;
 }
 
+let ffmpegLoaded = false;
 async function convertWEBMtoMP4(options: {
 	name: string,
 	blob: Blob,
 	onProgress?: (progress: number) => void,
 	ffmpegOptions?: { [key: string]: string },
 }) {
-	try {
-		await ffmpegLoadPromise;
-	} catch (e) {
-		showAlert('MP4 export not supported in this browser, try again in the latest version of Chrome.');
-		return;
+	if (!ffmpegLoaded) {
+		try {
+			await ffmpeg.load();
+			ffmpegLoaded = true;
+		} catch (e) {
+			showAlert('MP4 export not supported in this browser, try again in the latest version of Chrome.');
+			return;
+		}
 	}
-	
 	const { name, blob, onProgress, ffmpegOptions } = options;
 	// Convert blob to Uint8 array.
 	const data = await fetchFile(blob);
