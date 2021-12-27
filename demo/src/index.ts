@@ -132,3 +132,7 @@ stopRecordGIF.addEventListener('click', (e) => {
 	startRecordGIF.style.display = 'inline';
 });
 stopRecordGIF.style.display = 'none';
+
+document.getElementById('WEBM-support')!.innerHTML = `(supported by this browser: ${CanvasCapture.browserSupportsWEBM()})`;
+document.getElementById('MP4-support')!.innerHTML = `(supported by this browser: ${CanvasCapture.browserSupportsMP4()})`;
+document.getElementById('GIF-support')!.innerHTML = `(supported by this browser: ${CanvasCapture.browserSupportsGIF()})`;

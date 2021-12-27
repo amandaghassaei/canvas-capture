@@ -4702,7 +4702,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.browserSupportsWEBP = exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = exports.showDialog = void 0;
+exports.browserSupportsGIF = exports.browserSupportsMP4 = exports.browserSupportsWEBM = exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = exports.showDialog = void 0;
 // @ts-ignore
 var ccapture_js_1 = __nested_webpack_require_181966__(583);
 var file_saver_1 = __nested_webpack_require_181966__(162);
@@ -4713,6 +4713,7 @@ var gif_worker_1 = __nested_webpack_require_181966__(10);
 var ffmpeg_1 = __nested_webpack_require_181966__(45);
 var ffmpeg = ffmpeg_1.createFFmpeg({
     // Use public address if you don't want to host your own.
+    // TODO: fix this.
     corePath: 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
     log: true,
 });
@@ -4833,9 +4834,8 @@ window.addEventListener('keydown', function (e) {
         if (MP4s.length)
             stopRecord();
         else {
-            // We need to generate WEBM before converting to MP4.
-            if (!browserSupportsWEBP()) {
-                modals_1.showAlert("This browser does not support video recording, please try again in Chrome.");
+            if (!browserSupportsMP4()) {
+                modals_1.showAlert("This browser does not support MP4 video recording, please try again in Chrome.");
                 return;
             }
             beginVideoRecord(recOptions.mp4);
@@ -4846,8 +4846,8 @@ window.addEventListener('keydown', function (e) {
         if (WEBMs.length)
             stopRecord();
         else {
-            if (!browserSupportsWEBP()) {
-                modals_1.showAlert("This browser does not support video recording, please try again in Chrome.");
+            if (!browserSupportsWEBM()) {
+                modals_1.showAlert("This browser does not support WEBM video recording, please try again in Chrome.");
                 return;
             }
             beginVideoRecord(recOptions.webm);
@@ -4869,8 +4869,21 @@ window.addEventListener('keydown', function (e) {
 });
 function beginVideoRecord(options) {
     var _a;
-    if (!browserSupportsWEBP()) {
-        modals_1.showAlert("This browser does not support video recording, please try again in Chrome.");
+    var format = (options === null || options === void 0 ? void 0 : options.format) || 'mp4';
+    if (format === 'mp4') {
+        if (!browserSupportsMP4()) {
+            modals_1.showAlert("This browser does not support MP4 video recording, please try again in Chrome.");
+            return false;
+        }
+    }
+    else if (format === 'webm') {
+        if (!browserSupportsWEBM()) {
+            modals_1.showAlert("This browser does not support WEBM video recording, please try again in Chrome.");
+            return false;
+        }
+    }
+    else {
+        modals_1.showAlert("invalid video format " + format + ".");
         return false;
     }
     if (activeCaptures.length) {
@@ -4897,7 +4910,7 @@ function beginVideoRecord(options) {
         name: name,
         capturer: capturer,
         numFrames: 0,
-        type: (options === null || options === void 0 ? void 0 : options.format) || 'mp4',
+        type: format,
         // onMP4ConversionProgress: (options as MP4_OPTIONS)?.onMP4ConversionProgress,
         ffmpegOptions: (_a = options) === null || _a === void 0 ? void 0 : _a.ffmpegOptions,
     });
@@ -5167,7 +5180,30 @@ function browserSupportsWEBP() {
     }
     return true;
 }
-exports.browserSupportsWEBP = browserSupportsWEBP;
+function browserSupportsSharedArrayBuffer() {
+    try {
+        var test = new SharedArrayBuffer(1024);
+    }
+    catch (_a) {
+        return false;
+    }
+    return true;
+}
+function browserSupportsWebWorkers() {
+    return !!window.Worker;
+}
+function browserSupportsWEBM() {
+    return browserSupportsWEBP();
+}
+exports.browserSupportsWEBM = browserSupportsWEBM;
+function browserSupportsMP4() {
+    return browserSupportsWEBP() && browserSupportsSharedArrayBuffer();
+}
+exports.browserSupportsMP4 = browserSupportsMP4;
+function browserSupportsGIF() {
+    return browserSupportsWebWorkers();
+}
+exports.browserSupportsGIF = browserSupportsGIF;
 
 
 /***/ }),
@@ -5185,7 +5221,7 @@ exports.css = "\n/**************************  Basic Modal Styles\n**************
 /***/ }),
 
 /***/ 330:
-/***/ (function(__unused_webpack_module, exports, __nested_webpack_require_206263__) {
+/***/ (function(__unused_webpack_module, exports, __nested_webpack_require_207290__) {
 
 "use strict";
 
@@ -5202,8 +5238,8 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.showDot = exports.initDotWithCSS = exports.showDialog = exports.showAlert = exports.PARAMS = void 0;
-var micromodal_1 = __nested_webpack_require_206263__(650);
-var micromodal_css_1 = __nested_webpack_require_206263__(713);
+var micromodal_1 = __nested_webpack_require_207290__(650);
+var micromodal_css_1 = __nested_webpack_require_207290__(713);
 // Params.
 exports.PARAMS = {
     SHOW_ALERTS: false,
@@ -5296,7 +5332,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_213426__(moduleId) {
+/******/ 	function __nested_webpack_require_214453__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -5310,7 +5346,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_213426__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_214453__);
 /******/ 	
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
@@ -5323,9 +5359,9 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
-/******/ 		__nested_webpack_require_213426__.d = (exports, definition) => {
+/******/ 		__nested_webpack_require_214453__.d = (exports, definition) => {
 /******/ 			for(var key in definition) {
-/******/ 				if(__nested_webpack_require_213426__.o(definition, key) && !__nested_webpack_require_213426__.o(exports, key)) {
+/******/ 				if(__nested_webpack_require_214453__.o(definition, key) && !__nested_webpack_require_214453__.o(exports, key)) {
 /******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 				}
 /******/ 			}
@@ -5334,7 +5370,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_213426__.g = (function() {
+/******/ 		__nested_webpack_require_214453__.g = (function() {
 /******/ 			if (typeof globalThis === 'object') return globalThis;
 /******/ 			try {
 /******/ 				return this || new Function('return this')();
@@ -5346,13 +5382,13 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_213426__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 		__nested_webpack_require_214453__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
-/******/ 		__nested_webpack_require_213426__.r = (exports) => {
+/******/ 		__nested_webpack_require_214453__.r = (exports) => {
 /******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
 /******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
 /******/ 			}
@@ -5362,7 +5398,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/node module decorator */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_213426__.nmd = (module) => {
+/******/ 		__nested_webpack_require_214453__.nmd = (module) => {
 /******/ 			module.paths = [];
 /******/ 			if (!module.children) module.children = [];
 /******/ 			return module;
@@ -5374,7 +5410,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nested_webpack_require_213426__(607);
+/******/ 	var __webpack_exports__ = __nested_webpack_require_214453__(607);
 /******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()
@@ -5547,6 +5583,9 @@ stopRecordGIF.addEventListener('click', function (e) {
     startRecordGIF.style.display = 'inline';
 });
 stopRecordGIF.style.display = 'none';
+document.getElementById('WEBM-support').innerHTML = "(supported by this browser: " + CanvasCapture.browserSupportsWEBM() + ")";
+document.getElementById('MP4-support').innerHTML = "(supported by this browser: " + CanvasCapture.browserSupportsMP4() + ")";
+document.getElementById('GIF-support').innerHTML = "(supported by this browser: " + CanvasCapture.browserSupportsGIF() + ")";
 
 })();
 

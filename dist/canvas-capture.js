@@ -4698,7 +4698,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.browserSupportsWEBP = exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = exports.showDialog = void 0;
+exports.browserSupportsGIF = exports.browserSupportsMP4 = exports.browserSupportsWEBM = exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = exports.showDialog = void 0;
 // @ts-ignore
 var ccapture_js_1 = __webpack_require__(583);
 var file_saver_1 = __webpack_require__(162);
@@ -4709,6 +4709,7 @@ var gif_worker_1 = __webpack_require__(10);
 var ffmpeg_1 = __webpack_require__(45);
 var ffmpeg = ffmpeg_1.createFFmpeg({
     // Use public address if you don't want to host your own.
+    // TODO: fix this.
     corePath: 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
     log: true,
 });
@@ -4829,9 +4830,8 @@ window.addEventListener('keydown', function (e) {
         if (MP4s.length)
             stopRecord();
         else {
-            // We need to generate WEBM before converting to MP4.
-            if (!browserSupportsWEBP()) {
-                modals_1.showAlert("This browser does not support video recording, please try again in Chrome.");
+            if (!browserSupportsMP4()) {
+                modals_1.showAlert("This browser does not support MP4 video recording, please try again in Chrome.");
                 return;
             }
             beginVideoRecord(recOptions.mp4);
@@ -4842,8 +4842,8 @@ window.addEventListener('keydown', function (e) {
         if (WEBMs.length)
             stopRecord();
         else {
-            if (!browserSupportsWEBP()) {
-                modals_1.showAlert("This browser does not support video recording, please try again in Chrome.");
+            if (!browserSupportsWEBM()) {
+                modals_1.showAlert("This browser does not support WEBM video recording, please try again in Chrome.");
                 return;
             }
             beginVideoRecord(recOptions.webm);
@@ -4865,8 +4865,21 @@ window.addEventListener('keydown', function (e) {
 });
 function beginVideoRecord(options) {
     var _a;
-    if (!browserSupportsWEBP()) {
-        modals_1.showAlert("This browser does not support video recording, please try again in Chrome.");
+    var format = (options === null || options === void 0 ? void 0 : options.format) || 'mp4';
+    if (format === 'mp4') {
+        if (!browserSupportsMP4()) {
+            modals_1.showAlert("This browser does not support MP4 video recording, please try again in Chrome.");
+            return false;
+        }
+    }
+    else if (format === 'webm') {
+        if (!browserSupportsWEBM()) {
+            modals_1.showAlert("This browser does not support WEBM video recording, please try again in Chrome.");
+            return false;
+        }
+    }
+    else {
+        modals_1.showAlert("invalid video format " + format + ".");
         return false;
     }
     if (activeCaptures.length) {
@@ -4893,7 +4906,7 @@ function beginVideoRecord(options) {
         name: name,
         capturer: capturer,
         numFrames: 0,
-        type: (options === null || options === void 0 ? void 0 : options.format) || 'mp4',
+        type: format,
         // onMP4ConversionProgress: (options as MP4_OPTIONS)?.onMP4ConversionProgress,
         ffmpegOptions: (_a = options) === null || _a === void 0 ? void 0 : _a.ffmpegOptions,
     });
@@ -5163,7 +5176,30 @@ function browserSupportsWEBP() {
     }
     return true;
 }
-exports.browserSupportsWEBP = browserSupportsWEBP;
+function browserSupportsSharedArrayBuffer() {
+    try {
+        var test = new SharedArrayBuffer(1024);
+    }
+    catch (_a) {
+        return false;
+    }
+    return true;
+}
+function browserSupportsWebWorkers() {
+    return !!window.Worker;
+}
+function browserSupportsWEBM() {
+    return browserSupportsWEBP();
+}
+exports.browserSupportsWEBM = browserSupportsWEBM;
+function browserSupportsMP4() {
+    return browserSupportsWEBP() && browserSupportsSharedArrayBuffer();
+}
+exports.browserSupportsMP4 = browserSupportsMP4;
+function browserSupportsGIF() {
+    return browserSupportsWebWorkers();
+}
+exports.browserSupportsGIF = browserSupportsGIF;
 
 
 /***/ }),

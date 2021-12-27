@@ -49,4 +49,6 @@ export declare function takeJPEGSnapshot(options?: JPEG_OPTIONS): void;
 export declare function recordFrame(): void;
 export declare function stopRecord(): void;
 export declare function isRecording(): boolean;
-export declare function browserSupportsWEBP(): boolean;
+export declare function browserSupportsWEBM(): boolean;
+export declare function browserSupportsMP4(): boolean;
+export declare function browserSupportsGIF(): boolean;
