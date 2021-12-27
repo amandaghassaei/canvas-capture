@@ -199,6 +199,12 @@ I'm not aware of any browser limitations for the image export options (obviously
 - You cannot record GIF and video at the same time.  This appears to be a limitation of CCapture.js.  
 - gif.js (a dependency of CCapture.js) has some performance limitations and takes a significant amount of time to process after all frames have been captured, be careful if capturing a lot of frames.  Exported GIFs tend to be quite large and uncompressed you might want to optimize them further (I like [ezgif](https://ezgif.com/maker) for this).  
 
+## License
+
+The code in this repo is licensed under an MIT license, but it depends on other codebases and proprietary video codecs with different licenses.  Please be aware of this and check this project's dependencies for more info, specifically:
+
+>@ffmpeg/core contains WebAssembly code which is transpiled from original FFmpeg C code with minor modifications, but overall it still following the same licenses as FFmpeg and its external libraries (as each external libraries might have its own license).
+
 
 ## Converting WEBM to MP4
 
