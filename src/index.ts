@@ -224,7 +224,7 @@ export function beginVideoRecord(options: WEBM_OPTIONS | MP4_OPTIONS) {
 	if (options && options.quality) {
 		quality = options.quality * 100;
 	}
-	const name = options?.name || 'WEBM_Capture';
+	const name = options?.name || 'Video_Capture';
 	// Create a capturer that exports a WebM video.
 	// @ts-ignore
 	const capturer = new window.CCapture( {

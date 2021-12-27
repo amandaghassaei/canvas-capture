@@ -4878,7 +4878,7 @@ function beginVideoRecord(options) {
     if (options && options.quality) {
         quality = options.quality * 100;
     }
-    var name = (options === null || options === void 0 ? void 0 : options.name) || 'WEBM_Capture';
+    var name = (options === null || options === void 0 ? void 0 : options.name) || 'Video_Capture';
     // Create a capturer that exports a WebM video.
     // @ts-ignore
     var capturer = new window.CCapture({
