@@ -15,7 +15,7 @@ You can also try adding [dist/canvas-capture.js](dist/canvas-capture.js) or [dis
 
 ## Caveat
 
-**Video export currently only works in Chrome.**  MP4 and WEBM video export should be possible in Firefox once [this Firefox bug is addressed](https://bugzilla.mozilla.org/show_bug.cgi?id=1559743).
+==Video export currently only works in Chrome.==  MP4 and WEBM video export should be possible in Firefox once [this Firefox bug is addressed](https://bugzilla.mozilla.org/show_bug.cgi?id=1559743).
 
 This repo depends on [ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm/) to export MP4 video, not all browsers are supported:
 
