@@ -13,7 +13,7 @@ To install this package run:
 
 ```npm install github:amandaghassaei/canvas-capture```
 
-Currently, I'm not doing versions/releases in this repo, but you can reference a specific commit like this:
+I haven't released this on npm because I'm waiting for some updates in CCapture.js that will make it a cleaner dependency to this repo ([see Issue](https://github.com/spite/ccapture.js/issues/78)), but for stability you can reference a specific commit like this:
 
 ```npm install github:amandaghassaei/canvas-capture#9307b47```
 
