@@ -1,27 +1,31 @@
+/******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./dist/canvas-capture.js":
+/*!********************************!*\
+  !*** ./dist/canvas-capture.js ***!
+  \********************************/
+/***/ ((module) => {
+
 (function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
+	if(true)
 		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define([], factory);
-	else if(typeof exports === 'object')
-		exports["CanvasCapture"] = factory();
-	else
-		root["CanvasCapture"] = factory();
+	else {}
 })(self, function() {
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 583:
-/***/ ((module, exports, __webpack_require__) => {
+/***/ ((module, exports, __nested_webpack_require_493__) => {
 
-/* module decorator */ module = __webpack_require__.nmd(module);
+/* module decorator */ module = __nested_webpack_require_493__.nmd(module);
 var __WEBPACK_AMD_DEFINE_RESULT__;;(function() {
 
-if ( true && typeof module.exports !== 'undefined') {
-  var Tar = __webpack_require__(617);
-  var download = __webpack_require__(549);
-  var GIF = __webpack_require__(468);
-  var WebMWriter = __webpack_require__(627);
+if (  true && typeof module.exports !== 'undefined') {
+  var Tar = __nested_webpack_require_493__(617);
+  var download = __nested_webpack_require_493__(549);
+  var GIF = __nested_webpack_require_493__(468);
+  var WebMWriter = __nested_webpack_require_493__(627);
 }
 
 "use strict";
@@ -55,7 +59,7 @@ var moduleExports = (freeModule && freeModule.exports === freeExports)
 : undefined;
 
 /** Detect free variable `global` from Node.js. */
-var freeGlobal = checkGlobal(freeExports && freeModule && typeof __webpack_require__.g == 'object' && __webpack_require__.g);
+var freeGlobal = checkGlobal(freeExports && freeModule && typeof __nested_webpack_require_493__.g == 'object' && __nested_webpack_require_493__.g);
 
 /** Detect free variable `self`. */
 var freeSelf = checkGlobal(objectTypes[typeof self] && self);
@@ -980,7 +984,7 @@ function CCapture( settings ) {
     // referenced as the "underscore" module.
     !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {
     	return CCapture;
-    }).call(exports, __webpack_require__, exports, module),
+    }).call(exports, __nested_webpack_require_493__, exports, module),
 		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 }
   // Check for `exports` after `define` in case a build optimizer adds an `exports` object.
@@ -1127,7 +1131,7 @@ function download(data, strFileName, strMimeType) {
 	return true;
 } /* end download() */
 
-if ( true && typeof module.exports !== 'undefined') {
+if (  true && typeof module.exports !== 'undefined') {
   module.exports = download;
 }
 
@@ -1479,7 +1483,7 @@ struct posix_header {             // byte offset
 		this.out = utils.clean(blockSize);
 	};
 
-  if ( true && typeof module.exports !== 'undefined') {
+  if (  true && typeof module.exports !== 'undefined') {
     module.exports = Tar;
   } else {
     window.Tar = Tar;
@@ -2585,7 +2589,7 @@ struct posix_header {             // byte offset
         };
     };
 
-    if ( true && typeof module.exports !== 'undefined') {
+    if (  true && typeof module.exports !== 'undefined') {
 	    // module.exports = WebMWriter(require("./ArrayBufferDataStream"), require("./BlobBuffer"));
       module.exports = WebMWriter(ArrayBufferDataStream,BlobBuffer);
     } else {
@@ -2797,23 +2801,23 @@ function changeDpiOnArray(dataArray, dpi, format, overwritepHYs) {
 /***/ }),
 
 /***/ 162:
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __nested_webpack_require_112570__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function(a,b){if(true)!(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_FACTORY__ = (b),
 		__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 		(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
-		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));else {}})(this,function(){"use strict";function b(a,b){return"undefined"==typeof b?b={autoBom:!1}:"object"!=typeof b&&(console.warn("Deprecated: Expected third argument to be a object"),b={autoBom:!b}),b.autoBom&&/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(a.type)?new Blob(["\uFEFF",a],{type:a.type}):a}function c(a,b,c){var d=new XMLHttpRequest;d.open("GET",a),d.responseType="blob",d.onload=function(){g(d.response,b,c)},d.onerror=function(){console.error("could not download file")},d.send()}function d(a){var b=new XMLHttpRequest;b.open("HEAD",a,!1);try{b.send()}catch(a){}return 200<=b.status&&299>=b.status}function e(a){try{a.dispatchEvent(new MouseEvent("click"))}catch(c){var b=document.createEvent("MouseEvents");b.initMouseEvent("click",!0,!0,window,0,0,0,80,20,!1,!1,!1,!1,0,null),a.dispatchEvent(b)}}var f="object"==typeof window&&window.window===window?window:"object"==typeof self&&self.self===self?self:"object"==typeof __webpack_require__.g&&__webpack_require__.g.global===__webpack_require__.g?__webpack_require__.g:void 0,a=f.navigator&&/Macintosh/.test(navigator.userAgent)&&/AppleWebKit/.test(navigator.userAgent)&&!/Safari/.test(navigator.userAgent),g=f.saveAs||("object"!=typeof window||window!==f?function(){}:"download"in HTMLAnchorElement.prototype&&!a?function(b,g,h){var i=f.URL||f.webkitURL,j=document.createElement("a");g=g||b.name||"download",j.download=g,j.rel="noopener","string"==typeof b?(j.href=b,j.origin===location.origin?e(j):d(j.href)?c(b,g,h):e(j,j.target="_blank")):(j.href=i.createObjectURL(b),setTimeout(function(){i.revokeObjectURL(j.href)},4E4),setTimeout(function(){e(j)},0))}:"msSaveOrOpenBlob"in navigator?function(f,g,h){if(g=g||f.name||"download","string"!=typeof f)navigator.msSaveOrOpenBlob(b(f,h),g);else if(d(f))c(f,g,h);else{var i=document.createElement("a");i.href=f,i.target="_blank",setTimeout(function(){e(i)})}}:function(b,d,e,g){if(g=g||open("","_blank"),g&&(g.document.title=g.document.body.innerText="downloading..."),"string"==typeof b)return c(b,d,e);var h="application/octet-stream"===b.type,i=/constructor/i.test(f.HTMLElement)||f.safari,j=/CriOS\/[\d]+/.test(navigator.userAgent);if((j||h&&i||a)&&"undefined"!=typeof FileReader){var k=new FileReader;k.onloadend=function(){var a=k.result;a=j?a:a.replace(/^data:[^;]*;/,"data:attachment/file;"),g?g.location.href=a:location=a,g=null},k.readAsDataURL(b)}else{var l=f.URL||f.webkitURL,m=l.createObjectURL(b);g?g.location=m:location.href=m,g=null,setTimeout(function(){l.revokeObjectURL(m)},4E4)}});f.saveAs=g.saveAs=g, true&&(module.exports=g)});
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));else {}})(this,function(){"use strict";function b(a,b){return"undefined"==typeof b?b={autoBom:!1}:"object"!=typeof b&&(console.warn("Deprecated: Expected third argument to be a object"),b={autoBom:!b}),b.autoBom&&/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(a.type)?new Blob(["\uFEFF",a],{type:a.type}):a}function c(a,b,c){var d=new XMLHttpRequest;d.open("GET",a),d.responseType="blob",d.onload=function(){g(d.response,b,c)},d.onerror=function(){console.error("could not download file")},d.send()}function d(a){var b=new XMLHttpRequest;b.open("HEAD",a,!1);try{b.send()}catch(a){}return 200<=b.status&&299>=b.status}function e(a){try{a.dispatchEvent(new MouseEvent("click"))}catch(c){var b=document.createEvent("MouseEvents");b.initMouseEvent("click",!0,!0,window,0,0,0,80,20,!1,!1,!1,!1,0,null),a.dispatchEvent(b)}}var f="object"==typeof window&&window.window===window?window:"object"==typeof self&&self.self===self?self:"object"==typeof __nested_webpack_require_112570__.g&&__nested_webpack_require_112570__.g.global===__nested_webpack_require_112570__.g?__nested_webpack_require_112570__.g:void 0,a=f.navigator&&/Macintosh/.test(navigator.userAgent)&&/AppleWebKit/.test(navigator.userAgent)&&!/Safari/.test(navigator.userAgent),g=f.saveAs||("object"!=typeof window||window!==f?function(){}:"download"in HTMLAnchorElement.prototype&&!a?function(b,g,h){var i=f.URL||f.webkitURL,j=document.createElement("a");g=g||b.name||"download",j.download=g,j.rel="noopener","string"==typeof b?(j.href=b,j.origin===location.origin?e(j):d(j.href)?c(b,g,h):e(j,j.target="_blank")):(j.href=i.createObjectURL(b),setTimeout(function(){i.revokeObjectURL(j.href)},4E4),setTimeout(function(){e(j)},0))}:"msSaveOrOpenBlob"in navigator?function(f,g,h){if(g=g||f.name||"download","string"!=typeof f)navigator.msSaveOrOpenBlob(b(f,h),g);else if(d(f))c(f,g,h);else{var i=document.createElement("a");i.href=f,i.target="_blank",setTimeout(function(){e(i)})}}:function(b,d,e,g){if(g=g||open("","_blank"),g&&(g.document.title=g.document.body.innerText="downloading..."),"string"==typeof b)return c(b,d,e);var h="application/octet-stream"===b.type,i=/constructor/i.test(f.HTMLElement)||f.safari,j=/CriOS\/[\d]+/.test(navigator.userAgent);if((j||h&&i||a)&&"undefined"!=typeof FileReader){var k=new FileReader;k.onloadend=function(){var a=k.result;a=j?a:a.replace(/^data:[^;]*;/,"data:attachment/file;"),g?g.location.href=a:location=a,g=null},k.readAsDataURL(b)}else{var l=f.URL||f.webkitURL,m=l.createObjectURL(b);g?g.location=m:location.href=m,g=null,setTimeout(function(){l.revokeObjectURL(m)},4E4)}});f.saveAs=g.saveAs=g,  true&&(module.exports=g)});
 
 //# sourceMappingURL=FileSaver.min.js.map
 
 /***/ }),
 
 /***/ 650:
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ ((__unused_webpack_module, __webpack_exports__, __nested_webpack_require_115814__) => {
 
 "use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+__nested_webpack_require_115814__.r(__webpack_exports__);
+/* harmony export */ __nested_webpack_require_115814__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 function _classCallCheck(instance, Constructor) {
@@ -3287,7 +3291,7 @@ exports.css = "\n/**************************  Basic Modal Styles\n**************
 /***/ }),
 
 /***/ 330:
-/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+/***/ (function(__unused_webpack_module, exports, __nested_webpack_require_145008__) {
 
 "use strict";
 
@@ -3304,8 +3308,8 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.showDot = exports.initDotWithCSS = exports.showDialog = exports.showAlert = exports.PARAMS = void 0;
-var micromodal_1 = __webpack_require__(650);
-var micromodal_css_1 = __webpack_require__(713);
+var micromodal_1 = __nested_webpack_require_145008__(650);
+var micromodal_css_1 = __nested_webpack_require_145008__(713);
 // Params.
 exports.PARAMS = {
     SHOW_ALERTS: false,
@@ -3390,7 +3394,7 @@ exports.showDot = showDot;
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __webpack_require__(moduleId) {
+/******/ 	function __nested_webpack_require_149407__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -3404,7 +3408,7 @@ exports.showDot = showDot;
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_149407__);
 /******/ 	
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
@@ -3417,9 +3421,9 @@ exports.showDot = showDot;
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
-/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 		__nested_webpack_require_149407__.d = (exports, definition) => {
 /******/ 			for(var key in definition) {
-/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				if(__nested_webpack_require_149407__.o(definition, key) && !__nested_webpack_require_149407__.o(exports, key)) {
 /******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 				}
 /******/ 			}
@@ -3428,7 +3432,7 @@ exports.showDot = showDot;
 /******/ 	
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
-/******/ 		__webpack_require__.g = (function() {
+/******/ 		__nested_webpack_require_149407__.g = (function() {
 /******/ 			if (typeof globalThis === 'object') return globalThis;
 /******/ 			try {
 /******/ 				return this || new Function('return this')();
@@ -3440,13 +3444,13 @@ exports.showDot = showDot;
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
-/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 		__nested_webpack_require_149407__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
-/******/ 		__webpack_require__.r = (exports) => {
+/******/ 		__nested_webpack_require_149407__.r = (exports) => {
 /******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
 /******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
 /******/ 			}
@@ -3456,7 +3460,7 @@ exports.showDot = showDot;
 /******/ 	
 /******/ 	/* webpack/runtime/node module decorator */
 /******/ 	(() => {
-/******/ 		__webpack_require__.nmd = (module) => {
+/******/ 		__nested_webpack_require_149407__.nmd = (module) => {
 /******/ 			module.paths = [];
 /******/ 			if (!module.children) module.children = [];
 /******/ 			return module;
@@ -3473,14 +3477,14 @@ var exports = __webpack_exports__;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = exports.showDialog = void 0;
 // @ts-ignore
-var ccapture_js_1 = __webpack_require__(583);
-var file_saver_1 = __webpack_require__(162);
+var ccapture_js_1 = __nested_webpack_require_149407__(583);
+var file_saver_1 = __nested_webpack_require_149407__(162);
 // @ts-ignore
-var changedpi_1 = __webpack_require__(809);
-var modals_1 = __webpack_require__(330);
-var gif_worker_1 = __webpack_require__(10);
+var changedpi_1 = __nested_webpack_require_149407__(809);
+var modals_1 = __nested_webpack_require_149407__(330);
+var gif_worker_1 = __nested_webpack_require_149407__(10);
 // Export showDialog method in case it is useful.
-var modals_2 = __webpack_require__(330);
+var modals_2 = __nested_webpack_require_149407__(330);
 Object.defineProperty(exports, "showDialog", ({ enumerable: true, get: function () { return modals_2.showDialog; } }));
 // Make is so we don't have to specify workersPath for CCapture.
 var workersBlob = new Blob([gif_worker_1.workerString]);
@@ -3817,3 +3821,148 @@ exports.isRecording = isRecording;
 ;
 });
 //# sourceMappingURL=canvas-capture.js.map
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+var exports = __webpack_exports__;
+/*!***************************!*\
+  !*** ./demo/src/index.ts ***!
+  \***************************/
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var CanvasCapture = __webpack_require__(/*! ../../ */ "./dist/canvas-capture.js");
+// Initialize and pass in canvas.
+var canvas = document.getElementById('my-canvas');
+CanvasCapture.init(canvas, {
+    showAlerts: true,
+    showDialogs: true,
+});
+// Bind key presses to begin/end recordings.
+var WEBM_OPTIONS = {
+    name: 'demo-webm',
+    quality: 1,
+    fps: 60,
+};
+CanvasCapture.bindKeyToVideoRecord('v', WEBM_OPTIONS);
+var GIF_OPTIONS = {
+    name: 'demo-gif',
+    quality: 1,
+    fps: 60,
+};
+CanvasCapture.bindKeyToGIFRecord('g', GIF_OPTIONS);
+// These take a single snapshot.
+var PNG_OPTONS = {
+    name: 'demo-png',
+    dpi: 72,
+};
+CanvasCapture.bindKeyToPNGSnapshot('p', PNG_OPTONS);
+var JPEG_OPTIONS = {
+    name: 'demo-jpg',
+    quality: 1,
+    dpi: 72,
+};
+CanvasCapture.bindKeyToJPEGSnapshot('j', JPEG_OPTIONS);
+// Simple canvas draw setup.
+var context = canvas.getContext("2d");
+var angle = 0;
+var image = document.createElement("img");
+image.src = 'monalisa.png';
+function loop() {
+    requestAnimationFrame(loop);
+    // Wait until is loaded.
+    if (image.width) {
+        // Draw black background
+        context.beginPath();
+        context.fillStyle = 'black';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.save();
+        // Renter rotated image.
+        context.translate(canvas.width / 2, canvas.height / 2);
+        context.rotate(angle);
+        context.drawImage(image, -image.width / 2, -image.height / 2);
+        context.restore();
+        // Increase rotation.
+        angle += 0.05;
+    }
+    // You need to do this only if you are recording a video or gif.
+    if (CanvasCapture.isRecording())
+        CanvasCapture.recordFrame();
+}
+// Start animation loop.
+loop();
+// Wire up ui.
+document.getElementById("savePNG").addEventListener('click', function (e) {
+    e.preventDefault();
+    CanvasCapture.takePNGSnapshot(PNG_OPTONS);
+});
+document.getElementById("saveJPG").addEventListener('click', function (e) {
+    e.preventDefault();
+    CanvasCapture.takeJPEGSnapshot(JPEG_OPTIONS);
+});
+var startRecordWEBM = document.getElementById('startWEBM');
+startRecordWEBM.addEventListener('click', function (e) {
+    e.preventDefault();
+    CanvasCapture.beginVideoRecord(WEBM_OPTIONS);
+    startRecordWEBM.style.display = 'none';
+    stopRecordWEBM.style.display = 'block';
+});
+var stopRecordWEBM = document.getElementById('stopWEBM');
+stopRecordWEBM.addEventListener('click', function (e) {
+    e.preventDefault();
+    CanvasCapture.stopRecord();
+    stopRecordWEBM.style.display = 'none';
+    startRecordWEBM.style.display = 'block';
+});
+stopRecordWEBM.style.display = 'none';
+var startRecordGIF = document.getElementById('startGIF');
+startRecordGIF.addEventListener('click', function (e) {
+    e.preventDefault();
+    CanvasCapture.beginGIFRecord(GIF_OPTIONS);
+    startRecordGIF.style.display = 'none';
+    stopRecordGIF.style.display = 'block';
+});
+var stopRecordGIF = document.getElementById('stopGIF');
+stopRecordGIF.addEventListener('click', function (e) {
+    e.preventDefault();
+    CanvasCapture.stopRecord();
+    stopRecordGIF.style.display = 'none';
+    startRecordGIF.style.display = 'block';
+});
+stopRecordGIF.style.display = 'none';
+
+})();
+
+/******/ })()
+;
+//# sourceMappingURL=index.js.map

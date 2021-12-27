@@ -110,8 +110,8 @@ import * as CanvasCapture from 'canvas-capture';
 
 CanvasCapture.init(document.getElementById('my-canvas'), {
   verbose: true, // Verbosity of console output, default is true,
-  showAlerts: true, // Show alert dialogs, default is true.
-  showDialogs: true, // Show informational dialogs, default is true.
+  showAlerts: true, // Show alert dialogs, default is false.
+  showDialogs: true, // Show informational dialogs, default is false.
   showRecDot: true, // Show a red dot on the screen during records, defaults is true.
   recDotCSS: { right: '0', top: '0', margin: '10px' }, // Additional CSS for record dot.
 });
@@ -147,9 +147,9 @@ const options = {
 CanvasCapture.showDialog(title, message, options);
 ```
 
-## Saving MP4
+## Converting WEBM to MP4
 
-Currently this lib only supports saving video as webm.  I recommend using [ffmpeg](https://ffmpeg.org/) to convert to mp4.  From the terminal run:
+If you browser only supports webm video, I recommend using [ffmpeg](https://ffmpeg.org/) to convert to mp4.  From the terminal run:
 
 `
 ffmpeg -i PATH/FILENAME.webm -vf "crop=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264 -preset slow -crf 22 -pix_fmt yuv420p -an PATH/FILENAME.mp4
@@ -169,6 +169,11 @@ If your filename has spaces in it, you can escape them with `-i PATH/filename\ w
 
 - https://stackoverflow.com/questions/62863547/save-canvas-data-as-mp4-javascript
 - https://github.com/ffmpegwasm/ffmpeg.wasm/  
+
+## Notes
+
+- PNG can save alpha channel of canvas, and JPEG/GIF exporters will draw alpha = 0 as black, but the video exporter creates nasty artifacts when handling alpha.
+- You cannot record GIF and video at the same time.  This appears to be a limitation of CCapture.js?  
 
 ## Development
 

@@ -15,7 +15,11 @@ const workersPath = URL.createObjectURL(workersBlob);
 
 let VERBOSE = true;
 
-let capturer: CCapture | null = null;
+const activeCaptures: {
+	capturer: CCapture,
+	numFrames: number,
+	type: 'gif' | 'webm' | 'mp4',
+}[] = [];
 
 // This is an unused variable,
 // but needed for proper import of CCapture at the moment.
@@ -29,12 +33,7 @@ const hotkeys: { [key: string]: string | null} = {
 	jpeg: null,
 };
 
-let isRecordingVideo = false;
-let isRecordingGIF = false;
-
 let canvas: HTMLCanvasElement | null = null;
-
-let numFrames = 0;
 
 export function init(_canvas: HTMLCanvasElement, options?: {
 	verbose?: boolean,
@@ -52,7 +51,7 @@ export function init(_canvas: HTMLCanvasElement, options?: {
 		initDotWithCSS(options?.recDotCSS);
 	}
 	canvas.addEventListener('resize', function(){
-		if (capturer) {
+		if (activeCaptures.length) {
 			showAlert("Don't resize while recording canvas!");
 		}
 	});
@@ -64,7 +63,7 @@ export function setVerbose(state: boolean) {
 
 function checkCanvas() {
 	if (canvas === null) {
-		console.warn('No canvas supplied, please call CanvasCapture.init() and pass in canvas element.');
+		showAlert('No canvas supplied, please call CanvasCapture.init() and pass in canvas element.');
 		return false;
 	}
 	return true;
@@ -144,11 +143,13 @@ export function bindKeyToJPEGSnapshot(key: string, options?: JPEG_OPTIONS) {
 
 window.addEventListener('keydown', (e: KeyboardEvent) => {
 	if (hotkeys.webm && e.key === hotkeys.webm) {
-		if (isRecordingVideo) stopRecord();
+		const WEBMs = activeWEBMCaptures();
+		if (WEBMs.length) stopRecord();
 		else beginVideoRecord(recOptions.webm);
 	}
 	if (hotkeys.gif && e.key === hotkeys.gif) {
-		if (isRecordingGIF) stopRecord();
+		const GIFs = activeGIFCaptures();
+		if (GIFs.length) stopRecord();
 		else beginGIFRecord(recOptions.gif);
 	}
 	if (hotkeys.png && e.key === hotkeys.png) {
@@ -160,12 +161,8 @@ window.addEventListener('keydown', (e: KeyboardEvent) => {
 });
 
 export function beginVideoRecord(options?: VIDEO_OPTIONS) {
-	if (isRecordingGIF) {
-		console.warn('You are currently recording a gif, stop recording gif before starting new video record.');
-		return;
-	}
-	if (isRecordingVideo) {
-		console.warn('You are currently recording a video, stop recording current video before starting new video record.');
+	if (activeCaptures.length) {
+		showAlert(`CCapture.js only supports one video/gif capture at a time.`);
 		return;
 	}
 	// CCapture seems to expect a quality between 0 and 100.
@@ -175,24 +172,27 @@ export function beginVideoRecord(options?: VIDEO_OPTIONS) {
 	}
 	// Create a capturer that exports a WebM video.
 	// @ts-ignore
-	capturer = new window.CCapture( {
+	const capturer = new window.CCapture( {
 		format: 'webm',
 		name: options?.name || 'WEBM_Capture',
 		framerate: options?.fps || 60,
 		quality,
 		verbose: VERBOSE,
 	});
-	isRecordingVideo = true;
-	startRecord();
+	capturer.start();
+	activeCaptures.push({
+		capturer,
+		numFrames: 0,
+		type: 'webm',
+	});
+	// For video and gif records, we should also throw up an indicator to show that we're in record mode.
+	showDot(isRecording());
+	return capturer;
 }
 
 export function beginGIFRecord(options?: GIF_OPTIONS) {
-	if (isRecordingVideo) {
-		console.warn('You are currently recording a video, stop recording video before starting new gif record.');
-		return;
-	}
-	if (isRecordingGIF) {
-		console.warn('You are currently recording a gif, stop recording current gif before starting new gif record.');
+	if (activeCaptures.length) {
+		showAlert(`CCapture.js only supports one video/gif capture at a time.`);
 		return;
 	}
 	// CCapture seems to expect a quality between 0 and 100.
@@ -202,7 +202,7 @@ export function beginGIFRecord(options?: GIF_OPTIONS) {
 	}
 	// Create a capturer that exports a GIF.
 	// @ts-ignore
-	capturer = new window.CCapture({
+	const capturer = new window.CCapture({
 		format: 'gif',
 		name: options?.name || 'GIF_Capture',
 		framerate: options?.fps || 60,
@@ -210,8 +210,15 @@ export function beginGIFRecord(options?: GIF_OPTIONS) {
 		quality,
 		verbose: VERBOSE,
 	});
-	isRecordingGIF = true;
-	startRecord();
+	capturer.start();
+	activeCaptures.push({
+		capturer,
+		numFrames: 0,
+		type: 'gif',
+	});
+	// For video and gif records, we should also throw up an indicator to show that we're in record mode.
+	showDot(isRecording());
+	return capturer;
 }
 
 export function takePNGSnapshot(options?: PNG_OPTIONS) {
@@ -255,39 +262,61 @@ export function takeJPEGSnapshot(options?: JPEG_OPTIONS) {
 	}, 'image/jpeg', options?.quality || 1);
 }
 
+function getIndexOfCapturer(capturer: CCapture, methodName: string) {
+	let index = -1;
+	// Find capturer in activeCaptures.
+	for (let i = 0; i < activeCaptures.length; i++) {
+		if (activeCaptures[i].capturer == capturer) {
+			index = i;
+			break;
+		}
+	}
+	if (index < 0) {
+		showAlert(`Invalid capturer passed into CanvasCapture.${methodName}.`);
+	}
+	return index;
+}
+
+// export function recordFrame(capturer?: CCapture | CCapture[]) {
 export function recordFrame() {
 	if (!checkCanvas()) {
 		return;
 	}
-	if (!capturer) {
-		console.warn('No valid capturer inited, please call CanvasCapture.beginVideoRecord() or CanvasCapture.beginGIFRecord() first.');
+	if (activeCaptures.length === 0) {
+		showAlert('No valid capturer inited, please call CanvasCapture.beginVideoRecord() or CanvasCapture.beginGIFRecord() first.');
 		return;
 	}
-	capturer.capture(canvas);
-	numFrames++;
-}
 
-function startRecord() {
-	capturer.start();
-	// For video and gif records, we should also throw up an indicator to show that we're in record mode.
-	showDot(true);
-	numFrames = 0;
-}
-
-export function stopRecord() {
-	if (!capturer) {
-		console.warn('No valid capturer inited, please call CanvasCapture.beginVideoRecord() or CanvasCapture.beginGIFRecord() first.');
-		return;
+	// Either record frame on passed in capturer, or on all active capturers.
+	// if (capturer) {
+	// 	if (!Array.isArray(capturer)) {
+	// 		capturer = [capturer];
+	// 	}
+	// 	for (let i = 0; i < capturer.length; i++) {
+	// 		const index = getIndexOfCapturer(capturer, 'recordFrame');
+	// 		if (index >= 0) {
+	// 			activeCaptures[index].capturer.capture(canvas);
+	// 			activeCaptures[index].numFrames += 1;
+	// 		}
+	// 	}
+	// } else {
+	for (let i = 0; i < activeCaptures.length; i++) {
+		activeCaptures[i].capturer.capture(canvas);
+		activeCaptures[i].numFrames += 1;
 	}
+	// }
+}
+
+function stopRecordAtIndex(index: number) {
+	const { capturer, numFrames, type } = activeCaptures[index];
 	if (numFrames === 0) {
-		console.warn('No frames recorded, call CanvasCapture.recordFrame()');
+		showAlert('No frames recorded, call CanvasCapture.recordFrame().');
 		return;
 	}
 	capturer.stop();
 	capturer.save();
-	capturer = null;
-
-	if (isRecordingGIF) {
+	
+	if (type === 'gif') {
 		// Tell the user that gifs take a sec to process.
 		if (PARAMS.SHOW_DIALOGS) showDialog(
 			'Processing...',
@@ -296,11 +325,57 @@ export function stopRecord() {
 		);
 	}
 
-	isRecordingGIF = false;
-	isRecordingVideo = false;
-	showDot(false);
+	// Remove ref to capturer.
+	activeCaptures.splice(index, 1);
+}
+
+// export function stopRecord(capturer?: CCapture | CCapture[]) {
+export function stopRecord() {
+	if (activeCaptures.length === 0) {
+		showAlert('No valid capturer inited, please call CanvasCapture.beginVideoRecord() or CanvasCapture.beginGIFRecord() first.');
+		return;
+	}
+	
+	// // Either stop record on passed in capturer, or on all active capturers.
+	// if (capturer) {
+	// 	if (!Array.isArray(capturer)) {
+	// 		capturer = [capturer];
+	// 	}
+	// 	for (let i = 0; i < capturer.length; i++) {
+	// 		const index = getIndexOfCapturer(capturer[i], 'stopRecord');
+	// 		if (index >= 0) {
+	// 			stopRecordAtIndex(index);
+	// 		}
+	// 	}
+	// } else {
+	for (let i = activeCaptures.length - 1; i >= 0; i--) {
+		stopRecordAtIndex(i);
+	}
+	// }
+
+	showDot(isRecording());
+}
+
+function activeWEBMCaptures() {
+	const webmCaptures: CCapture[] = [];
+	for (let i = 0; i < activeCaptures.length; i++) {
+		if (activeCaptures[i].type === 'webm') {
+			webmCaptures.push(activeCaptures[i].capturer);
+		}
+	}
+	return webmCaptures;
+}
+
+function activeGIFCaptures() {
+	const gifCaptures: CCapture[] = [];
+	for (let i = 0; i < activeCaptures.length; i++) {
+		if (activeCaptures[i].type === 'gif') {
+			gifCaptures.push(activeCaptures[i].capturer);
+		}
+	}
+	return gifCaptures;
 }
 
 export function isRecording() {
-	return isRecordingVideo || isRecordingGIF;
+	return activeCaptures.length > 0;
 }

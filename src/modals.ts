@@ -3,8 +3,8 @@ import { css } from './micromodal.css';
 
 // Params.
 export const PARAMS = {
-	SHOW_ALERTS: true,
-	SHOW_DIALOGS: true,
+	SHOW_ALERTS: false,
+	SHOW_DIALOGS: false,
 	SHOW_REC_DOT: true,
 };
 

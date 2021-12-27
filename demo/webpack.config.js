@@ -1,7 +1,8 @@
+const path = require('path');
+
 module.exports = {
 	mode: 'development',
-	entry: 'index.ts',
-	path: path.resolve(__dirname, 'src'),
+	entry: path.resolve(__dirname, 'src/index.ts'),
 	performance: {
 		hints: false,
 	},
