@@ -1,5 +1,6 @@
 export { showDialog } from './modals';
 export declare function init(_canvas: HTMLCanvasElement, options?: {
+    ffmpegCorePath?: string;
     verbose?: boolean;
     showAlerts?: boolean;
     showDialogs?: boolean;

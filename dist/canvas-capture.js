@@ -4705,20 +4705,15 @@ var file_saver_1 = __webpack_require__(162);
 var changedpi_1 = __webpack_require__(809);
 var modals_1 = __webpack_require__(330);
 var ffmpeg_1 = __webpack_require__(45);
+// Make it so we don't have to specify workersPath for CCapture gif recorder.
+// This is not a large file, so no need to separate from lib.
 // @ts-ignore
 var gif_worker_js_1 = __webpack_require__(156);
-var ffmpeg = ffmpeg_1.createFFmpeg({
-    // Use public address if you don't want to host your own.
-    // TODO: host this locally.
-    corePath: 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
-    log: true,
-});
+var gifWorkersPath = URL.createObjectURL(new Blob([gif_worker_js_1.default]));
+var ffmpeg;
 // Export showDialog method in case it is useful.
 var modals_2 = __webpack_require__(330);
 Object.defineProperty(exports, "showDialog", ({ enumerable: true, get: function () { return modals_2.showDialog; } }));
-// Make it so we don't have to specify workersPath for CCapture.
-var workersBlob = new Blob([gif_worker_js_1.default]);
-var workersPath = URL.createObjectURL(workersBlob);
 var VERBOSE = true;
 var activeCaptures = [];
 // This is an unused variable,
@@ -4734,6 +4729,11 @@ var hotkeys = {
 var canvas = null;
 function init(_canvas, options) {
     canvas = _canvas;
+    ffmpeg = ffmpeg_1.createFFmpeg({
+        // Use public address if you don't want to host your own.
+        corePath: (options === null || options === void 0 ? void 0 : options.ffmpegCorePath) || 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
+        log: true,
+    });
     if (options && options.verbose !== undefined)
         setVerbose(options.verbose);
     if (options && options.showAlerts !== undefined)
@@ -4931,7 +4931,7 @@ function beginGIFRecord(options) {
         format: 'gif',
         name: name,
         framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
-        workersPath: workersPath,
+        workersPath: gifWorkersPath,
         quality: quality,
         verbose: VERBOSE,
     });

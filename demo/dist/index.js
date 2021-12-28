@@ -4709,20 +4709,15 @@ var file_saver_1 = __nested_webpack_require_182154__(162);
 var changedpi_1 = __nested_webpack_require_182154__(809);
 var modals_1 = __nested_webpack_require_182154__(330);
 var ffmpeg_1 = __nested_webpack_require_182154__(45);
+// Make it so we don't have to specify workersPath for CCapture gif recorder.
+// This is not a large file, so no need to separate from lib.
 // @ts-ignore
 var gif_worker_js_1 = __nested_webpack_require_182154__(156);
-var ffmpeg = ffmpeg_1.createFFmpeg({
-    // Use public address if you don't want to host your own.
-    // TODO: host this locally.
-    corePath: 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
-    log: true,
-});
+var gifWorkersPath = URL.createObjectURL(new Blob([gif_worker_js_1.default]));
+var ffmpeg;
 // Export showDialog method in case it is useful.
 var modals_2 = __nested_webpack_require_182154__(330);
 Object.defineProperty(exports, "showDialog", ({ enumerable: true, get: function () { return modals_2.showDialog; } }));
-// Make it so we don't have to specify workersPath for CCapture.
-var workersBlob = new Blob([gif_worker_js_1.default]);
-var workersPath = URL.createObjectURL(workersBlob);
 var VERBOSE = true;
 var activeCaptures = [];
 // This is an unused variable,
@@ -4738,6 +4733,11 @@ var hotkeys = {
 var canvas = null;
 function init(_canvas, options) {
     canvas = _canvas;
+    ffmpeg = ffmpeg_1.createFFmpeg({
+        // Use public address if you don't want to host your own.
+        corePath: (options === null || options === void 0 ? void 0 : options.ffmpegCorePath) || 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
+        log: true,
+    });
     if (options && options.verbose !== undefined)
         setVerbose(options.verbose);
     if (options && options.showAlerts !== undefined)
@@ -4935,7 +4935,7 @@ function beginGIFRecord(options) {
         format: 'gif',
         name: name,
         framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
-        workersPath: workersPath,
+        workersPath: gifWorkersPath,
         quality: quality,
         verbose: VERBOSE,
     });
@@ -5225,7 +5225,7 @@ exports.css = "\n/**************************  Basic Modal Styles\n**************
 /***/ }),
 
 /***/ 330:
-/***/ (function(__unused_webpack_module, exports, __nested_webpack_require_207650__) {
+/***/ (function(__unused_webpack_module, exports, __nested_webpack_require_207774__) {
 
 "use strict";
 
@@ -5242,8 +5242,8 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.showDot = exports.initDotWithCSS = exports.showDialog = exports.showAlert = exports.PARAMS = void 0;
-var micromodal_1 = __nested_webpack_require_207650__(650);
-var micromodal_css_1 = __nested_webpack_require_207650__(713);
+var micromodal_1 = __nested_webpack_require_207774__(650);
+var micromodal_css_1 = __nested_webpack_require_207774__(713);
 // Params.
 exports.PARAMS = {
     SHOW_ALERTS: false,
@@ -5336,7 +5336,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_214813__(moduleId) {
+/******/ 	function __nested_webpack_require_214937__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -5350,7 +5350,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_214813__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_214937__);
 /******/ 	
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
@@ -5363,9 +5363,9 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
-/******/ 		__nested_webpack_require_214813__.d = (exports, definition) => {
+/******/ 		__nested_webpack_require_214937__.d = (exports, definition) => {
 /******/ 			for(var key in definition) {
-/******/ 				if(__nested_webpack_require_214813__.o(definition, key) && !__nested_webpack_require_214813__.o(exports, key)) {
+/******/ 				if(__nested_webpack_require_214937__.o(definition, key) && !__nested_webpack_require_214937__.o(exports, key)) {
 /******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 				}
 /******/ 			}
@@ -5374,7 +5374,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_214813__.g = (function() {
+/******/ 		__nested_webpack_require_214937__.g = (function() {
 /******/ 			if (typeof globalThis === 'object') return globalThis;
 /******/ 			try {
 /******/ 				return this || new Function('return this')();
@@ -5386,13 +5386,13 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_214813__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 		__nested_webpack_require_214937__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
-/******/ 		__nested_webpack_require_214813__.r = (exports) => {
+/******/ 		__nested_webpack_require_214937__.r = (exports) => {
 /******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
 /******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
 /******/ 			}
@@ -5402,7 +5402,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/node module decorator */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_214813__.nmd = (module) => {
+/******/ 		__nested_webpack_require_214937__.nmd = (module) => {
 /******/ 			module.paths = [];
 /******/ 			if (!module.children) module.children = [];
 /******/ 			return module;
@@ -5414,7 +5414,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nested_webpack_require_214813__(607);
+/******/ 	var __webpack_exports__ = __nested_webpack_require_214937__(607);
 /******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()

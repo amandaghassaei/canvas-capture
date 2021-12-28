@@ -4,23 +4,18 @@ import { saveAs } from 'file-saver';
 // @ts-ignore
 import { changeDpiBlob } from 'changedpi';
 import { initDotWithCSS, PARAMS, showAlert, showDialog, showDot } from './modals';
-import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
-// @ts-ignore
-import workerString from 'raw-loader!../node_modules/ccapture.js/src/gif.worker.js';
+import { createFFmpeg, fetchFile, FFmpeg } from '@ffmpeg/ffmpeg';
 
-const ffmpeg = createFFmpeg({
-  // Use public address if you don't want to host your own.
-  // TODO: host this locally.
-  corePath: 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
-  log: true,
-});
+// Make it so we don't have to specify workersPath for CCapture gif recorder.
+// This is not a large file, so no need to separate from lib.
+// @ts-ignore
+import gifWorkerString from 'raw-loader!ccapture.js/src/gif.worker.js';
+const gifWorkersPath = URL.createObjectURL(new Blob([gifWorkerString]));
+
+let ffmpeg: FFmpeg;
 
 // Export showDialog method in case it is useful.
 export { showDialog } from './modals';
-
-// Make it so we don't have to specify workersPath for CCapture.
-const workersBlob = new Blob([workerString]);
-const workersPath = URL.createObjectURL(workersBlob);
 
 let VERBOSE = true;
 
@@ -48,6 +43,7 @@ const hotkeys: { [key: string]: string | null} = {
 let canvas: HTMLCanvasElement | null = null;
 
 export function init(_canvas: HTMLCanvasElement, options?: {
+	ffmpegCorePath?: string,
 	verbose?: boolean,
 	showAlerts?: boolean,
 	showDialogs?: boolean,
@@ -55,6 +51,11 @@ export function init(_canvas: HTMLCanvasElement, options?: {
 	recDotCSS?: {[key: string]: string},
 }) {
 	canvas = _canvas;
+	ffmpeg = createFFmpeg({
+		// Use public address if you don't want to host your own.
+		corePath: options?.ffmpegCorePath || 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
+		log: true,
+	  });
 	if (options && options.verbose !== undefined) setVerbose(options.verbose);
 	if (options && options.showAlerts !== undefined) PARAMS.SHOW_ALERTS = options.showAlerts;
 	if (options && options.showDialogs !== undefined) PARAMS.SHOW_DIALOGS = options.showDialogs;
@@ -276,7 +277,7 @@ export function beginGIFRecord(options?: GIF_OPTIONS) {
 		format: 'gif',
 		name,
 		framerate: options?.fps || 60,
-		workersPath,
+		workersPath: gifWorkersPath,
 		quality,
 		verbose: VERBOSE,
 	});
