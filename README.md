@@ -227,7 +227,7 @@ The code in this repo is licensed under an MIT license, but it depends on other 
 
 ## Converting WEBM to MP4
 
-[Not all browsers](https://caniuse.com/sharedarraybuffer) support mp4 export from this library.  If your browser only supports webm video, I recommend using [ffmpeg](https://ffmpeg.org/) to convert to mp4.  From the terminal run:
+[Not all browsers](https://caniuse.com/sharedarraybuffer) support mp4 export, and even if they do, you may decide to export webm for performance reasons.  I've found that I can playback webm with [VLC player](https://www.videolan.org/vlc/), but the framerate tends to be choppy (the webm files are generally very large).  If you want to convert your downloaded webms to mp4, I recommend using [ffmpeg](https://ffmpeg.org/) from the terminal:
 
 `
 ffmpeg -i PATH/FILENAME.webm -vf "crop=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264 -preset slow -crf 22 -pix_fmt yuv420p -an PATH/FILENAME.mp4
@@ -240,8 +240,6 @@ ffmpeg -i PATH/FILENAME.webm -vf "crop=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264
 `-pix_fmt yuv420p` makes it compatible with the web browser  
 
 `-an` creates a video with no audio  
-
-If your filename has spaces in it, you can escape them with `-i PATH/filename\ with\ spaces.webm`  
 
 
 ## Development
