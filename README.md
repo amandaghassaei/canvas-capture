@@ -225,9 +225,9 @@ The code in this repo is licensed under an MIT license, but it depends on other 
 >@ffmpeg/core contains WebAssembly code which is transpiled from original FFmpeg C code with minor modifications, but overall it still following the same licenses as FFmpeg and its external libraries (as each external libraries might have its own license).
 
 
-## Converting WEBM to MP4
+## Converting WEBM to Other Formats
 
-[Not all browsers](https://caniuse.com/sharedarraybuffer) support mp4 export, and even if they do, you may decide to export webm for performance reasons.  Webm is a bit annoying though – I've found that I can play webm with [VLC player](https://www.videolan.org/vlc/), but the framerate tends to be choppy (the webm files are generally very large), and very few websites/programs support them.  If you want to convert your webms to mp4 (or any other format) after you've already downloaded them, I recommend using [ffmpeg](https://ffmpeg.org/) from the terminal:
+[Not all browsers](https://caniuse.com/sharedarraybuffer) support mp4 export, and even if they do, you may decide to export webm anyway for performance reasons (I tend to do this, they are much faster to export).  Webm is a bit annoying as a format though – I've found that I can play webm videos with [VLC player](https://www.videolan.org/vlc/), but the framerate tends to be choppy (the webm files are generally very large), and very few websites/programs support them.  If you want to convert your webms to mp4 (or any other format) after you've already downloaded them, I recommend using [ffmpeg](https://ffmpeg.org/) from the terminal:
 
 `
 ffmpeg -i PATH/FILENAME.webm -vf "crop=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264 -preset slow -crf 22 -pix_fmt yuv420p -an PATH/FILENAME.mp4
@@ -240,6 +240,8 @@ ffmpeg -i PATH/FILENAME.webm -vf "crop=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264
 `-pix_fmt yuv420p` makes it compatible with the web browser  
 
 `-an` creates a video with no audio  
+
+For Mac users: I highly recommend checking out MacOS Automator and creating a Quick Action for these types of conversions that you can call on any file by right clicking in the Finder.  I have some instructions for that [here](https://github.com/amandaghassaei/ffmpeg-scripts); I hope to clean this up and make it easy to install at some point in the future.  I have a Quick Action for "Convert to MP4" that invokes the above ffmpeg command on whatever file I've selected – big time saver!
 
 
 ## Development
