@@ -227,7 +227,7 @@ The code in this repo is licensed under an MIT license, but it depends on other 
 
 ## Converting WEBM to MP4
 
-[Not all browsers](https://caniuse.com/sharedarraybuffer) support mp4 export, and even if they do, you may decide to export webm for performance reasons.  I've found that I can playback webm with [VLC player](https://www.videolan.org/vlc/), but the framerate tends to be choppy (the webm files are generally very large).  If you want to convert your downloaded webms to mp4, I recommend using [ffmpeg](https://ffmpeg.org/) from the terminal:
+[Not all browsers](https://caniuse.com/sharedarraybuffer) support mp4 export, and even if they do, you may decide to export webm for performance reasons.  Webm is a bit annoying though – I've found that I can play webm with [VLC player](https://www.videolan.org/vlc/), but the framerate tends to be choppy (the webm files are generally very large), and very few websites/programs support them.  If you want to convert your webms to mp4 (or any other format) after you've already downloaded them, I recommend using [ffmpeg](https://ffmpeg.org/) from the terminal:
 
 `
 ffmpeg -i PATH/FILENAME.webm -vf "crop=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264 -preset slow -crf 22 -pix_fmt yuv420p -an PATH/FILENAME.mp4
