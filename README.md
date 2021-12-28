@@ -133,9 +133,9 @@ CanvasCapture.init(document.getElementById('my-canvas'), {
   // By default, ffmpegCorePath is set to load remotely from
   // 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js'.
   // If you would like to load locally, you can set ffmpegCorePath to load from node_modules
-  // ('./node_modules/@ffmpeg/core/dist/ffmpeg-core.js') using a copy of @ffmpeg/core installed via npm,
-  // or copy the files at https://unpkg.com/browse/@ffmpeg/core@0.10.0/dist/ , save them in your project,
-  // and set ffmpegCorePath accordingly.
+  // ('./node_modules/@ffmpeg/core/dist/ffmpeg-core.js') using a copy of @ffmpeg/core installed
+  // via npm, or copy the files at https://unpkg.com/browse/@ffmpeg/core@0.10.0/dist/ ,
+  // save them in your project, and set ffmpegCorePath accordingly.
   
   verbose: true, // Verbosity of console output, default is true,
   showRecDot: true, // Show a red dot on the screen during records, defaults is true.
