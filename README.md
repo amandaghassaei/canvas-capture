@@ -136,16 +136,15 @@ CanvasCapture.init(document.getElementById('my-canvas'), {
   // ('./node_modules/@ffmpeg/core/dist/ffmpeg-core.js') using a copy of @ffmpeg/core installed
   // via npm, or copy the files at https://unpkg.com/browse/@ffmpeg/core@0.10.0/dist/ ,
   // save them in your project, and set ffmpegCorePath accordingly.
-  
   verbose: true, // Verbosity of console output, default is true,
   showRecDot: true, // Show a red dot on the screen during records, defaults is true.
-  recDotCSS: { right: '0', top: '0', margin: '10px' }, // Additional CSS for record dot.
+  recDotCSS: { right: '0', top: '0', margin: '10px' }, // Additional CSS for record dot, default is {}.
   showAlerts: true, // Show alert dialogs during export in case of errors, default is false.
   showDialogs: true, // Show informational dialogs during export, default is false.
 });
 ```
 
-Default CSS for the record dot is:
+The baseline CSS for the record dot places it in the upper right corner of the screen, any of these params can be overwritten via options.recDotCSS:
 ```js
 background: "red",
 width: "20px",
