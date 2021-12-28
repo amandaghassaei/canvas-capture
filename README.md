@@ -241,7 +241,7 @@ ffmpeg -i PATH/FILENAME.webm -vf "crop=trunc(iw/2)*2:trunc(ih/2)*2" -c:v libx264
 
 `-an` creates a video with no audio  
 
-For Mac users: I highly recommend checking out [MacOS Automator](https://support.apple.com/guide/automator/welcome/mac) and creating a Quick Action for these types of conversions that you can call on any file by right clicking in the Finder.  I have some instructions for that [here](https://github.com/amandaghassaei/ffmpeg-scripts); I hope to clean this up and make it easy to install at some point in the future.  I have a Quick Action for "Convert to MP4" that invokes the above ffmpeg command on whatever file I've selected – big time saver!
+For Mac users: I highly recommend checking out [MacOS Automator](https://support.apple.com/guide/automator/welcome/mac) and creating a Quick Action for these types of conversions that you can call on any file by right clicking in the Finder.  I have some instructions for that [here](https://github.com/amandaghassaei/ffmpeg-scripts) (I hope to clean this up and make it easy to install at some point in the future).  I have a Quick Action for "Convert to MP4" that invokes the above ffmpeg command on whatever file I've selected – it's a big time saver!
 
 
 ## Development
