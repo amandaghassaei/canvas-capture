@@ -5128,6 +5128,9 @@ function convertWEBMtoMP4(options) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    // Tell the user that mp4s take a sec to process.
+                    if (modals_1.PARAMS.SHOW_DIALOGS)
+                        modals_1.showDialog('Processing...', 'MP4 is processing and may take a minute to save.  You can close this window in the meantime.', { autoCloseDelay: 7000 });
                     if (!!ffmpegLoaded) return [3 /*break*/, 4];
                     _a.label = 1;
                 case 1:
@@ -5225,7 +5228,7 @@ exports.css = "\n/**************************  Basic Modal Styles\n**************
 /***/ }),
 
 /***/ 330:
-/***/ (function(__unused_webpack_module, exports, __nested_webpack_require_207774__) {
+/***/ (function(__unused_webpack_module, exports, __nested_webpack_require_208082__) {
 
 "use strict";
 
@@ -5242,8 +5245,8 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.showDot = exports.initDotWithCSS = exports.showDialog = exports.showAlert = exports.PARAMS = void 0;
-var micromodal_1 = __nested_webpack_require_207774__(650);
-var micromodal_css_1 = __nested_webpack_require_207774__(713);
+var micromodal_1 = __nested_webpack_require_208082__(650);
+var micromodal_css_1 = __nested_webpack_require_208082__(713);
 // Params.
 exports.PARAMS = {
     SHOW_ALERTS: false,
@@ -5336,7 +5339,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_214937__(moduleId) {
+/******/ 	function __nested_webpack_require_215245__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -5350,7 +5353,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_214937__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_215245__);
 /******/ 	
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
@@ -5363,9 +5366,9 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
-/******/ 		__nested_webpack_require_214937__.d = (exports, definition) => {
+/******/ 		__nested_webpack_require_215245__.d = (exports, definition) => {
 /******/ 			for(var key in definition) {
-/******/ 				if(__nested_webpack_require_214937__.o(definition, key) && !__nested_webpack_require_214937__.o(exports, key)) {
+/******/ 				if(__nested_webpack_require_215245__.o(definition, key) && !__nested_webpack_require_215245__.o(exports, key)) {
 /******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 				}
 /******/ 			}
@@ -5374,7 +5377,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_214937__.g = (function() {
+/******/ 		__nested_webpack_require_215245__.g = (function() {
 /******/ 			if (typeof globalThis === 'object') return globalThis;
 /******/ 			try {
 /******/ 				return this || new Function('return this')();
@@ -5386,13 +5389,13 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_214937__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 		__nested_webpack_require_215245__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
-/******/ 		__nested_webpack_require_214937__.r = (exports) => {
+/******/ 		__nested_webpack_require_215245__.r = (exports) => {
 /******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
 /******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
 /******/ 			}
@@ -5402,7 +5405,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/node module decorator */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_214937__.nmd = (module) => {
+/******/ 		__nested_webpack_require_215245__.nmd = (module) => {
 /******/ 			module.paths = [];
 /******/ 			if (!module.children) module.children = [];
 /******/ 			return module;
@@ -5414,7 +5417,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nested_webpack_require_214937__(607);
+/******/ 	var __webpack_exports__ = __nested_webpack_require_215245__(607);
 /******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()

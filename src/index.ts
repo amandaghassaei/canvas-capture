@@ -489,6 +489,12 @@ async function convertWEBMtoMP4(options: {
 	onProgress?: (progress: number) => void,
 	ffmpegOptions?: { [key: string]: string },
 }) {
+	// Tell the user that mp4s take a sec to process.
+	if (PARAMS.SHOW_DIALOGS) showDialog(
+		'Processing...',
+		'MP4 is processing and may take a minute to save.  You can close this window in the meantime.',
+		{ autoCloseDelay: 7000 },
+	);
 	if (!ffmpegLoaded) {
 		try {
 			await ffmpeg.load();
