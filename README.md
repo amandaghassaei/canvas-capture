@@ -207,7 +207,7 @@ CanvasCapture.browserSupportsGIF(); // Returns true if the browser supports gif 
 
 I'm not aware of any browser limitations for the image export options (obviously, the browser must [support canvas](https://caniuse.com/?search=canvas) as a bare minimum).
 
-Another thing to be aware of: this library defaults to pulling a copy of ffmpeg.wasm from [unpkg.com/@ffmpeg/core@0.10.0/dist](https://unpkg.com/@ffmpeg/core@0.10.0/dist), so it requires an internet connection to export mp4.  If you want to host your own copy of ffmpeg-core, you'll need to provide a path to `ffmpeg-core.js` with the `ffmpegCorePath` option in the `CanvasCapture.init()` method.  Be sure to also include `ffmpeg-core.wasm` and `ffmpeg-core.worker.js` in the same folder.
+Another thing to be aware of: this library defaults to pulling a copy of ffmpeg.wasm from [unpkg.com/@ffmpeg/core@0.10.0/dist/](https://unpkg.com/@ffmpeg/core@0.10.0/dist/), so it requires an internet connection to export mp4.  If you want to host your own copy of ffmpeg-core, you'll need to provide a path to `ffmpeg-core.js` with the `ffmpegCorePath` option in `CanvasCapture.init()`.  Be sure to also include `ffmpeg-core.wasm` and `ffmpeg-core.worker.js` in the same folder.
 
 
 ## Additional Notes
