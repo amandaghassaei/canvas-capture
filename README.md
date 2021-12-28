@@ -126,10 +126,16 @@ You can initialize `CanvasCapture` with the following options:
 import * as CanvasCapture from 'canvas-capture';
 
 CanvasCapture.init(document.getElementById('my-canvas'), {
-  // ffmpeg-core has not been included in this library by default because it is very large (~25MB) and is only needed for mp4 export.
-  // By default, ffmpegCorePath is set to load remotely from 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js'.
-  // If you would like to load localled, you can set ffmpegCorePath to load from node_modules (see below) using a copy of @ffmpeg/core installed via npm, or copy the file at https://unpkg.com/browse/@ffmpeg/core@0.10.0/dist/ and save them in your project and set ffmpegCorePath accordingly.
-  ffmpegCorePath: './node_modules/@ffmpeg/core/dist/ffmpeg-core.js', // Path to a copy of ffmpeg-core to be loaded asynchronously.
+  // ffmpegCorePath is a path to a copy of ffmpeg-core to be loaded asynchronously.
+  // ffmpeg-core has not been included in this library by default because it is very large (~25MB)
+  // and is only needed for mp4 export.
+  // By default, ffmpegCorePath is set to load remotely from
+  // 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js'.
+  // If you would like to load locally, you can set ffmpegCorePath to load from
+  // node_modules (see below) using a copy of @ffmpeg/core installed via npm,
+  // or copy the file at https://unpkg.com/browse/@ffmpeg/core@0.10.0/dist/ and
+  // save them in your project and set ffmpegCorePath accordingly.
+  ffmpegCorePath: './node_modules/@ffmpeg/core/dist/ffmpeg-core.js',
   verbose: true, // Verbosity of console output, default is true,
   showRecDot: true, // Show a red dot on the screen during records, defaults is true.
   recDotCSS: { right: '0', top: '0', margin: '10px' }, // Additional CSS for record dot.
