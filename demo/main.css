@@ -1,3 +1,9 @@
 .supportInfo {
 	margin-left: 20px;
 }
+
+#controls {
+	display: inline-block;
+    padding: 20px;
+	vertical-align: top;
+}
