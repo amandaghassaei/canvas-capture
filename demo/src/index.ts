@@ -65,7 +65,7 @@ function loop() {
 		context.drawImage(image, -image.width / 2, -image.height / 2);
 		context.restore();
 		// Increase rotation.
-		angle += 0.05;
+		angle += 0.02;
 	}
 
 	// You need to do this only if you are recording a video or gif.
