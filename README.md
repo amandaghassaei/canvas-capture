@@ -214,7 +214,7 @@ Another thing to be aware of: this library defaults to pulling a copy of ffmpeg.
 
 - WEBM export is ready to download immediately after all frames are captured.  MP4 export requires an additional conversion step after the frames have been captured; for very large videos, you may find that ffmpeg conversion to MP4 takes too long.
 - WEBM videos are significantly larger than MP4.
-- PNG can save alpha channel of canvas, and JPEG/GIF exporters will draw alpha = 0 as black, but the video exporter creates nasty artifacts when handling alpha – best to avoid this.  
+- PNG export preserves the alpha channel of canvas, and JPEG/GIF exporters will draw alpha = 0 as black, but the video exporter creates nasty artifacts when handling transparent/semi-transparent regions of the canvas – best to avoid this.  
 - You cannot record GIF and video at the same time.  This appears to be a limitation of CCapture.js.  
 - gif.js (a dependency of CCapture.js) has some performance limitations and takes a significant amount of time to process after all frames have been captured, be careful if capturing a lot of frames.  Exported GIFs tend to be quite large and uncompressed you might want to optimize them further (I like [ezgif](https://ezgif.com/maker) for this).  
 
