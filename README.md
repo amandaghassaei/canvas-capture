@@ -2,7 +2,7 @@
 A small wrapper around [CCapture.js](https://github.com/spite/ccapture.js) and [ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm) to record the canvas as an image (png/jpeg), video (mp4/webm), or gif – all from the browser!
 
 Demo at: [apps.amandaghassaei.com/canvas-capture/demo/](https://apps.amandaghassaei.com/canvas-capture/demo/)  
-Video export currently works in Chrome (see [Caveats](#caveats) for more details about browser support).
+Video export currently only works in Chrome (see [Caveats](#caveats) for more details about browser support).
 
 This project doesn't expose *all* the features of either CCapture.js or ffmpeg.wasm, but it packages some of the most useful functionality in a convenient way to be installed via npm and run in the browser (I'm mostly using this in projects built with webpack).  I've also added:
 
