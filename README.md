@@ -7,6 +7,7 @@ This project doesn't expose *all* the features of either CCapture.js or ffmpeg.w
 
 - type declarations for CanvasCapture API
 - helper functions to bind recording and screen-shotting to hotkeys
+- ability to record png/jpeg frames as zip with [JSZip](https://github.com/Stuk/jszip)
 - an optional recording indicator (red dot) on screen to let you know when recording is happening
 - other optional modal dialog features  
 
@@ -225,9 +226,10 @@ Another thing to be aware of: this library defaults to pulling a copy of ffmpeg.
 - webm videos are significantly larger than mp4.
 - png export preserves the alpha channel of canvas, and jpeg/gif exporters will draw alpha = 0 as black, but the video exporter creates nasty artifacts when handling transparent/semi-transparent regions of the canvas – best to avoid this.  
 - You cannot record gif and video (or multiple gifs / multiple videos) at the same time.  This appears to be a limitation of CCapture.js.  You can record png/jpeg frames as zip while recording a video/gif.
-- gif.js (a dependency of CCapture.js) has some performance limitations and takes a significant amount of time to process after all frames have been captured, be careful if capturing a lot of frames.  Exported gifs tend to be quite large and uncompressed you might want to optimize them further (I like [ezgif](https://ezgif.com/maker) for this).  
-- Record frames is currently set to save a zip with no compression with [JSZip](https://github.com/Stuk/jszip).  The zipping process still may take some time and you might be better off saving the frames individually with `takeXXXSnapshot()` if you have a lot of files to save.
 - `beginXXXRecord` methods return a `capture` object that can be passed to `CanvasCapture.recordFrame(capture)` or `CanvasCapture.stopRecord(capture)` to target a specific recording.  If `recordFrame` or `stopRecord` are called with no arguments, all active captures are affected.
+- gif.js (a dependency of CCapture.js) has some performance limitations and takes a significant amount of time to process after all frames have been captured, be careful if capturing a lot of frames.  Exported gifs tend to be quite large and uncompressed you might want to optimize them further (I like [ezgif](https://ezgif.com/maker) for this).  
+- Record frames is currently set to save a zip with no compression with [JSZip](https://github.com/Stuk/jszip).  The zipping process may take some time and you might be better off saving the frames individually with `takeXXXSnapshot()` if you have a lot of files to save.  
+
 
 ## License
 
