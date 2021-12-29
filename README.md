@@ -40,7 +40,10 @@ CanvasCapture.bindKeyToVideoRecord('v', {
   quality: 0.6,
 });
 CanvasCapture.bindKeyToGIFRecord('g');
-// These take a single snapshot.
+// Download a series of frames as a zip.
+CanvasCapture.bindKeyToPNGFramesRecord('f'); // Also try bindKeyToJPEGFramesRecord().
+
+// These methods take a single snapshot.
 CanvasCapture.bindKeyToPNGSnapshot('p'); 
 CanvasCapture.bindKeyToJPEGSnapshot('j', {
   name: 'myJpeg', // Options are optional, more info below.
@@ -74,7 +77,6 @@ CanvasCapture.recordFrame();
 CanvasCapture.recordFrame();
 CanvasCapture.stopRecord();
 
-
 // Now you may start another recording.
 CanvasCapture.beginVideoRecord({
   format: 'mp4',
@@ -83,10 +85,16 @@ CanvasCapture.recordFrame();
 ....
 CanvasCapture.stopRecord();
 
+// Also try CanvasCapture.beginJPEGFramesRecord(jpegOptions)
+// and CanvasCapture.beginPNGFramesRecord(pngOptions)
+
 // Or you can call `takeXXXSnapshot` to take a single snapshot.
 // No need to call `recordFrame` or `stopRecord` for these methods.
 CanvasCapture.takePNGSnapshot({ name: 'MyPng' }); // Options are optional, more info below.
-CanvasCapture.takeJPEGSnapshot()
+CanvasCapture.takeJPEGSnapshot({}, (blob, filename) => {
+  // Instead of automatically downloading the file, you can pass an optional callback
+  // as the second argument to takeJPEGSnapshot() and takePNGSnapshot()
+});
 
 ```
 
@@ -139,7 +147,7 @@ CanvasCapture.init(document.getElementById('my-canvas'), {
   // via npm, or copy the files at https://unpkg.com/browse/@ffmpeg/core@0.10.0/dist/ ,
   // save them in your project, and set ffmpegCorePath accordingly.
   verbose: true, // Verbosity of console output, default is true,
-  showRecDot: true, // Show a red dot on the screen during records, defaults is true.
+  showRecDot: true, // Show a red dot on the screen during records, defaults is false.
   recDotCSS: { right: '0', top: '0', margin: '10px' }, // CSS for record dot, default is {}.
   showAlerts: true, // Show alert dialogs during export in case of errors, default is false.
   showDialogs: true, // Show informational dialogs during export, default is false.
@@ -216,8 +224,10 @@ Another thing to be aware of: this library defaults to pulling a copy of ffmpeg.
 - webm export is ready to download immediately after all frames are captured.  mp4 export requires an additional conversion step after the frames have been captured; for very large videos, you may find that ffmpeg conversion to mp4 takes too long.
 - webm videos are significantly larger than mp4.
 - png export preserves the alpha channel of canvas, and jpeg/gif exporters will draw alpha = 0 as black, but the video exporter creates nasty artifacts when handling transparent/semi-transparent regions of the canvas – best to avoid this.  
-- You cannot record gif and video (or multiple gifs, or multiple videos) at the same time.  This appears to be a limitation of CCapture.js.  
+- You cannot record gif and video (or multiple gifs / multiple videos) at the same time.  This appears to be a limitation of CCapture.js.  You can record png/jpeg frames as zip while recording a video/gif.
 - gif.js (a dependency of CCapture.js) has some performance limitations and takes a significant amount of time to process after all frames have been captured, be careful if capturing a lot of frames.  Exported gifs tend to be quite large and uncompressed you might want to optimize them further (I like [ezgif](https://ezgif.com/maker) for this).  
+- Record frames is currently set to save a zip with no compression with [JSZip](https://github.com/Stuk/jszip).  The zipping process still may take some time and you might be better off saving the frames individually with `takeXXXSnapshot()` if you have a lot of files to save.
+- `beginXXXRecord` methods return a `capture` object that can be passed to `CanvasCapture.recordFrame(capture)` or `CanvasCapture.stopRecord(capture)` to target a specific recording.  If `recordFrame` or `stopRecord` are called with no arguments, all active captures are affected.
 
 ## License
 

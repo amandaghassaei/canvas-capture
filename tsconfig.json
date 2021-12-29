@@ -10,7 +10,10 @@
     "outDir": "./dist/",
     "declaration": true,
     "declarationDir": "dist/types",
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": [
+      "node_modules/@types",
+      "src/types",
+    ]
   },
   "include": [
     "src"

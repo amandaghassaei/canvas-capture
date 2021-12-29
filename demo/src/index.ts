@@ -35,12 +35,14 @@ const PNG_OPTONS = {
 	dpi: 72,
 };
 CanvasCapture.bindKeyToPNGSnapshot('p', PNG_OPTONS);
+CanvasCapture.bindKeyToPNGFrames('o', PNG_OPTONS);
 const JPEG_OPTIONS = {
 	name: 'demo-jpg',
 	quality: 1,
 	dpi: 72,
 };
 CanvasCapture.bindKeyToJPEGSnapshot('j', JPEG_OPTIONS);
+CanvasCapture.bindKeyToJPEGFrames('h', JPEG_OPTIONS);
 
 // Simple canvas draw setup.
 const context = canvas.getContext("2d")!;
@@ -80,54 +82,95 @@ document.getElementById("savePNG")!.addEventListener('click', (e) => {
 	e.preventDefault();
 	CanvasCapture.takePNGSnapshot(PNG_OPTONS);
 });
+const startRecordPNGFrames = document.getElementById('startPNG')!;
+let pngFramesCapture: CanvasCapture.ACTIVE_CAPTURE | undefined;
+startRecordPNGFrames.addEventListener('click', (e) => {
+	e.preventDefault();
+	pngFramesCapture = CanvasCapture.beginPNGFramesRecord(PNG_OPTONS);
+	startRecordPNGFrames.style.display = pngFramesCapture ? 'none' : 'inline';
+	stopRecordPNGFrames.style.display = pngFramesCapture ? 'inline' : 'none';
+});
+const stopRecordPNGFrames = document.getElementById('stopPNG')!;
+stopRecordPNGFrames.addEventListener('click', (e) => {
+	e.preventDefault();
+	CanvasCapture.stopRecord(pngFramesCapture);
+	pngFramesCapture = undefined;
+	stopRecordPNGFrames.style.display = 'none';
+	startRecordPNGFrames.style.display = 'inline';
+});
+stopRecordPNGFrames.style.display = 'none';
+
 document.getElementById("saveJPG")!.addEventListener('click', (e) => {
 	e.preventDefault();
 	CanvasCapture.takeJPEGSnapshot(JPEG_OPTIONS);
 });
+const startRecordJPGFrames = document.getElementById('startJPG')!;
+let jpgFramesCapture: CanvasCapture.ACTIVE_CAPTURE | undefined;
+startRecordJPGFrames.addEventListener('click', (e) => {
+	e.preventDefault();
+	jpgFramesCapture = CanvasCapture.beginJPEGFramesRecord(JPEG_OPTIONS);
+	startRecordJPGFrames.style.display = jpgFramesCapture ? 'none' : 'inline';
+	stopRecordJPGFrames.style.display = jpgFramesCapture ? 'inline' : 'none';
+});
+const stopRecordJPGFrames = document.getElementById('stopJPG')!;
+stopRecordJPGFrames.addEventListener('click', (e) => {
+	e.preventDefault();
+	CanvasCapture.stopRecord(jpgFramesCapture);
+	pngFramesCapture = undefined;
+	stopRecordJPGFrames.style.display = 'none';
+	startRecordJPGFrames.style.display = 'inline';
+});
+stopRecordJPGFrames.style.display = 'none';
 
 const startRecordMP4 = document.getElementById('startMP4')!;
+let mp4Capture: CanvasCapture.ACTIVE_CAPTURE | undefined;
 startRecordMP4.addEventListener('click', (e) => {
 	e.preventDefault();
-	const capturer = CanvasCapture.beginVideoRecord(MP4_OPTIONS);
-	startRecordMP4.style.display = capturer ? 'none' : 'inline';
-	stopRecordMP4.style.display = capturer ? 'inline' : 'none';
+	mp4Capture = CanvasCapture.beginVideoRecord(MP4_OPTIONS);
+	startRecordMP4.style.display = mp4Capture ? 'none' : 'inline';
+	stopRecordMP4.style.display = mp4Capture ? 'inline' : 'none';
 });
 const stopRecordMP4 = document.getElementById('stopMP4')!;
 stopRecordMP4.addEventListener('click', (e) => {
 	e.preventDefault();
-	CanvasCapture.stopRecord();
+	CanvasCapture.stopRecord(mp4Capture);
+	mp4Capture = undefined;
 	stopRecordMP4.style.display = 'none';
 	startRecordMP4.style.display = 'inline';
 });
 stopRecordMP4.style.display = 'none';
 
 const startRecordWEBM = document.getElementById('startWEBM')!;
+let webmCapture: CanvasCapture.ACTIVE_CAPTURE | undefined;
 startRecordWEBM.addEventListener('click', (e) => {
 	e.preventDefault();
-	const capturer = CanvasCapture.beginVideoRecord(WEBM_OPTIONS);
-	startRecordWEBM.style.display = capturer ? 'none' : 'inline';
-	stopRecordWEBM.style.display = capturer ? 'inline' : 'none';
+	webmCapture = CanvasCapture.beginVideoRecord(WEBM_OPTIONS);
+	startRecordWEBM.style.display = webmCapture ? 'none' : 'inline';
+	stopRecordWEBM.style.display = webmCapture ? 'inline' : 'none';
 });
 const stopRecordWEBM = document.getElementById('stopWEBM')!;
 stopRecordWEBM.addEventListener('click', (e) => {
 	e.preventDefault();
-	CanvasCapture.stopRecord();
+	CanvasCapture.stopRecord(webmCapture);
+	webmCapture = undefined;
 	stopRecordWEBM.style.display = 'none';
 	startRecordWEBM.style.display = 'inline';
 });
 stopRecordWEBM.style.display = 'none';
 
 const startRecordGIF = document.getElementById('startGIF')!;
+let gifCapture: CanvasCapture.ACTIVE_CAPTURE | undefined;
 startRecordGIF.addEventListener('click', (e) => {
 	e.preventDefault();
-	CanvasCapture.beginGIFRecord(GIF_OPTIONS);
-	startRecordGIF.style.display = 'none';
-	stopRecordGIF.style.display = 'inline';
+	gifCapture = CanvasCapture.beginGIFRecord(GIF_OPTIONS);
+	startRecordGIF.style.display = gifCapture ? 'none' : 'inline';
+	stopRecordGIF.style.display = gifCapture ? 'inline' : 'none';
 });
 const stopRecordGIF = document.getElementById('stopGIF')!;
 stopRecordGIF.addEventListener('click', (e) => {
 	e.preventDefault();
-	CanvasCapture.stopRecord();
+	CanvasCapture.stopRecord(gifCapture);
+	gifCapture = undefined;
 	stopRecordGIF.style.display = 'none';
 	startRecordGIF.style.display = 'inline';
 });

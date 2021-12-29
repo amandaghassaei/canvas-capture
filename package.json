@@ -26,6 +26,7 @@
     "ccapture.js": "github:amandaghassaei/ccapture.js#npm-fix",
     "changedpi": "^1.0.4",
     "file-saver": "^2.0.5",
+    "jszip": "^3.7.1",
     "micromodal": "^0.4.6"
   },
   "devDependencies": {

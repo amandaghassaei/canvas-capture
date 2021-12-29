@@ -1,12 +1,6 @@
 import MicroModal from 'micromodal';
 import { css } from './micromodal.css';
-
-// Params.
-export const PARAMS = {
-	SHOW_ALERTS: false,
-	SHOW_DIALOGS: false,
-	SHOW_REC_DOT: true,
-};
+import { PARAMS } from './params';
 
 // Add modal styling.
 const style = document.createElement('style');
@@ -48,8 +42,8 @@ const DIALOG_MODAL_ID = 'dialog';
 const dialogModal = initModalHTML(DIALOG_MODAL_ID, 'Saving...');
 
 export function showAlert(message: string) {
+	console.warn(message);
 	if (!PARAMS.SHOW_ALERTS) {
-		console.warn(message);
 		return;
 	}
 	if (!alertModalInited) {
@@ -63,6 +57,10 @@ export function showAlert(message: string) {
 export function showDialog(title: string, message: string, options?: {
 	autoCloseDelay?: number,
 }) {
+	if (PARAMS.VERBOSE) console.log(title, message);
+	if (!PARAMS.SHOW_DIALOGS) {
+		return;
+	}
 	if (!dialogModalInited) {
 		dialogModalInited = true;
 		document.getElementsByTagName('body')[0].appendChild(dialogModal);
