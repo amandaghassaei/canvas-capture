@@ -5539,7 +5539,7 @@ CanvasCapture.init(canvas, {
 // Bind key presses to begin/end recordings.
 var MP4_OPTIONS = {
     name: 'demo-mp4',
-    format: 'mp4',
+    format: CanvasCapture.MP4,
     quality: 1,
     fps: 60,
     onMP4ConversionProgress: function (_a) {
@@ -5550,7 +5550,7 @@ var MP4_OPTIONS = {
 CanvasCapture.bindKeyToVideoRecord('v', MP4_OPTIONS);
 var WEBM_OPTIONS = {
     name: 'demo-webm',
-    format: 'webm',
+    format: CanvasCapture.WEBM,
     quality: 1,
     fps: 60,
 };
