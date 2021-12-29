@@ -197,15 +197,13 @@ In order for mp4 export to work, you need to configure your (local or remote) se
 
 >SharedArrayBuffer is only available to pages that are [cross-origin isolated](https://developer.chrome.com/blog/enabling-shared-array-buffer/#cross-origin-isolation). So you need to host your own server with `Cross-Origin-Embedder-Policy: require-corp` and `Cross-Origin-Opener-Policy: same-origin` headers to use ffmpeg.wasm.
 
-I've included a script for initializing a local server with the correct Cross-Origin policy at [canvas-capture/server.js](https://github.com/amandaghassaei/canvas-capture/blob/main/server.js).  If you need to start up your own server for testing, try running:
+I've included a script for initializing a local server with the correct Cross-Origin policy at [canvas-capture/server.js](https://github.com/amandaghassaei/canvas-capture/blob/main/server.js).  If you need to start up your own server for testing, try running the code below to boot up a server at `localhost:8080`:
 
 ```sh
 node node_modules/canvas-capture/server.js
 ```
 
-This will boot up a server at `localhost:8080`.
-
-If you are building an application with [webpack-dev-server](https://webpack.js.org/configuration/dev-server/), you can add the headers to your `webpack.config.js`:
+If you are building an application with [webpack-dev-server](https://webpack.js.org/configuration/dev-server/), you can add the appropriate headers to your `webpack.config.js`:
 
 ```js
 module.exports = {
