@@ -20,7 +20,7 @@ To install this package run:
 
 I haven't released this on npm because I'm waiting for some updates in CCapture.js that will make it a cleaner dependency to this repo ([see Issue](https://github.com/spite/ccapture.js/issues/78)), but for stability you can reference a specific commit like this:
 
-```npm install github:amandaghassaei/canvas-capture#9307b47```
+```npm install github:amandaghassaei/canvas-capture#774ae42```
 
 You can also try adding [dist/canvas-capture.js](dist/canvas-capture.js) or [dist/canvas-capture.min.js](dist/canvas-capture.min.js) to your project and it should be available as `window.CanvasCapture` or possibly globally as `CanvasCapture`.  I have not tested this yet, please let me know if this works!
 
