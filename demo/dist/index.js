@@ -4720,7 +4720,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.browserSupportsGIF = exports.browserSupportsMP4 = exports.browserSupportsWEBM = exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginJPEGFramesRecord = exports.beginPNGFramesRecord = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToJPEGFrames = exports.bindKeyToPNGFrames = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = exports.showDialog = void 0;
+exports.browserSupportsGIF = exports.browserSupportsMP4 = exports.browserSupportsWEBM = exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginJPEGFramesRecord = exports.beginPNGFramesRecord = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToJPEGFrames = exports.bindKeyToPNGFrames = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = exports.MP4 = exports.WEBM = exports.showDialog = void 0;
 var ccapture_js_1 = __nested_webpack_require_277788__(583);
 var file_saver_1 = __nested_webpack_require_277788__(162);
 // @ts-ignore
@@ -4739,8 +4739,8 @@ var ffmpeg;
 var modals_2 = __nested_webpack_require_277788__(330);
 Object.defineProperty(exports, "showDialog", ({ enumerable: true, get: function () { return modals_2.showDialog; } }));
 var GIF = 'gif';
-var WEBM = 'webm';
-var MP4 = 'mp4';
+exports.WEBM = 'webm';
+exports.MP4 = 'mp4';
 var JPEGZIP = 'jpegzip';
 var PNGZIP = 'pngzip';
 var JPEG = 'jpeg';
@@ -4800,13 +4800,13 @@ function setHotkey(key, type) {
 }
 // Pressing key once will start record, press again to stop.
 function bindKeyToVideoRecord(key, options) {
-    if (options.format === WEBM) {
+    if (options.format === exports.WEBM) {
         hotkeyOptions.webm = options;
-        setHotkey(key, WEBM);
+        setHotkey(key, exports.WEBM);
     }
     else {
         hotkeyOptions.mp4 = options;
-        setHotkey(key, MP4);
+        setHotkey(key, exports.MP4);
     }
 }
 exports.bindKeyToVideoRecord = bindKeyToVideoRecord;
@@ -4838,7 +4838,7 @@ function bindKeyToJPEGSnapshot(key, options) {
 exports.bindKeyToJPEGSnapshot = bindKeyToJPEGSnapshot;
 window.addEventListener('keydown', function (e) {
     if (hotkeys.mp4 && e.key === hotkeys.mp4) {
-        var MP4s = activeCapturesOfType(MP4);
+        var MP4s = activeCapturesOfType(exports.MP4);
         if (MP4s.length)
             stopRecord(MP4s);
         else {
@@ -4850,7 +4850,7 @@ window.addEventListener('keydown', function (e) {
         }
     }
     if (hotkeys.webm && e.key === hotkeys.webm) {
-        var WEBMs = activeCapturesOfType(WEBM);
+        var WEBMs = activeCapturesOfType(exports.WEBM);
         if (WEBMs.length)
             stopRecord(WEBMs);
         else {
@@ -4898,14 +4898,14 @@ function startCapture(capture) {
 }
 function beginVideoRecord(options) {
     var _a;
-    var format = (options === null || options === void 0 ? void 0 : options.format) || MP4; // Default to MP4 record.
-    if (format === MP4) {
+    var format = (options === null || options === void 0 ? void 0 : options.format) || exports.MP4; // Default to MP4 record.
+    if (format === exports.MP4) {
         if (!browserSupportsMP4()) {
             modals_1.showAlert("This browser does not support MP4 video recording, please try again in Chrome.");
             return;
         }
     }
-    else if (format === WEBM) {
+    else if (format === exports.WEBM) {
         if (!browserSupportsWEBM()) {
             modals_1.showAlert("This browser does not support WEBM video recording, please try again in Chrome.");
             return;
@@ -5102,7 +5102,7 @@ function stopRecordAtIndex(index) {
         modals_1.showAlert('No frames recorded, call CanvasCapture.recordFrame().');
         return;
     }
-    if (type === MP4) {
+    if (type === exports.MP4) {
         capturer.save(function (blob) {
             convertWEBMtoMP4({
                 name: name,
@@ -5161,7 +5161,7 @@ function activeCapturesOfType(type) {
     return captures;
 }
 function activeVideoGifCaptures() {
-    return activeCapturesOfType(WEBM).concat(activeCapturesOfType(MP4)).concat(activeCapturesOfType(GIF));
+    return activeCapturesOfType(exports.WEBM).concat(activeCapturesOfType(exports.MP4)).concat(activeCapturesOfType(GIF));
 }
 function isRecording() {
     return activeCaptures.length > 0;
@@ -5275,7 +5275,7 @@ exports.css = "\n/**************************  Basic Modal Styles\n**************
 /***/ }),
 
 /***/ 330:
-/***/ (function(__unused_webpack_module, exports, __nested_webpack_require_305317__) {
+/***/ (function(__unused_webpack_module, exports, __nested_webpack_require_305442__) {
 
 "use strict";
 
@@ -5292,9 +5292,9 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.showDot = exports.initDotWithCSS = exports.showDialog = exports.showAlert = void 0;
-var micromodal_1 = __nested_webpack_require_305317__(650);
-var micromodal_css_1 = __nested_webpack_require_305317__(713);
-var params_1 = __nested_webpack_require_305317__(848);
+var micromodal_1 = __nested_webpack_require_305442__(650);
+var micromodal_css_1 = __nested_webpack_require_305442__(713);
+var params_1 = __nested_webpack_require_305442__(848);
 // Add modal styling.
 var style = document.createElement('style');
 style.textContent = micromodal_css_1.css;
@@ -5404,7 +5404,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_312832__(moduleId) {
+/******/ 	function __nested_webpack_require_312957__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -5418,7 +5418,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_312832__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_312957__);
 /******/ 	
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
@@ -5431,9 +5431,9 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
-/******/ 		__nested_webpack_require_312832__.d = (exports, definition) => {
+/******/ 		__nested_webpack_require_312957__.d = (exports, definition) => {
 /******/ 			for(var key in definition) {
-/******/ 				if(__nested_webpack_require_312832__.o(definition, key) && !__nested_webpack_require_312832__.o(exports, key)) {
+/******/ 				if(__nested_webpack_require_312957__.o(definition, key) && !__nested_webpack_require_312957__.o(exports, key)) {
 /******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 				}
 /******/ 			}
@@ -5442,7 +5442,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_312832__.g = (function() {
+/******/ 		__nested_webpack_require_312957__.g = (function() {
 /******/ 			if (typeof globalThis === 'object') return globalThis;
 /******/ 			try {
 /******/ 				return this || new Function('return this')();
@@ -5454,13 +5454,13 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_312832__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 		__nested_webpack_require_312957__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
-/******/ 		__nested_webpack_require_312832__.r = (exports) => {
+/******/ 		__nested_webpack_require_312957__.r = (exports) => {
 /******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
 /******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
 /******/ 			}
@@ -5470,7 +5470,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/node module decorator */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_312832__.nmd = (module) => {
+/******/ 		__nested_webpack_require_312957__.nmd = (module) => {
 /******/ 			module.paths = [];
 /******/ 			if (!module.children) module.children = [];
 /******/ 			return module;
@@ -5482,7 +5482,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nested_webpack_require_312832__(607);
+/******/ 	var __webpack_exports__ = __nested_webpack_require_312957__(607);
 /******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()

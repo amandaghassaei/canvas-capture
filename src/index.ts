@@ -19,8 +19,8 @@ let ffmpeg: FFmpeg;
 export { showDialog } from './modals';
 
 const GIF = 'gif';
-const WEBM = 'webm';
-const MP4 = 'mp4';
+export const WEBM = 'webm';
+export const MP4 = 'mp4';
 const JPEGZIP = 'jpegzip';
 const PNGZIP = 'pngzip';
 const JPEG = 'jpeg';

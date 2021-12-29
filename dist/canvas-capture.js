@@ -4716,7 +4716,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.browserSupportsGIF = exports.browserSupportsMP4 = exports.browserSupportsWEBM = exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginJPEGFramesRecord = exports.beginPNGFramesRecord = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToJPEGFrames = exports.bindKeyToPNGFrames = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = exports.showDialog = void 0;
+exports.browserSupportsGIF = exports.browserSupportsMP4 = exports.browserSupportsWEBM = exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginJPEGFramesRecord = exports.beginPNGFramesRecord = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToJPEGFrames = exports.bindKeyToPNGFrames = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = exports.MP4 = exports.WEBM = exports.showDialog = void 0;
 var ccapture_js_1 = __webpack_require__(583);
 var file_saver_1 = __webpack_require__(162);
 // @ts-ignore
@@ -4735,8 +4735,8 @@ var ffmpeg;
 var modals_2 = __webpack_require__(330);
 Object.defineProperty(exports, "showDialog", ({ enumerable: true, get: function () { return modals_2.showDialog; } }));
 var GIF = 'gif';
-var WEBM = 'webm';
-var MP4 = 'mp4';
+exports.WEBM = 'webm';
+exports.MP4 = 'mp4';
 var JPEGZIP = 'jpegzip';
 var PNGZIP = 'pngzip';
 var JPEG = 'jpeg';
@@ -4796,13 +4796,13 @@ function setHotkey(key, type) {
 }
 // Pressing key once will start record, press again to stop.
 function bindKeyToVideoRecord(key, options) {
-    if (options.format === WEBM) {
+    if (options.format === exports.WEBM) {
         hotkeyOptions.webm = options;
-        setHotkey(key, WEBM);
+        setHotkey(key, exports.WEBM);
     }
     else {
         hotkeyOptions.mp4 = options;
-        setHotkey(key, MP4);
+        setHotkey(key, exports.MP4);
     }
 }
 exports.bindKeyToVideoRecord = bindKeyToVideoRecord;
@@ -4834,7 +4834,7 @@ function bindKeyToJPEGSnapshot(key, options) {
 exports.bindKeyToJPEGSnapshot = bindKeyToJPEGSnapshot;
 window.addEventListener('keydown', function (e) {
     if (hotkeys.mp4 && e.key === hotkeys.mp4) {
-        var MP4s = activeCapturesOfType(MP4);
+        var MP4s = activeCapturesOfType(exports.MP4);
         if (MP4s.length)
             stopRecord(MP4s);
         else {
@@ -4846,7 +4846,7 @@ window.addEventListener('keydown', function (e) {
         }
     }
     if (hotkeys.webm && e.key === hotkeys.webm) {
-        var WEBMs = activeCapturesOfType(WEBM);
+        var WEBMs = activeCapturesOfType(exports.WEBM);
         if (WEBMs.length)
             stopRecord(WEBMs);
         else {
@@ -4894,14 +4894,14 @@ function startCapture(capture) {
 }
 function beginVideoRecord(options) {
     var _a;
-    var format = (options === null || options === void 0 ? void 0 : options.format) || MP4; // Default to MP4 record.
-    if (format === MP4) {
+    var format = (options === null || options === void 0 ? void 0 : options.format) || exports.MP4; // Default to MP4 record.
+    if (format === exports.MP4) {
         if (!browserSupportsMP4()) {
             modals_1.showAlert("This browser does not support MP4 video recording, please try again in Chrome.");
             return;
         }
     }
-    else if (format === WEBM) {
+    else if (format === exports.WEBM) {
         if (!browserSupportsWEBM()) {
             modals_1.showAlert("This browser does not support WEBM video recording, please try again in Chrome.");
             return;
@@ -5098,7 +5098,7 @@ function stopRecordAtIndex(index) {
         modals_1.showAlert('No frames recorded, call CanvasCapture.recordFrame().');
         return;
     }
-    if (type === MP4) {
+    if (type === exports.MP4) {
         capturer.save(function (blob) {
             convertWEBMtoMP4({
                 name: name,
@@ -5157,7 +5157,7 @@ function activeCapturesOfType(type) {
     return captures;
 }
 function activeVideoGifCaptures() {
-    return activeCapturesOfType(WEBM).concat(activeCapturesOfType(MP4)).concat(activeCapturesOfType(GIF));
+    return activeCapturesOfType(exports.WEBM).concat(activeCapturesOfType(exports.MP4)).concat(activeCapturesOfType(GIF));
 }
 function isRecording() {
     return activeCaptures.length > 0;
