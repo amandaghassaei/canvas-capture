@@ -5533,6 +5533,7 @@ var CanvasCapture = __webpack_require__(/*! ../../ */ "./dist/canvas-capture.js"
 // Initialize and pass in canvas.
 var canvas = document.getElementById('my-canvas');
 CanvasCapture.init(canvas, {
+    showRecDot: true,
     showAlerts: true,
     showDialogs: true,
 });

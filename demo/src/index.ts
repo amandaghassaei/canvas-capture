@@ -3,6 +3,7 @@ import * as CanvasCapture from '../../';
 // Initialize and pass in canvas.
 const canvas = document.getElementById('my-canvas') as HTMLCanvasElement
 CanvasCapture.init(canvas, {
+	showRecDot: true,
 	showAlerts: true,
 	showDialogs: true,
 });
