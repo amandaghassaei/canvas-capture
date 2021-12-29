@@ -138,6 +138,11 @@ You can initialize `CanvasCapture` with the following options:
 import * as CanvasCapture from 'canvas-capture';
 
 CanvasCapture.init(document.getElementById('my-canvas'), {
+  verbose: true, // Verbosity of console output, default is true,
+  showRecDot: true, // Show a red dot on the screen during records, default is false.
+  recDotCSS: { right: '0', top: '0', margin: '10px' }, // CSS overrides for dot, default is {}.
+  showAlerts: true, // Show alert dialogs during export in case of errors, default is false.
+  showDialogs: true, // Show informational dialogs during export, default is false.
   ffmpegCorePath: './node_modules/@ffmpeg/core/dist/ffmpeg-core.js', // Path to a copy of
   // ffmpeg-core to be loaded asynchronously.  ffmpeg-core has not been included in this
   // library by default because it is very large (~25MB) and is only needed for mp4 export.
@@ -147,11 +152,6 @@ CanvasCapture.init(document.getElementById('my-canvas'), {
   // ('./node_modules/@ffmpeg/core/dist/ffmpeg-core.js') using a copy of @ffmpeg/core installed
   // via npm, or copy the files at https://unpkg.com/browse/@ffmpeg/core@0.10.0/dist/ ,
   // save them in your project, and set ffmpegCorePath accordingly.
-  verbose: true, // Verbosity of console output, default is true,
-  showRecDot: true, // Show a red dot on the screen during records, default is false.
-  recDotCSS: { right: '0', top: '0', margin: '10px' }, // CSS overrides for dot, default is {}.
-  showAlerts: true, // Show alert dialogs during export in case of errors, default is false.
-  showDialogs: true, // Show informational dialogs during export, default is false.
 });
 ```
 
