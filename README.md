@@ -7,7 +7,7 @@ This project doesn't expose *all* the features of either CCapture.js or ffmpeg.w
 
 - type declarations for CanvasCapture API
 - helper functions to bind recording and screen-shotting to hotkeys
-- ability to record png/jpeg frames as zip with [JSZip](https://github.com/Stuk/jszip)
+- ability to export zipped png/jpeg frames with [JSZip](https://github.com/Stuk/jszip)
 - an optional recording indicator (red dot) on screen to let you know when recording is happening
 - other optional modal dialog features  
 
