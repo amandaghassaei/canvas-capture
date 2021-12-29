@@ -203,7 +203,23 @@ I've included a script for initializing a local server with the correct Cross-Or
 node node_modules/canvas-capture/server.js
 ```
 
-This will boot up a server as `localhost:8080`.
+This will boot up a server at `localhost:8080`.
+
+If you are building an application with [webpack-dev-server](https://webpack.js.org/configuration/dev-server/), you can add the headers to your `webpack.config.js`:
+
+```js
+module.exports = {
+  ...
+  devServer: {
+    headers: {
+      "Cross-Origin-Embedder-Policy": "require-corp",
+      "Cross-Origin-Opener-Policy": "same-origin",
+    }
+  }
+}
+```
+
+If you're hosting an application on [Github Pages](https://pages.github.com/), I recommend checking out [coi-serviceworker](https://github.com/gzuidhof/coi-serviceworker) to get the correct headers on your page.  I was able to get this to work for my [demo page](https://apps.amandaghassaei.com/canvas-capture/demo/).
 
 Additionally, you can test for browser support with the following methods:
 
