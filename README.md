@@ -149,7 +149,7 @@ CanvasCapture.init(document.getElementById('my-canvas'), {
   // save them in your project, and set ffmpegCorePath accordingly.
   verbose: true, // Verbosity of console output, default is true,
   showRecDot: true, // Show a red dot on the screen during records, default is false.
-  recDotCSS: { right: '0', top: '0', margin: '10px' }, // CSS overrides for record dot, default is {}.
+  recDotCSS: { right: '0', top: '0', margin: '10px' }, // CSS overrides for dot, default is {}.
   showAlerts: true, // Show alert dialogs during export in case of errors, default is false.
   showDialogs: true, // Show informational dialogs during export, default is false.
 });
