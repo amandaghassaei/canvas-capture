@@ -5175,7 +5175,7 @@ function convertWEBMtoMP4(options) {
             switch (_a.label) {
                 case 0:
                     // Tell the user that mp4s take a sec to process.
-                    modals_1.showDialog('Processing...', 'MP4 is processing and may take a minute to save.  You can close this window in the meantime.', { autoCloseDelay: 7000 });
+                    modals_1.showDialog('Processing...', 'MP4 is processing and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
                     if (!!ffmpegLoaded) return [3 /*break*/, 4];
                     _a.label = 1;
                 case 1:

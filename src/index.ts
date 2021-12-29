@@ -528,7 +528,7 @@ async function convertWEBMtoMP4(options: {
 	// Tell the user that mp4s take a sec to process.
 	showDialog(
 		'Processing...',
-		'MP4 is processing and may take a minute to save.  You can close this window in the meantime.',
+		'MP4 is processing and may take a minute to save.  You can close this dialog in the meantime.',
 		{ autoCloseDelay: 7000 },
 	);
 	if (!ffmpegLoaded) {
