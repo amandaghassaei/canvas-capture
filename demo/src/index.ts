@@ -6,6 +6,7 @@ CanvasCapture.init(canvas, {
 	showRecDot: true,
 	showAlerts: true,
 	showDialogs: true,
+	verbose: false,
 });
 
 // Bind key presses to begin/end recordings.
@@ -15,6 +16,8 @@ const MP4_OPTIONS = {
 	quality: 1,
 	fps: 60,
 	onMP4ConversionProgress: ({ ratio }: { ratio: number }) => console.log(ratio),
+	onExportProgress: (progress: number) => console.log(`MP4 export progress: ${progress}.`),
+	onExportFinish: () => console.log(`Finished MP4 export.`),
 };
 CanvasCapture.bindKeyToVideoRecord('v', MP4_OPTIONS);
 const WEBM_OPTIONS = {
@@ -22,18 +25,24 @@ const WEBM_OPTIONS = {
 	format: CanvasCapture.WEBM as typeof CanvasCapture.WEBM,
 	quality: 1,
 	fps: 60,
+	onExportProgress: (progress: number) => console.log(`WEBM export progress: ${progress}.`),
+	onExportFinish: () => console.log(`Finished WEBM export.`),
 };
 CanvasCapture.bindKeyToVideoRecord('w', WEBM_OPTIONS);
 const GIF_OPTIONS = {
 	name: 'demo-gif',
 	quality: 1,
 	fps: 60,
+	onExportProgress: (progress: number) => console.log(`GIF export progress: ${progress}.`),
+	onExportFinish: () => console.log(`Finished GIF export.`),
 };
 CanvasCapture.bindKeyToGIFRecord('g', GIF_OPTIONS);
 // These take a single snapshot.
 const PNG_OPTONS = {
 	name: 'demo-png',
 	dpi: 72,
+	onExportProgress: (progress: number) => console.log(`PNG frames export progress: ${progress}.`),
+	onExportFinish: () => console.log(`Finished PNG frames zip.`),
 };
 CanvasCapture.bindKeyToPNGSnapshot('p', PNG_OPTONS);
 CanvasCapture.bindKeyToPNGFrames('o', PNG_OPTONS);
@@ -41,6 +50,8 @@ const JPEG_OPTIONS = {
 	name: 'demo-jpg',
 	quality: 1,
 	dpi: 72,
+	onExportProgress: (progress: number) => console.log(`JPEG frames export progress: ${progress}.`),
+	onExportFinish: () => console.log(`Finished JPEG frames zip.`),
 };
 CanvasCapture.bindKeyToJPEGSnapshot('j', JPEG_OPTIONS);
 CanvasCapture.bindKeyToJPEGFrames('h', JPEG_OPTIONS);

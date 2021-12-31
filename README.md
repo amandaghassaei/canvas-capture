@@ -109,38 +109,38 @@ videoOptions = {
   name: string, // Defaults to 'Video_Capture'.
   fps: number, // The frames per second of the output video, defaults to 60.
   quality: number, // A number between 0 and 1, defaults to 1.
+  onExportProgress: (progress: number) => void, // progress is a number between 0 and 1.
+  onExportFinish: () => void, // Callback after save complete.
   // Options below for ffmpeg conversion to mp4, not needed for webm export.
   ffmpegOptions?: { [key: string]: string }, // Defaults to
   // { '-c:v': 'libx264', '-preset': 'slow', '-crf': '22', '-pix_fmt': 'yuv420p' }
   // Internally the ffmpeg conversion runs with additional flags to crop to an even
   // number of px dimensions ('-vf crop=trunc(iw/2)*2:trunc(ih/2)*2', required for mp4)
   // and export no audio channel ('-an').
-  // onProgress gives feedback for FFMPEG conversion (MP4 only).
-  onProgress: (progress: number) => void, // progress is a number between 0 and 1.
 }
 gifOptions = {
   name: string, // Defaults to 'GIF_Capture'.
   fps: number, // The frames per second of the output gif, defaults to 60.
   quality: number, // A number between 0 and 1, defaults to 1.
-  // onProgress gives feedback for GIF export process.
-  onProgress: (progress: number) => void, // progress is a number between 0 and 1.
+  onExportProgress: (progress: number) => void, // progress is a number between 0 and 1.
+  onExportFinish: () => void, // Callback after save complete.
 }
 pngOptions = {
   name: string, // Defaults to 'PNG_Capture'.
   dpi: number, // Defaults to screen resolution (72 dpi).
-  // Below used for recording PNG frames
-  // (bindKeyToPNGFrames() or beginPNGFramesRecord()):
-  // onProgress gives feedback for zipping process.
-  onProgress: (progress: number) => void, // progress is a number between 0 and 1.
+  // onExportProgress and onExportFinish gives zipping updates for recording PNG frames
+  // (only used by bindKeyToPNGFrames() and beginPNGFramesRecord()):
+  onExportProgress: (progress: number) => void, // progress is a number between 0 and 1.
+  onExportFinish: () => void, // Callback after save complete.
 }
 jpegOptions = {
   name: string, // Defaults to 'JPEG_Capture'.
   quality: number, // A number between 0 and 1, defaults to 1.
   dpi: number, // Defaults to screen resolution (72 dpi).
-  // Below used for recording JPEG frames
-  // (bindKeyToJPEGFrames() or beginJPEGFramesRecord()):
-  // onProgress gives feedback for zipping process.
-  onProgress: (progress: number) => void, // progress is a number between 0 and 1.
+  // onExportProgress and onExportFinish gives zipping updates for recording JPEG frames
+  // (only used by bindKeyToJPEGFrames() and beginJPEGFramesRecord()):
+  onExportProgress: (progress: number) => void, // progress is a number between 0 and 1.
+  onExportFinish: () => void, // Callback after save complete.
 }
 ```
 

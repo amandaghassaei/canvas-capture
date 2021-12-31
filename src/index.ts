@@ -1,5 +1,6 @@
 import CCapture from 'ccapture.js'
 import { saveAs } from 'file-saver';
+const download = require('downloadjs');
 // @ts-ignore
 import { changeDpiBlob } from 'changedpi';
 import { PARAMS } from './params';
@@ -35,7 +36,8 @@ type WEBM_OPTIONS = {
 	fps?: number,
 	name?: string,
 	quality?: number, // A number 0-1.
-	// No onProgress because download is immediate.
+	onExportProgress?: (progress: number) => void, // Download is immediate, so this isn't very informative.  progress is a number between 0 and 1.
+	onExportFinish?: () => void,
 };
 type MP4_OPTIONS = {
 	format?: typeof MP4,
@@ -43,24 +45,28 @@ type MP4_OPTIONS = {
 	name?: string,
 	quality?: number, // A number 0-1.
 	ffmpegOptions?: { [key: string]: string },
-	onProgress?: (progress: number) => void, // FFMPEG encoding progress, progress is a number between 0 and 1.
+	onExportProgress?: (progress: number) => void, // FFMPEG encoding progress, progress is a number between 0 and 1.
+	onExportFinish?: () => void,
 };
 type GIF_OPTIONS = {
 	fps?: number,
 	name?: string,
 	quality?: number // A number 0-1.
-	onProgress?: (progress: number) => void, // progress is a number between 0 and 1.
+	onExportProgress?: (progress: number) => void, // progress is a number between 0 and 1.
+	onExportFinish?: () => void,
 };
 type PNG_OPTIONS = {
 	name?: string,
 	dpi?: number, // Default is screen dpi (72).
-	onProgress?: (progress: number) => void, // Zipping progress, only used for recording PNG frames, progress is a number between 0 and 1.
+	onExportProgress?: (progress: number) => void, // Zipping progress, only used for recording PNG frames, progress is a number between 0 and 1.
+	onExportFinish?: () => void,
 };
 type JPEG_OPTIONS = {
 	name?: string,
 	quality?: number, // A number 0-1.
 	dpi?: number, // Default is screen dpi (72).
-	onProgress?: (progress: number) => void, // Zipping progress, only used for recording JPEG frames, progress is a number between 0 and 1.
+	onExportProgress?: (progress: number) => void, // Zipping progress, only used for recording JPEG frames, progress is a number between 0 and 1.
+	onExportFinish?: () => void,
 };
 
 export type ACTIVE_CAPTURE = {
@@ -69,7 +75,8 @@ export type ACTIVE_CAPTURE = {
 	numFrames: number,
 	type: CAPTURE_TYPE,
 	zipOptions?: PNG_OPTIONS | JPEG_OPTIONS, // Only used for frame zip record.
-	onProgress?: (progress: number) => void,
+	onExportProgress?: (progress: number) => void,
+	onExportFinish?: () => void,
 	ffmpegOptions?: { [key: string]: string },
 };
 const activeCaptures: ACTIVE_CAPTURE[] = [];
@@ -283,7 +290,8 @@ export function beginVideoRecord(options: WEBM_OPTIONS | MP4_OPTIONS) {
 		numFrames: 0,
 		type: format,
 		ffmpegOptions: (options as MP4_OPTIONS)?.ffmpegOptions,
-		onProgress: (options as MP4_OPTIONS)?.onProgress,
+		onExportProgress: options?.onExportProgress,
+		onExportFinish: options?.onExportFinish,
 	};
 	startCapture(capture);
 	return capture;
@@ -309,7 +317,7 @@ export function beginGIFRecord(options?: GIF_OPTIONS) {
 		workersPath: gifWorkersPath,
 		quality,
 		verbose: PARAMS.VERBOSE,
-		onProgress: options?.onProgress,
+		onProgress: options?.onExportProgress,
 	});
 	const capture = {
 		name,
@@ -329,7 +337,8 @@ export function beginPNGFramesRecord(options?: PNG_OPTIONS) {
 		capturer: new JSZip(),
 		numFrames: 0,
 		type: PNGZIP as CAPTURE_TYPE,
-		onProgress: options?.onProgress,
+		onExportProgress: options?.onExportProgress,
+		onExportFinish: options?.onExportFinish,
 	};
 	startCapture(capture);
 	return capture;
@@ -343,7 +352,8 @@ export function beginJPEGFramesRecord(options?: JPEG_OPTIONS) {
 		capturer: new JSZip(),
 		numFrames: 0,
 		type: JPEGZIP as CAPTURE_TYPE,
-		onProgress: options?.onProgress,
+		onExportProgress: options?.onExportProgress,
+		onExportFinish: options?.onExportFinish,
 	};
 	startCapture(capture);
 	return capture;
@@ -437,7 +447,8 @@ function stopRecordAtIndex(index: number) {
 		capturer,
 		numFrames,
 		type,
-		onProgress,
+		onExportProgress,
+		onExportFinish,
 		ffmpegOptions,
 	} = activeCaptures[index];
 	// Remove ref to capturer.
@@ -450,38 +461,62 @@ function stopRecordAtIndex(index: number) {
 		return;
 	}
 
-	if (type === MP4) {
-		(capturer as CCapture).save((blob: Blob) => {
-			convertWEBMtoMP4({
-				name,
-				blob,
-				onProgress,
-				ffmpegOptions,
+	switch (type) {
+		case MP4:
+			(capturer as CCapture).save((blob: Blob) => {
+				// Tell the user that mp4s take a sec to process.
+				showDialog(
+					'Processing...',
+					'MP4 is processing and may take a minute to save.  You can close this dialog in the meantime.',
+					{ autoCloseDelay: 7000 },
+				);
+				convertWEBMtoMP4({
+					name,
+					blob,
+					onProgress: onExportProgress,
+					onFinish: onExportFinish,
+					ffmpegOptions,
+				});
 			});
-		});
-	} else {
-		if (type !== PNGZIP && type !== JPEGZIP) (capturer as CCapture).save();
-		else {
-			(capturer as JSZip).generateAsync({ type: 'blob' }, (metadata) => {
-				if (onProgress) onProgress(metadata.percent / 100);
-			}).then((content) => {
-				saveAs(content, `${name}.zip`);
+			break;
+		case WEBM:
+			if (onExportProgress) onExportProgress(0);
+			(capturer as CCapture).save((blob: Blob) => {
+				saveAs(blob, `${name}.webm`);
+				if (onExportProgress) onExportProgress(1);// Save is nearly immediate.
+				if (onExportFinish) onExportFinish();
 			});
+			break;
+		case GIF:
+			// Tell the user that gifs take a sec to process.
+			showDialog(
+				'Processing...',
+				'GIF is processing and may take a minute to save.  You can close this dialog in the meantime.',
+				{ autoCloseDelay: 7000 },
+			);
+			// onExportProgress callback already passed to CCapture.
+			(capturer as CCapture).save((blob: Blob) => {
+				saveAs(blob, `${name}.gif`);
+				if (onExportFinish) onExportFinish();
+			});
+			break;
+		case PNGZIP:
+		case JPEGZIP:
+			// Tell the user that frames take a sec to zip.
 			showDialog(
 				'Processing...',
 				'Frames are being zipped and may take a minute to save.  You can close this dialog in the meantime.',
 				{ autoCloseDelay: 7000 },
 			);
-		}
-	}
-
-	if (type === GIF) {
-		// Tell the user that gifs take a sec to process.
-		showDialog(
-			'Processing...',
-			'GIF is processing and may take a minute to save.  You can close this dialog in the meantime.',
-			{ autoCloseDelay: 7000 },
-		);
+			(capturer as JSZip).generateAsync({ type: 'blob' }, (metadata) => {
+				if (onExportProgress) onExportProgress(metadata.percent / 100);
+			}).then((content) => {
+				saveAs(content, `${name}.zip`);
+				if (onExportFinish) onExportFinish();
+			});
+			break;
+		default:
+			throw new Error(`Need to handle saving type ${type}.`);
 	}
 }
 
@@ -532,14 +567,9 @@ async function convertWEBMtoMP4(options: {
 	name: string,
 	blob: Blob,
 	onProgress?: (progress: number) => void,
+	onFinish?: () => void,
 	ffmpegOptions?: { [key: string]: string },
 }) {
-	// Tell the user that mp4s take a sec to process.
-	showDialog(
-		'Processing...',
-		'MP4 is processing and may take a minute to save.  You can close this dialog in the meantime.',
-		{ autoCloseDelay: 7000 },
-	);
 	if (!ffmpegLoaded) {
 		try {
 			await ffmpeg.load();
@@ -549,7 +579,7 @@ async function convertWEBMtoMP4(options: {
 			return;
 		}
 	}
-	const { name, blob, onProgress, ffmpegOptions } = options;
+	const { name, blob, onProgress, onFinish, ffmpegOptions } = options;
 	// Convert blob to Uint8 array.
 	const data = await fetchFile(blob);
 	// Write data to MEMFS, need to use Uint8Array for binary data.
@@ -588,6 +618,7 @@ async function convertWEBMtoMP4(options: {
 	// Delete files in MEMFS.
 	ffmpeg.FS('unlink', `${name}.webm`);
 	ffmpeg.FS('unlink', `${name}.mp4`);
+	if (onFinish) onFinish();
 }
 
 function browserSupportsWEBP() {
