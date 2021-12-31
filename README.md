@@ -13,7 +13,6 @@ Video export currently only works in Chrome (see [Caveats](#caveats) for more de
 
 This project doesn't expose *all* the features of either CCapture.js or ffmpeg.wasm, but it packages some of the most useful functionality in a convenient way to be installed via npm and run in the browser (I'm mostly using this in  projects built with webpack).  I've also added:
 
-- type declarations for CanvasCapture API
 - helper functions to bind recording and screen-shotting to hotkeys
 - ability to export zipped png/jpeg frames with [JSZip](https://github.com/Stuk/jszip)
 - an optional recording indicator (red dot) on screen to let you know when recording is happening
