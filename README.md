@@ -16,7 +16,8 @@ This project doesn't expose *all* the features of either CCapture.js or ffmpeg.w
 - helper functions to bind recording and screen-shotting to hotkeys
 - ability to export zipped png/jpeg frames with [JSZip](https://github.com/Stuk/jszip)
 - an optional recording indicator (red dot) on screen to let you know when recording is happening
-- other optional modal dialog features  
+- other optional modal dialog features
+- type declarations for everything – this project is written in Typescript  
 
 ## Installation
 

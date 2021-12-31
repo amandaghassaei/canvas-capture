@@ -18,13 +18,13 @@ let ffmpeg: FFmpeg;
 // Export showDialog method in case it is useful.
 export { showDialog } from './modals';
 
-const GIF = 'gif';
-export const WEBM = 'webm';
-export const MP4 = 'mp4';
-const JPEGZIP = 'jpegzip';
-const PNGZIP = 'pngzip';
-const JPEG = 'jpeg';
-const PNG = 'png';
+const GIF = 'gif' as const;
+export const WEBM = 'webm' as const;
+export const MP4 = 'mp4' as const;
+const JPEGZIP = 'jpegzip' as const;
+const PNGZIP = 'pngzip' as const;
+const JPEG = 'jpeg' as const;
+const PNG = 'png' as const;
 type CAPTURE_TYPE =
 	typeof GIF | typeof WEBM | typeof MP4 |
 	typeof JPEGZIP | typeof PNGZIP;

@@ -1,11 +1,11 @@
 import CCapture from './CCapture.js/CCapture';
 import JSZip = require('jszip');
 export { showDialog } from './modals';
-declare const GIF = "gif";
-export declare const WEBM = "webm";
-export declare const MP4 = "mp4";
-declare const JPEGZIP = "jpegzip";
-declare const PNGZIP = "pngzip";
+declare const GIF: "gif";
+export declare const WEBM: "webm";
+export declare const MP4: "mp4";
+declare const JPEGZIP: "jpegzip";
+declare const PNGZIP: "pngzip";
 declare type CAPTURE_TYPE = typeof GIF | typeof WEBM | typeof MP4 | typeof JPEGZIP | typeof PNGZIP;
 declare type WEBM_OPTIONS = {
     format?: typeof WEBM;

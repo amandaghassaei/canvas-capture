@@ -12,7 +12,7 @@ CanvasCapture.init(canvas, {
 // Bind key presses to begin/end recordings.
 const MP4_OPTIONS = {
 	name: 'demo-mp4',
-	format: CanvasCapture.MP4 as typeof CanvasCapture.MP4,
+	format: CanvasCapture.MP4,
 	quality: 1,
 	fps: 60,
 	onMP4ConversionProgress: ({ ratio }: { ratio: number }) => console.log(ratio),
@@ -22,7 +22,7 @@ const MP4_OPTIONS = {
 CanvasCapture.bindKeyToVideoRecord('v', MP4_OPTIONS);
 const WEBM_OPTIONS = {
 	name: 'demo-webm',
-	format: CanvasCapture.WEBM as typeof CanvasCapture.WEBM,
+	format: CanvasCapture.WEBM,
 	quality: 1,
 	fps: 60,
 	onExportProgress: (progress: number) => console.log(`WEBM export progress: ${progress}.`),
