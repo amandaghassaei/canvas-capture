@@ -11,7 +11,7 @@ Video export currently only works in Chrome (see [Caveats](#caveats) for more de
 - [License](#license)
 - [Development](#development)
 
-This project doesn't expose *all* the features of either CCapture.js or ffmpeg.wasm, but it packages some of the most useful functionality in a convenient way to be installed via npm and run in the browser (I'm mostly using this in  projects built with webpack).  I've also added:
+This project doesn't expose *all* the features of either CCapture.js or ffmpeg.wasm, but it packages some of the most useful functionality in a convenient way to be installed via npm and run in the browser (I'm mostly using this in projects built with webpack).  I've also added:
 
 - helper functions to bind recording and screen-shotting to hotkeys
 - ability to export zipped png/jpeg frames with [JSZip](https://github.com/Stuk/jszip)
@@ -303,10 +303,13 @@ To build `src` to `dist` run and recompile `demo`:
 
 ```npm run build```
 
-Please note there is some weirdness around importing CCapture with npm.  I'm currently grabbing CCapture from a branch at `github:amandaghassaei/ccapture.js#npm-fix`.  I'm not proud of the changes I had to make to get this to work ([see diff here](https://github.com/amandaghassaei/ccapture.js/commit/7ada41933411c4b1bcde4cdb09eef03758838bc7)), but it's fine for now.  Also, in order to get the constructor to work correctly, I had to call `window.CCapture()` rather than using the module import directly.  You'll also see I had to assign the default export from CCapture to an unused temp variable to get everything to work:
+Please note there is some weirdness around importing CCapture with npm.  I'm currently using a copy of CCapture from the `npm-fix` branch at [github.com/amandaghassaei/ccapture.js/tree/npm-fix](https://github.com/amandaghassaei/ccapture.js/tree/npm-fix).  I'm not proud of the changes I had to make to get this to work ([see diff here](https://github.com/amandaghassaei/ccapture.js/commit/7ada41933411c4b1bcde4cdb09eef03758838bc7)), but it's fine for now.  In order to package this repo u nicely for npm and remove all github-hosted dependencies, I had to make a copy of my CCapture.js `npm-fix` branch in the src directory of this repo.  It's ugly, but hopefully this can all be cleared up at some point in the future.
+
+Also, in order to get the CCapture constructor to work correctly, I had to call `window.CCapture()` rather than using the module import directly.  You'll also see I had to assign the default export from CCapture to an unused temp variable to make sure it was included in the build:
+
 
 ```js
-import CCapture from 'ccapture.js';
+import CCapture from './CCapture.js/CCapture'; // Pulling my local copy of CCapture.js.
 const temp = CCapture; // This is an unused variable, but critically necessary.
 
 ....

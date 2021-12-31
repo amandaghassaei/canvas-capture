@@ -1,4 +1,4 @@
-import CCapture from 'ccapture.js'
+import CCapture from './CCapture.js/CCapture';
 import { saveAs } from 'file-saver';
 // @ts-ignore
 import { changeDpiBlob } from 'changedpi';
@@ -9,7 +9,7 @@ import { createFFmpeg, fetchFile, FFmpeg } from '@ffmpeg/ffmpeg';
 // Make it so we don't have to specify workersPath for CCapture gif recorder.
 // This is not a large file, so no need to separate from lib.
 // @ts-ignore
-import gifWorkerString from 'raw-loader!ccapture.js/src/gif.worker.js';
+import gifWorkerString from 'raw-loader!./CCapture.js/gif.worker.js';
 import JSZip = require('jszip');
 const gifWorkersPath = URL.createObjectURL(new Blob([gifWorkerString]));
 

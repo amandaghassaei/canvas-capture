@@ -1,4 +1,4 @@
-import CCapture from 'ccapture.js';
+import CCapture from './CCapture.js/CCapture';
 import JSZip = require('jszip');
 export { showDialog } from './modals';
 declare const GIF = "gif";
