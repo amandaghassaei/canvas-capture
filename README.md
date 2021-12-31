@@ -55,7 +55,7 @@ CanvasCapture.bindKeyToPNGFramesRecord('f', {
   },
 }); // Also try bindKeyToJPEGFramesRecord().
 
-// These methods take a single snapshot.
+// These methods immediately save a single snapshot on keydown.
 CanvasCapture.bindKeyToPNGSnapshot('p'); 
 CanvasCapture.bindKeyToJPEGSnapshot('j', {
   name: 'myJpeg', // Options are optional, more info below.
@@ -102,12 +102,12 @@ CanvasCapture.stopRecord();
 CanvasCapture.takePNGSnapshot();
 CanvasCapture.takeJPEGSnapshot({ dpi: 600 }, (blob, filename) => {
   // Instead of automatically downloading the file, you can pass an optional callback
-  // as the second argument to takeJPEGSnapshot() and takePNGSnapshot()
+  // as the second argument to takeJPEGSnapshot() and takePNGSnapshot().
 });
 
 ```
 
-Available options for each capture type - this can be passed in as an optional argument to `bindKeyToXXX`, `beginXXXRecord`, or `takeXXXSnapshot`:
+Available options for each capture type - passed in as an optional argument to `bindKeyToXXX`, `beginXXXRecord`, or `takeXXXSnapshot`:
 
 ```ts
 videoOptions = {
