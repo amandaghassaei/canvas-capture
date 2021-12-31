@@ -7,7 +7,7 @@ Video export currently only works in Chrome (see [Caveats](#caveats) for more de
 - [Installation](#installation)
 - [Use](#use)
 - [Caveats](#caveats)
-- [Additonal Notes](#additional-notes)
+- [Additional Notes](#additional-notes)
 - [License](#license)
 - [Development](#development)
 
