@@ -9,7 +9,7 @@ Video export currently only works in Chrome (see [Caveats](#caveats) for more de
 - [Caveats](#caveats)
 - [Additonal Notes](#additional-notes)
 - [License](#license)
-- [Converting WEBM to Other Formats](converting-webm-to-other-formats)
+- [Converting WEBM to Other Formats](#converting-webm-to-other-formats)
 - [Development](#development)
 - [Demo](#demo)
 
