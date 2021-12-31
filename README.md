@@ -33,7 +33,7 @@ You can also try adding [dist/canvas-capture.js](dist/canvas-capture.js) or [dis
 
 ## Use
 
-There are a few ways to call CCapture. You can bind hotkeys to start/stop recording:
+There are a few ways to call canvas-capture. You can bind hotkeys to start/stop recording:
 
 ```js
 import * as CanvasCapture from 'canvas-capture';
