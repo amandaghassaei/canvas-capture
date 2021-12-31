@@ -16,6 +16,7 @@
   },
   "author": "Amanda Ghassaei",
   "license": "MIT",
+  "private": false,
   "bugs": {
     "url": "https://github.com/amandaghassaei/canvas-capture/issues"
   },
