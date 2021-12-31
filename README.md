@@ -95,7 +95,7 @@ CanvasCapture.stopRecord();
 
 // Or you can call `takeXXXSnapshot` to take a single snapshot.
 // No need to call `recordFrame` or `stopRecord` for these methods.
-CanvasCapture.takePNGSnapshot({ name: 'MyPng' }); // Options are optional, more info below.
+CanvasCapture.takePNGSnapshot();
 CanvasCapture.takeJPEGSnapshot({ dpi: 600 }, (blob, filename) => {
   // Instead of automatically downloading the file, you can pass an optional callback
   // as the second argument to takeJPEGSnapshot() and takePNGSnapshot()
@@ -117,26 +117,32 @@ videoOptions = {
   // Internally the ffmpeg conversion runs with additional flags to crop to an even
   // number of px dimensions ('-vf crop=trunc(iw/2)*2:trunc(ih/2)*2', required for mp4)
   // and export no audio channel ('-an').
-  onProgress: (progress: number) => void, // FFMPEG conversion, progress is a number between 0 and 1.
+  // onProgress gives feedback for FFMPEG conversion (MP4 only).
+  onProgress: (progress: number) => void, // progress is a number between 0 and 1.
 }
 gifOptions = {
   name: string, // Defaults to 'GIF_Capture'.
   fps: number, // The frames per second of the output gif, defaults to 60.
   quality: number, // A number between 0 and 1, defaults to 1.
-  onProgress: (progress: number) => void, // GIF export progress, progress is a number between 0 and 1.
+  // onProgress gives feedback for GIF export process.
+  onProgress: (progress: number) => void, // progress is a number between 0 and 1.
 }
 pngOptions = {
   name: string, // Defaults to 'PNG_Capture'.
   dpi: number, // Defaults to screen resolution (72 dpi).
-  // Below used for recording PNG frames (bindKeyToPNGFrames() or beginPNGFramesRecord()):
-  onProgress: (progress: number) => void, // Zipping progress, progress is a number between 0 and 1.
+  // Below used for recording PNG frames
+  // (bindKeyToPNGFrames() or beginPNGFramesRecord()):
+  // onProgress gives feedback for zipping process.
+  onProgress: (progress: number) => void, // progress is a number between 0 and 1.
 }
 jpegOptions = {
   name: string, // Defaults to 'JPEG_Capture'.
   quality: number, // A number between 0 and 1, defaults to 1.
   dpi: number, // Defaults to screen resolution (72 dpi).
-  // Below used for recording JPEG frames (bindKeyToJPEGFrames() or beginJPEGFramesRecord()):
-  onProgress: (progress: number) => void, // Zipping progress, progress is a number between 0 and 1.
+  // Below used for recording JPEG frames
+  // (bindKeyToJPEGFrames() or beginJPEGFramesRecord()):
+  // onProgress gives feedback for zipping process.
+  onProgress: (progress: number) => void, // progress is a number between 0 and 1.
 }
 ```
 
