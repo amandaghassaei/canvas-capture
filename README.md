@@ -84,9 +84,7 @@ CanvasCapture.recordFrame();
 CanvasCapture.stopRecord();
 
 // Now you may start another recording.
-CanvasCapture.beginVideoRecord({
-  format: 'mp4',
-});
+CanvasCapture.beginVideoRecord({ format: 'mp4' });
 CanvasCapture.recordFrame();
 ....
 CanvasCapture.stopRecord();
