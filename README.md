@@ -4,6 +4,15 @@ A small wrapper around [CCapture.js](https://github.com/spite/ccapture.js) and [
 Demo at: [apps.amandaghassaei.com/canvas-capture/demo/](https://apps.amandaghassaei.com/canvas-capture/demo/)  
 Video export currently only works in Chrome (see [Caveats](#caveats) for more details about browser support and server header requirements).
 
+- [Installation](#installation)
+- [Use](#use)
+- [Caveats](#caveats)
+- [Additonal Notes](#additional-notes)
+- [License](#license)
+- [Converting WEBM to Other Formats](converting-webm-to-other-formats)
+- [Development](#development)
+- [Demo](#demo)
+
 This project doesn't expose *all* the features of either CCapture.js or ffmpeg.wasm, but it packages some of the most useful functionality in a convenient way to be installed via npm and run in the browser (I'm mostly using this in  projects built with webpack).  I've also added:
 
 - type declarations for CanvasCapture API
