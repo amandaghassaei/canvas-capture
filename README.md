@@ -2,9 +2,9 @@
 A small wrapper around [CCapture.js](https://github.com/spite/ccapture.js) and [ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm) to record the canvas as an image (png/jpeg), video (mp4/webm), or gif – all from the browser!
 
 Demo at: [apps.amandaghassaei.com/canvas-capture/demo/](https://apps.amandaghassaei.com/canvas-capture/demo/)  
-Video export currently only works in Chrome (see [Caveats](#caveats) for more details about browser support).
+Video export currently only works in Chrome (see [Caveats](#caveats) for more details about browser support and server header requirements).
 
-This project doesn't expose *all* the features of either CCapture.js or ffmpeg.wasm, but it packages some of the most useful functionality in a convenient way to be installed via npm and run in the browser (I'm mostly using this in projects built with webpack).  I've also added:
+This project doesn't expose *all* the features of either CCapture.js or ffmpeg.wasm, but it packages some of the most useful functionality in a convenient way to be installed via npm and run in the browser (I'm mostly using this in  projects built with webpack).  I've also added:
 
 - type declarations for CanvasCapture API
 - helper functions to bind recording and screen-shotting to hotkeys
@@ -43,7 +43,11 @@ CanvasCapture.bindKeyToVideoRecord('v', {
 });
 CanvasCapture.bindKeyToGIFRecord('g');
 // Download a series of frames as a zip.
-CanvasCapture.bindKeyToPNGFramesRecord('f'); // Also try bindKeyToJPEGFramesRecord().
+CanvasCapture.bindKeyToPNGFramesRecord('f', {
+  onProgress: (progress) => { // Options are optional, more info below.
+    console.log(`Zipping... ${Math.round(progress * 100)}% complete.`);
+  },
+}); // Also try bindKeyToJPEGFramesRecord().
 
 // These methods take a single snapshot.
 CanvasCapture.bindKeyToPNGSnapshot('p'); 
@@ -107,26 +111,32 @@ videoOptions = {
   name: string, // Defaults to 'Video_Capture'.
   fps: number, // The frames per second of the output video, defaults to 60.
   quality: number, // A number between 0 and 1, defaults to 1.
-  // Options for ffmpeg conversion to mp4, not needed for webm export.
+  // Options below for ffmpeg conversion to mp4, not needed for webm export.
   ffmpegOptions?: { [key: string]: string }, // Defaults to
   // { '-c:v': 'libx264', '-preset': 'slow', '-crf': '22', '-pix_fmt': 'yuv420p' }
   // Internally the ffmpeg conversion runs with additional flags to crop to an even
   // number of px dimensions ('-vf crop=trunc(iw/2)*2:trunc(ih/2)*2', required for mp4)
   // and export no audio channel ('-an').
+  onProgress: (progress: number) => void, // FFMPEG conversion, progress is a number between 0 and 1.
 }
 gifOptions = {
   name: string, // Defaults to 'GIF_Capture'.
   fps: number, // The frames per second of the output gif, defaults to 60.
   quality: number, // A number between 0 and 1, defaults to 1.
+  onProgress: (progress: number) => void, // GIF export progress, progress is a number between 0 and 1.
 }
 pngOptions = {
   name: string, // Defaults to 'PNG_Capture'.
   dpi: number, // Defaults to screen resolution (72 dpi).
+  // Below used for recording PNG frames (bindKeyToPNGFrames() or beginPNGFramesRecord()):
+  onProgress: (progress: number) => void, // Zipping progress, progress is a number between 0 and 1.
 }
 jpegOptions = {
   name: string, // Defaults to 'JPEG_Capture'.
   quality: number, // A number between 0 and 1, defaults to 1.
   dpi: number, // Defaults to screen resolution (72 dpi).
+  // Below used for recording JPEG frames (bindKeyToJPEGFrames() or beginJPEGFramesRecord()):
+  onProgress: (progress: number) => void, // Zipping progress, progress is a number between 0 and 1.
 }
 ```
 

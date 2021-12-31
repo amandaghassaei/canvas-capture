@@ -35,28 +35,32 @@ type WEBM_OPTIONS = {
 	fps?: number,
 	name?: string,
 	quality?: number, // A number 0-1.
+	// No onProgress because download is immediate.
 };
 type MP4_OPTIONS = {
 	format?: typeof MP4,
 	fps?: number,
 	name?: string,
 	quality?: number, // A number 0-1.
-	// onFFMPEGProgress?: (progress: { ratio: number }) => void,
 	ffmpegOptions?: { [key: string]: string },
+	onProgress?: (progress: number) => void, // FFMPEG encoding progress, progress is a number between 0 and 1.
 };
 type GIF_OPTIONS = {
 	fps?: number,
 	name?: string,
 	quality?: number // A number 0-1.
+	onProgress?: (progress: number) => void, // progress is a number between 0 and 1.
 };
 type PNG_OPTIONS = {
 	name?: string,
 	dpi?: number, // Default is screen dpi (72).
+	onProgress?: (progress: number) => void, // Zipping progress, only used for recording PNG frames, progress is a number between 0 and 1.
 };
 type JPEG_OPTIONS = {
 	name?: string,
 	quality?: number, // A number 0-1.
 	dpi?: number, // Default is screen dpi (72).
+	onProgress?: (progress: number) => void, // Zipping progress, only used for recording JPEG frames, progress is a number between 0 and 1.
 };
 
 export type ACTIVE_CAPTURE = {
@@ -65,7 +69,7 @@ export type ACTIVE_CAPTURE = {
 	numFrames: number,
 	type: CAPTURE_TYPE,
 	zipOptions?: PNG_OPTIONS | JPEG_OPTIONS, // Only used for frame zip record.
-	onFFMPEGProgress?: (progress: number) => void,
+	onProgress?: (progress: number) => void,
 	ffmpegOptions?: { [key: string]: string },
 };
 const activeCaptures: ACTIVE_CAPTURE[] = [];
@@ -278,8 +282,8 @@ export function beginVideoRecord(options: WEBM_OPTIONS | MP4_OPTIONS) {
 		capturer,
 		numFrames: 0,
 		type: format,
-		// onFFMPEGProgress: (options as MP4_OPTIONS)?.onFFMPEGProgress,
 		ffmpegOptions: (options as MP4_OPTIONS)?.ffmpegOptions,
+		onProgress: (options as MP4_OPTIONS)?.onProgress,
 	};
 	startCapture(capture);
 	return capture;
@@ -305,6 +309,7 @@ export function beginGIFRecord(options?: GIF_OPTIONS) {
 		workersPath: gifWorkersPath,
 		quality,
 		verbose: PARAMS.VERBOSE,
+		onProgress: options?.onProgress,
 	});
 	const capture = {
 		name,
@@ -324,6 +329,7 @@ export function beginPNGFramesRecord(options?: PNG_OPTIONS) {
 		capturer: new JSZip(),
 		numFrames: 0,
 		type: PNGZIP as CAPTURE_TYPE,
+		onProgress: options?.onProgress,
 	};
 	startCapture(capture);
 	return capture;
@@ -337,6 +343,7 @@ export function beginJPEGFramesRecord(options?: JPEG_OPTIONS) {
 		capturer: new JSZip(),
 		numFrames: 0,
 		type: JPEGZIP as CAPTURE_TYPE,
+		onProgress: options?.onProgress,
 	};
 	startCapture(capture);
 	return capture;
@@ -430,7 +437,7 @@ function stopRecordAtIndex(index: number) {
 		capturer,
 		numFrames,
 		type,
-		onFFMPEGProgress,
+		onProgress,
 		ffmpegOptions,
 	} = activeCaptures[index];
 	// Remove ref to capturer.
@@ -448,14 +455,16 @@ function stopRecordAtIndex(index: number) {
 			convertWEBMtoMP4({
 				name,
 				blob,
-				onProgress: onFFMPEGProgress,
+				onProgress,
 				ffmpegOptions,
 			});
 		});
 	} else {
 		if (type !== PNGZIP && type !== JPEGZIP) (capturer as CCapture).save();
 		else {
-			(capturer as JSZip).generateAsync({ type: 'blob' }).then((content) => {
+			(capturer as JSZip).generateAsync({ type: 'blob' }, (metadata) => {
+				if (onProgress) onProgress(metadata.percent / 100);
+			}).then((content) => {
 				saveAs(content, `${name}.zip`);
 			});
 			showDialog(
@@ -546,11 +555,11 @@ async function convertWEBMtoMP4(options: {
 	// Write data to MEMFS, need to use Uint8Array for binary data.
 	ffmpeg.FS('writeFile', `${name}.webm`, data);
 	// Convert to MP4.
-	// OnProgress callback is not working yet.
+	// TODO: onProgress callback is not working quite right yet.
 	// https://github.com/ffmpegwasm/ffmpeg.wasm/issues/112
-	// if (onProgress) ffmpeg.setProgress(({ ratio }) => {
-	// 	onProgress(ratio);
-	// });
+	if (onProgress) ffmpeg.setProgress(({ ratio }) => {
+		onProgress(ratio);
+	});
 	// -vf "crop=trunc(iw/2)*2:trunc(ih/2)*2" ensures the dimensions of the mp4 are divisible by 2.
 	// -c:v libx264 -preset slow -crf 22 encodes as h.264 with better compression settings.
 	// -pix_fmt yuv420p makes it compatible with the web browser.

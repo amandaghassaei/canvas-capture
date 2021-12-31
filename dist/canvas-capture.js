@@ -4893,7 +4893,7 @@ function startCapture(capture) {
     modals_1.showDot(isRecording());
 }
 function beginVideoRecord(options) {
-    var _a;
+    var _a, _b;
     var format = (options === null || options === void 0 ? void 0 : options.format) || exports.MP4; // Default to MP4 record.
     if (format === exports.MP4) {
         if (!browserSupportsMP4()) {
@@ -4934,8 +4934,8 @@ function beginVideoRecord(options) {
         capturer: capturer,
         numFrames: 0,
         type: format,
-        // onFFMPEGProgress: (options as MP4_OPTIONS)?.onFFMPEGProgress,
         ffmpegOptions: (_a = options) === null || _a === void 0 ? void 0 : _a.ffmpegOptions,
+        onProgress: (_b = options) === null || _b === void 0 ? void 0 : _b.onProgress,
     };
     startCapture(capture);
     return capture;
@@ -4961,6 +4961,7 @@ function beginGIFRecord(options) {
         workersPath: gifWorkersPath,
         quality: quality,
         verbose: params_1.PARAMS.VERBOSE,
+        onProgress: options === null || options === void 0 ? void 0 : options.onProgress,
     });
     var capture = {
         name: name,
@@ -4980,6 +4981,7 @@ function beginPNGFramesRecord(options) {
         capturer: new JSZip(),
         numFrames: 0,
         type: PNGZIP,
+        onProgress: options === null || options === void 0 ? void 0 : options.onProgress,
     };
     startCapture(capture);
     return capture;
@@ -4993,6 +4995,7 @@ function beginJPEGFramesRecord(options) {
         capturer: new JSZip(),
         numFrames: 0,
         type: JPEGZIP,
+        onProgress: options === null || options === void 0 ? void 0 : options.onProgress,
     };
     startCapture(capture);
     return capture;
@@ -5089,7 +5092,7 @@ function recordFrame(capture) {
 }
 exports.recordFrame = recordFrame;
 function stopRecordAtIndex(index) {
-    var _a = activeCaptures[index], name = _a.name, capturer = _a.capturer, numFrames = _a.numFrames, type = _a.type, onFFMPEGProgress = _a.onFFMPEGProgress, ffmpegOptions = _a.ffmpegOptions;
+    var _a = activeCaptures[index], name = _a.name, capturer = _a.capturer, numFrames = _a.numFrames, type = _a.type, onProgress = _a.onProgress, ffmpegOptions = _a.ffmpegOptions;
     // Remove ref to capturer.
     activeCaptures.splice(index, 1);
     if (type !== PNGZIP && type !== JPEGZIP)
@@ -5103,7 +5106,7 @@ function stopRecordAtIndex(index) {
             convertWEBMtoMP4({
                 name: name,
                 blob: blob,
-                onProgress: onFFMPEGProgress,
+                onProgress: onProgress,
                 ffmpegOptions: ffmpegOptions,
             });
         });
@@ -5112,7 +5115,10 @@ function stopRecordAtIndex(index) {
         if (type !== PNGZIP && type !== JPEGZIP)
             capturer.save();
         else {
-            capturer.generateAsync({ type: 'blob' }).then(function (content) {
+            capturer.generateAsync({ type: 'blob' }, function (metadata) {
+                if (onProgress)
+                    onProgress(metadata.percent / 100);
+            }).then(function (content) {
                 file_saver_1.saveAs(content, name + ".zip");
             });
             modals_1.showDialog('Processing...', 'Frames are being zipped and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
@@ -5192,6 +5198,14 @@ function convertWEBMtoMP4(options) {
                     data = _a.sent();
                     // Write data to MEMFS, need to use Uint8Array for binary data.
                     ffmpeg.FS('writeFile', name + ".webm", data);
+                    // Convert to MP4.
+                    // TODO: onProgress callback is not working quite right yet.
+                    // https://github.com/ffmpegwasm/ffmpeg.wasm/issues/112
+                    if (onProgress)
+                        ffmpeg.setProgress(function (_a) {
+                            var ratio = _a.ratio;
+                            onProgress(ratio);
+                        });
                     defaultFFMPEGOptions = {
                         '-c:v': 'libx264',
                         '-preset': 'slow',
