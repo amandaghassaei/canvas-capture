@@ -25,7 +25,6 @@
     "@ffmpeg/ffmpeg": "^0.10.1",
     "ccapture.js": "github:amandaghassaei/ccapture.js#npm-fix",
     "changedpi": "^1.0.4",
-    "downloadjs": "^1.4.7",
     "file-saver": "^2.0.5",
     "jszip": "^3.7.1",
     "micromodal": "^0.4.6"

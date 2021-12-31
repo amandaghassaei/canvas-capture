@@ -1,6 +1,5 @@
 import CCapture from 'ccapture.js'
 import { saveAs } from 'file-saver';
-const download = require('downloadjs');
 // @ts-ignore
 import { changeDpiBlob } from 'changedpi';
 import { PARAMS } from './params';
