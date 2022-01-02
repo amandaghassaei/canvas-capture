@@ -36,7 +36,7 @@ There are a few ways to call canvas-capture. You can bind hotkeys to start/stop 
 import * as CanvasCapture from 'canvas-capture';
 
 // Initialize and pass in canvas.
-CanvasCapture.init(document.getElementById('my-canvas'));
+CanvasCapture.init(document.getElementById('my-canvas'), { showRecDot: true });
 
 // Bind key presses to begin/end recordings.
 CanvasCapture.bindKeyToVideoRecord('v', {
@@ -77,7 +77,7 @@ Alternatively, you can call `beginXXXRecord` and `takeXXXSnapshot` directly:
 import * as CanvasCapture from 'canvas-capture';
 
 // Initialize and pass in canvas.
-CanvasCapture.init(document.getElementById('my-canvas'));
+CanvasCapture.init(document.getElementById('my-canvas'), { showRecDot: true });
 
 CanvasCapture.beginGIFRecord({ fps: 10 }); // Options are optional, more info below.
 .... // Draw something.
