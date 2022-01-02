@@ -168,7 +168,7 @@ CanvasCapture.init(document.getElementById('my-canvas'), {
   // If you would like to load locally, you can set ffmpegCorePath to load from node_modules
   // ('./node_modules/@ffmpeg/core/dist/ffmpeg-core.js') using a copy of @ffmpeg/core installed
   // via npm, or copy the files at https://unpkg.com/browse/@ffmpeg/core@0.10.0/dist/ ,
-  // save them in your project, and set ffmpegCorePath accordingly.
+  // save them in your project, and set ffmpegCorePath to point to the ffmpeg-core.js file.
 });
 ```
 
