@@ -44,9 +44,7 @@ CanvasCapture.bindKeyToVideoRecord('v', {
   name: 'myVideo',
   quality: 0.6,
 });
-
 CanvasCapture.bindKeyToGIFRecord('g');
-
 // Download a series of frames as a zip.
 CanvasCapture.bindKeyToPNGFramesRecord('f', {
   onProgress: (progress) => { // Options are optional, more info below.
