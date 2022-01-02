@@ -36,7 +36,10 @@ There are a few ways to call canvas-capture. You can bind hotkeys to start/stop 
 import * as CanvasCapture from 'canvas-capture';
 
 // Initialize and pass in canvas.
-CanvasCapture.init(document.getElementById('my-canvas'), { showRecDot: true });
+CanvasCapture.init(
+  document.getElementById('my-canvas'),
+  { showRecDot: true }, // Options are optional, more info below.
+);
 
 // Bind key presses to begin/end recordings.
 CanvasCapture.bindKeyToVideoRecord('v', {
@@ -64,7 +67,8 @@ function loop() {
 
   // Render something...
 
-  // You need to do this only if you are recording a video, gif, or frames.
+  // You need to do this only if you are recording a video,
+  // gif, or frames.
   if (CanvasCapture.isRecording()) CanvasCapture.recordFrame();
 }
 
@@ -77,9 +81,12 @@ Alternatively, you can call `beginXXXRecord` and `takeXXXSnapshot` directly:
 import * as CanvasCapture from 'canvas-capture';
 
 // Initialize and pass in canvas.
-CanvasCapture.init(document.getElementById('my-canvas'), { showRecDot: true });
+CanvasCapture.init(
+  document.getElementById('my-canvas'),
+  { showRecDot: true }, // Options are optional, more info below.
+);
 
-CanvasCapture.beginGIFRecord({ fps: 10 }); // Options are optional, more info below.
+CanvasCapture.beginGIFRecord({ name: 'myGif', fps: 10 });
 .... // Draw something.
 CanvasCapture.recordFrame();
 .... // Draw something.
@@ -92,14 +99,16 @@ CanvasCapture.recordFrame();
 ....
 CanvasCapture.stopRecord();
 
-// Also try beginJPEGFramesRecord(jpegOptions) and beginPNGFramesRecord(pngOptions)
+// Also try beginJPEGFramesRecord(jpegOptions)
+// and beginPNGFramesRecord(pngOptions)
 
 // Or you can call `takeXXXSnapshot` to take a single snapshot.
 // No need to call `recordFrame` or `stopRecord` for these methods.
 CanvasCapture.takePNGSnapshot();
 CanvasCapture.takeJPEGSnapshot({ dpi: 600 }, (blob, filename) => {
-  // Instead of automatically downloading the file, you can pass an optional callback
-  // as the second argument to takeJPEGSnapshot() and takePNGSnapshot().
+  // Instead of automatically downloading the file, you can pass an
+  // optional callback  as the second argument to takeJPEGSnapshot()
+  // and takePNGSnapshot().
 });
 
 ```
@@ -110,39 +119,46 @@ Available options for each capture type - passed in as an optional argument to `
 videoOptions = {
   format: 'mp4' | 'webm', // Defaults to 'mp4'.
   name: string, // Defaults to 'Video_Capture'.
-  fps: number, // The frames per second of the output video, defaults to 60.
+  fps: number, // Frames per second of the output video, defaults to 60.
   quality: number, // A number between 0 and 1, defaults to 1.
-  onExportProgress: (progress: number) => void, // progress is a number between 0 and 1.
+  onExportProgress: (progress: number) => void,// progress is range [0-1].
   onExportFinish: () => void, // Callback after save complete.
-  // Options below for ffmpeg conversion to mp4, not needed for webm export.
-  ffmpegOptions?: { [key: string]: string }, // Defaults to
-  // { '-c:v': 'libx264', '-preset': 'slow', '-crf': '22', '-pix_fmt': 'yuv420p' }
-  // Internally the ffmpeg conversion runs with additional flags to crop to an even
-  // number of px dimensions ('-vf crop=trunc(iw/2)*2:trunc(ih/2)*2', required for mp4)
-  // and export no audio channel ('-an').
+  // Options below for ffmpeg conversion to mp4, not used for webm export.
+  ffmpegOptions?: { [key: string]: string }, // FFMPEG option flags
+  // Defaults to
+  // {  '-c:v': 'libx264',
+  //    '-preset': 'slow',
+  //    '-crf': '22',
+  //    '-pix_fmt': 'yuv420p' }
+  // Internally the ffmpeg conversion runs with additional flags to crop
+  // to an even number of px dimensions (required for mp4):
+  // '-vf crop=trunc(iw/2)*2:trunc(ih/2)*2'
+  // and export no audio channel: '-an'
 }
 gifOptions = {
   name: string, // Defaults to 'GIF_Capture'.
   fps: number, // The frames per second of the output gif, defaults to 60.
   quality: number, // A number between 0 and 1, defaults to 1.
-  onExportProgress: (progress: number) => void, // progress is a number between 0 and 1.
+  onExportProgress: (progress: number) => void, // progress is range [0-1].
   onExportFinish: () => void, // Callback after save complete.
 }
 pngOptions = {
   name: string, // Defaults to 'PNG_Capture'.
   dpi: number, // Defaults to screen resolution (72 dpi).
-  // onExportProgress and onExportFinish gives zipping updates for recording PNG frames
-  // (only used by bindKeyToPNGFrames() and beginPNGFramesRecord()):
-  onExportProgress: (progress: number) => void, // progress is a number between 0 and 1.
+  // onExportProgress and onExportFinish gives zipping updates for
+  // recording PNG frames (only used by bindKeyToPNGFrames()
+  // and beginPNGFramesRecord()):
+  onExportProgress: (progress: number) => void, // progress is range [0-1].
   onExportFinish: () => void, // Callback after save complete.
 }
 jpegOptions = {
   name: string, // Defaults to 'JPEG_Capture'.
   quality: number, // A number between 0 and 1, defaults to 1.
   dpi: number, // Defaults to screen resolution (72 dpi).
-  // onExportProgress and onExportFinish gives zipping updates for recording JPEG frames
-  // (only used by bindKeyToJPEGFrames() and beginJPEGFramesRecord()):
-  onExportProgress: (progress: number) => void, // progress is a number between 0 and 1.
+  // onExportProgress and onExportFinish gives zipping updates for
+  // recording JPEG frames (only used by bindKeyToJPEGFrames()
+  // and beginJPEGFramesRecord()):
+  onExportProgress: (progress: number) => void, // progress is range [0-1].
   onExportFinish: () => void, // Callback after save complete.
 }
 ```
@@ -155,20 +171,29 @@ You can initialize `CanvasCapture` with the following options:
 import * as CanvasCapture from 'canvas-capture';
 
 CanvasCapture.init(document.getElementById('my-canvas'), {
-  verbose: true, // Verbosity of console output, default is true,
-  showRecDot: true, // Show a red dot on the screen during records, default is false.
-  recDotCSS: { right: '0', top: '0', margin: '10px' }, // CSS overrides for dot, default is {}.
-  showAlerts: true, // Show alert dialogs during export in case of errors, default is false.
-  showDialogs: true, // Show informational dialogs during export, default is false.
-  ffmpegCorePath: './node_modules/@ffmpeg/core/dist/ffmpeg-core.js', // Path to a copy of
-  // ffmpeg-core to be loaded asynchronously.  ffmpeg-core has not been included in this
-  // library by default because it is very large (~25MB) and is only needed for mp4 export.
+  // Verbosity of console output.
+  verbose: true, // Default is true.
+  // Show a red dot on the screen during records.
+  showRecDot: true, // Default is false.
+  // CSS overrides for record dot.
+  recDotCSS: { right: '0', top: '0', margin: '10px' }, // Default is {}.
+  // Show alert dialogs during export in case of errors.
+  showAlerts: true, // Default is false.
+  // Show informational dialogs during export.
+  showDialogs: true, // Default is false.
+  // Path to a copy of ffmpeg-core to be loaded asynchronously.
+  // ffmpeg-core has not been included in this library by default because
+  // it is very large (~25MB) and is only needed for mp4 export.
+  ffmpegCorePath: './node_modules/@ffmpeg/core/dist/ffmpeg-core.js', 
   // By default, ffmpegCorePath is set to load remotely from
   // https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js
-  // If you would like to load locally, you can set ffmpegCorePath to load from node_modules
-  // ('./node_modules/@ffmpeg/core/dist/ffmpeg-core.js') using a copy of @ffmpeg/core installed
-  // via npm, or copy the files at https://unpkg.com/browse/@ffmpeg/core@0.10.0/dist/ ,
-  // save them in your project, and set ffmpegCorePath to point to the ffmpeg-core.js file.
+  // If you would like to load locally, you can set ffmpegCorePath to
+  // load from node_modules:
+  // './node_modules/@ffmpeg/core/dist/ffmpeg-core.js'
+  // using a copy of @ffmpeg/core installed via npm, or copy the files
+  // (ffmpeg-core.js, ffmpeg-core.wasm, and ffmpeg-core.worker.js), save
+  // them in your project, and set ffmpegCorePath to point to
+  // ffmpeg-core.js
 });
 ```
 
@@ -195,7 +220,8 @@ I've also included a helper function to show a simple modal dialog with a title 
 
 ```js
 const options = {
-  // Set the amount of time to wait before auto-closing dialog, or -1 to disable auto-close.
+  // Set the amount of time to wait before auto-closing dialog,
+  // or -1 to disable auto-close.
   autoCloseDelay: 7000, // Default is -1.
 };
 // title and message are strings, options are optional.
@@ -240,11 +266,14 @@ If you're hosting an application on [Github Pages](https://pages.github.com/), I
 Additionally, you can test for browser support with the following methods:
 
 ```js
-CanvasCapture.browserSupportsWEBM(); // Returns true if the browser supports webm recording.
+// Returns true if the browser supports webm recording.
+CanvasCapture.browserSupportsWEBM();
 
-CanvasCapture.browserSupportsMP4(); // Returns true if the browser supports mp4 recording.
+// Returns true if the browser supports mp4 recording.
+CanvasCapture.browserSupportsMP4();
 
-CanvasCapture.browserSupportsGIF(); // Returns true if the browser supports gif recording.
+// Returns true if the browser supports gif recording.
+CanvasCapture.browserSupportsGIF();
 ```
 
 I'm not aware of any browser limitations for the image export options (obviously, the browser must [support canvas](https://caniuse.com/?search=canvas) as a bare minimum).
@@ -306,8 +335,10 @@ Also, in order to get the CCapture constructor to work correctly, I had to call 
 
 
 ```js
-import CCapture from './CCapture.js/CCapture'; // Pulling my local copy of CCapture.js.
-const temp = CCapture; // This is an unused variable, but critically necessary.
+// Importing my local copy of CCapture.js.
+import CCapture from './CCapture.js/CCapture';
+// This is an unused variable, but critically necessary.
+const temp = CCapture;
 
 ....
 
