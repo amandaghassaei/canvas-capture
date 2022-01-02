@@ -121,7 +121,7 @@ videoOptions = {
   name: string, // Defaults to 'Video_Capture'.
   fps: number, // Frames per second of the output video, defaults to 60.
   quality: number, // A number between 0 and 1, defaults to 1.
-  onExportProgress: (progress: number) => void,// progress is range [0-1].
+  onExportProgress: (progress: number) => void, // progress: range [0-1].
   onExportFinish: () => void, // Callback after save complete.
   // Options below for ffmpeg conversion to mp4, not used for webm export.
   ffmpegOptions?: { [key: string]: string }, // FFMPEG option flags
@@ -139,7 +139,7 @@ gifOptions = {
   name: string, // Defaults to 'GIF_Capture'.
   fps: number, // The frames per second of the output gif, defaults to 60.
   quality: number, // A number between 0 and 1, defaults to 1.
-  onExportProgress: (progress: number) => void, // progress is range [0-1].
+  onExportProgress: (progress: number) => void, // progress: range [0-1].
   onExportFinish: () => void, // Callback after save complete.
 }
 pngOptions = {
@@ -148,7 +148,7 @@ pngOptions = {
   // onExportProgress and onExportFinish gives zipping updates for
   // recording PNG frames (only used by bindKeyToPNGFrames()
   // and beginPNGFramesRecord()):
-  onExportProgress: (progress: number) => void, // progress is range [0-1].
+  onExportProgress: (progress: number) => void, // progress: range [0-1].
   onExportFinish: () => void, // Callback after save complete.
 }
 jpegOptions = {
@@ -158,7 +158,7 @@ jpegOptions = {
   // onExportProgress and onExportFinish gives zipping updates for
   // recording JPEG frames (only used by bindKeyToJPEGFrames()
   // and beginJPEGFramesRecord()):
-  onExportProgress: (progress: number) => void, // progress is range [0-1].
+  onExportProgress: (progress: number) => void, // progress: range [0-1].
   onExportFinish: () => void, // Callback after save complete.
 }
 ```
