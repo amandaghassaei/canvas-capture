@@ -17,6 +17,10 @@
   "author": "Amanda Ghassaei",
   "license": "MIT",
   "private": false,
+  "files": [
+    "dist/*",
+    "src/*"
+  ],
   "bugs": {
     "url": "https://github.com/amandaghassaei/canvas-capture/issues"
   },
