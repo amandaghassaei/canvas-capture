@@ -21,6 +21,15 @@
     "dist/*",
     "src/*"
   ],
+  "keywords": [
+    "mp4",
+    "video",
+    "gif",
+    "record",
+    "canvas",
+    "save",
+    "download"
+  ],
   "bugs": {
     "url": "https://github.com/amandaghassaei/canvas-capture/issues"
   },
