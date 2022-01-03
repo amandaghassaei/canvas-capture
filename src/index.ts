@@ -125,7 +125,6 @@ export function init(_canvas: HTMLCanvasElement, options?: {
 	ffmpeg = createFFmpeg({
 		// Use public address if you don't want to host your own.
 		corePath: options?.ffmpegCorePath || 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
-		log: true,
 	  });
 	if (options && options.verbose !== undefined) setVerbose(options.verbose);
 	if (options && options.showAlerts !== undefined) PARAMS.SHOW_ALERTS = options.showAlerts;
@@ -143,6 +142,7 @@ export function init(_canvas: HTMLCanvasElement, options?: {
 
 export function setVerbose(state: boolean) {
 	PARAMS.VERBOSE = !!state;
+	if (ffmpeg) ffmpeg.setLogging(PARAMS.VERBOSE);
 }
 
 function checkCanvas() {

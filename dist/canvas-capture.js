@@ -2169,7 +2169,6 @@ function init(_canvas, options) {
     ffmpeg = ffmpeg_1.createFFmpeg({
         // Use public address if you don't want to host your own.
         corePath: (options === null || options === void 0 ? void 0 : options.ffmpegCorePath) || 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
-        log: true,
     });
     if (options && options.verbose !== undefined)
         setVerbose(options.verbose);
@@ -2191,6 +2190,8 @@ function init(_canvas, options) {
 exports.init = init;
 function setVerbose(state) {
     params_1.PARAMS.VERBOSE = !!state;
+    if (ffmpeg)
+        ffmpeg.setLogging(params_1.PARAMS.VERBOSE);
 }
 exports.setVerbose = setVerbose;
 function checkCanvas() {
