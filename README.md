@@ -351,7 +351,7 @@ const capturer = new window.CCapture({
   name: 'WEBM_Capture',
   framerate: 60,
   quality: 63,
-  verbose: VERBOSE,
+  verbose: false,
 });
 // This didn't work:
 // const capturer = new CCapture({
@@ -359,7 +359,7 @@ const capturer = new window.CCapture({
 //   name: 'WEBM_Capture',
 //   framerate: 60,
 //   quality: 63,
-//   verbose: VERBOSE,
+//   verbose: false,
 // });
 ```
 
