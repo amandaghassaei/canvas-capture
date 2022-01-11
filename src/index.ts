@@ -164,11 +164,12 @@ function setHotkey(key: string, type: HOTKEY_TYPE) {
 }
 
 // Pressing key once will start record, press again to stop.
-export function bindKeyToVideoRecord(key: string, options: WEBM_OPTIONS | MP4_OPTIONS) {
-	if (options.format === WEBM) {
+export function bindKeyToVideoRecord(key: string, options?: WEBM_OPTIONS | MP4_OPTIONS) {
+	if (options?.format === WEBM) {
 		hotkeyOptions.webm = options as WEBM_OPTIONS;
 		setHotkey(key, WEBM);
 	} else {
+		// Default to MP4.
 		hotkeyOptions.mp4 = options as MP4_OPTIONS;
 		setHotkey(key, MP4);
 	}
@@ -248,7 +249,7 @@ function startCapture(capture: ACTIVE_CAPTURE) {
 	showDot(isRecording());
 }
 
-export function beginVideoRecord(options: WEBM_OPTIONS | MP4_OPTIONS) {
+export function beginVideoRecord(options?: WEBM_OPTIONS | MP4_OPTIONS) {
 	const format = options?.format || MP4; // Default to MP4 record.
 	if (format === MP4) {
 		if (!browserSupportsMP4()) {

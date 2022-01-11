@@ -8,6 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack && npm run build-demo",
     "build-demo": "webpack --config demo/webpack.config.js",
+    "deployPatch": "npm version patch && npm run build && npm publish && git add . && git ci -m \"iter version number\"",
     "start": "node server.js"
   },
   "repository": {

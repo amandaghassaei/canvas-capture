@@ -2212,11 +2212,12 @@ function setHotkey(key, type) {
 }
 // Pressing key once will start record, press again to stop.
 function bindKeyToVideoRecord(key, options) {
-    if (options.format === exports.WEBM) {
+    if ((options === null || options === void 0 ? void 0 : options.format) === exports.WEBM) {
         hotkeyOptions.webm = options;
         setHotkey(key, exports.WEBM);
     }
     else {
+        // Default to MP4.
         hotkeyOptions.mp4 = options;
         setHotkey(key, exports.MP4);
     }
