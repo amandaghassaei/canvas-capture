@@ -6,6 +6,7 @@ export declare const WEBM: "webm";
 export declare const MP4: "mp4";
 declare const JPEGZIP: "jpegzip";
 declare const PNGZIP: "pngzip";
+declare type onExport = (blob: Blob, filename: string) => void;
 declare type CAPTURE_TYPE = typeof GIF | typeof WEBM | typeof MP4 | typeof JPEGZIP | typeof PNGZIP;
 declare type WEBM_OPTIONS = {
     format?: typeof WEBM;
@@ -13,6 +14,7 @@ declare type WEBM_OPTIONS = {
     name?: string;
     quality?: number;
     onExportProgress?: (progress: number) => void;
+    onExport?: onExport;
     onExportFinish?: () => void;
 };
 declare type MP4_OPTIONS = {
@@ -24,6 +26,7 @@ declare type MP4_OPTIONS = {
         [key: string]: string;
     };
     onExportProgress?: (progress: number) => void;
+    onExport?: onExport;
     onExportFinish?: () => void;
 };
 declare type GIF_OPTIONS = {
@@ -31,12 +34,14 @@ declare type GIF_OPTIONS = {
     name?: string;
     quality?: number;
     onExportProgress?: (progress: number) => void;
+    onExport?: onExport;
     onExportFinish?: () => void;
 };
 declare type PNG_OPTIONS = {
     name?: string;
     dpi?: number;
     onExportProgress?: (progress: number) => void;
+    onExport?: onExport;
     onExportFinish?: () => void;
 };
 declare type JPEG_OPTIONS = {
@@ -44,6 +49,7 @@ declare type JPEG_OPTIONS = {
     quality?: number;
     dpi?: number;
     onExportProgress?: (progress: number) => void;
+    onExport?: onExport;
     onExportFinish?: () => void;
 };
 export declare type ACTIVE_CAPTURE = {
@@ -53,6 +59,7 @@ export declare type ACTIVE_CAPTURE = {
     type: CAPTURE_TYPE;
     zipOptions?: PNG_OPTIONS | JPEG_OPTIONS;
     onExportProgress?: (progress: number) => void;
+    onExport?: onExport;
     onExportFinish?: () => void;
     ffmpegOptions?: {
         [key: string]: string;
@@ -84,6 +91,7 @@ export declare function beginVideoRecord(options?: WEBM_OPTIONS | MP4_OPTIONS): 
         [key: string]: string;
     } | undefined;
     onExportProgress: ((progress: number) => void) | ((progress: number) => void) | undefined;
+    onExport: onExport | undefined;
     onExportFinish: (() => void) | (() => void) | undefined;
 } | undefined;
 export declare function beginGIFRecord(options?: GIF_OPTIONS): {
@@ -99,6 +107,7 @@ export declare function beginPNGFramesRecord(options?: PNG_OPTIONS): {
     numFrames: number;
     type: CAPTURE_TYPE;
     onExportProgress: ((progress: number) => void) | undefined;
+    onExport: onExport | undefined;
     onExportFinish: (() => void) | undefined;
 };
 export declare function beginJPEGFramesRecord(options?: JPEG_OPTIONS): {
@@ -108,10 +117,11 @@ export declare function beginJPEGFramesRecord(options?: JPEG_OPTIONS): {
     numFrames: number;
     type: CAPTURE_TYPE;
     onExportProgress: ((progress: number) => void) | undefined;
+    onExport: onExport | undefined;
     onExportFinish: (() => void) | undefined;
 };
-export declare function takePNGSnapshot(options?: PNG_OPTIONS, callback?: (blob: Blob, filename: string) => void): void;
-export declare function takeJPEGSnapshot(options?: JPEG_OPTIONS, callback?: (blob: Blob, filename: string) => void): void;
+export declare function takePNGSnapshot(options?: PNG_OPTIONS): void;
+export declare function takeJPEGSnapshot(options?: JPEG_OPTIONS): void;
 export declare function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]): void;
 export declare function stopRecord(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]): void;
 export declare function isRecording(): boolean;

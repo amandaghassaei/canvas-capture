@@ -2353,6 +2353,7 @@ function beginVideoRecord(options) {
         type: format,
         ffmpegOptions: (_a = options) === null || _a === void 0 ? void 0 : _a.ffmpegOptions,
         onExportProgress: options === null || options === void 0 ? void 0 : options.onExportProgress,
+        onExport: options === null || options === void 0 ? void 0 : options.onExport,
         onExportFinish: options === null || options === void 0 ? void 0 : options.onExportFinish,
     };
     startCapture(capture);
@@ -2400,6 +2401,7 @@ function beginPNGFramesRecord(options) {
         numFrames: 0,
         type: PNGZIP,
         onExportProgress: options === null || options === void 0 ? void 0 : options.onExportProgress,
+        onExport: options === null || options === void 0 ? void 0 : options.onExport,
         onExportFinish: options === null || options === void 0 ? void 0 : options.onExportFinish,
     };
     startCapture(capture);
@@ -2415,18 +2417,19 @@ function beginJPEGFramesRecord(options) {
         numFrames: 0,
         type: JPEGZIP,
         onExportProgress: options === null || options === void 0 ? void 0 : options.onExportProgress,
+        onExport: options === null || options === void 0 ? void 0 : options.onExport,
         onExportFinish: options === null || options === void 0 ? void 0 : options.onExportFinish,
     };
     startCapture(capture);
     return capture;
 }
 exports.beginJPEGFramesRecord = beginJPEGFramesRecord;
-function takePNGSnapshot(options, callback) {
-    if (callback === void 0) { callback = file_saver_1.saveAs; }
+function takePNGSnapshot(options) {
     var name = (options === null || options === void 0 ? void 0 : options.name) || 'PNG_Capture';
     if (!checkCanvas()) {
         return;
     }
+    var filename = name + ".png";
     canvas.toBlob(function (blob) {
         if (!blob) {
             modals_1.showAlert('Problem saving PNG, please try again!');
@@ -2434,22 +2437,32 @@ function takePNGSnapshot(options, callback) {
         }
         if (options === null || options === void 0 ? void 0 : options.dpi) {
             changedpi_1.changeDpiBlob(blob, options === null || options === void 0 ? void 0 : options.dpi).then(function (blob) {
-                callback(blob, name + ".png");
+                if (options === null || options === void 0 ? void 0 : options.onExport) {
+                    options.onExport(blob, filename);
+                }
+                else {
+                    file_saver_1.saveAs(blob, filename);
+                }
             });
         }
         else {
-            callback(blob, name + ".png");
+            if (options === null || options === void 0 ? void 0 : options.onExport) {
+                options.onExport(blob, filename);
+            }
+            else {
+                file_saver_1.saveAs(blob, filename);
+            }
         }
     }, 'image/png');
 }
 exports.takePNGSnapshot = takePNGSnapshot;
-function takeJPEGSnapshot(options, callback) {
-    if (callback === void 0) { callback = file_saver_1.saveAs; }
+function takeJPEGSnapshot(options) {
     var name = (options === null || options === void 0 ? void 0 : options.name) || 'JPEG_Capture';
     if (!checkCanvas()) {
         return;
     }
     // Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+    var filename = name + ".jpg";
     canvas.toBlob(function (blob) {
         if (!blob) {
             modals_1.showAlert('Problem saving JPEG, please try again!');
@@ -2457,11 +2470,21 @@ function takeJPEGSnapshot(options, callback) {
         }
         if (options === null || options === void 0 ? void 0 : options.dpi) {
             changedpi_1.changeDpiBlob(blob, options === null || options === void 0 ? void 0 : options.dpi).then(function (blob) {
-                callback(blob, name + ".jpg");
+                if (options === null || options === void 0 ? void 0 : options.onExport) {
+                    options.onExport(blob, filename);
+                }
+                else {
+                    file_saver_1.saveAs(blob, filename);
+                }
             });
         }
         else {
-            callback(blob, name + ".jpg");
+            if (options === null || options === void 0 ? void 0 : options.onExport) {
+                options.onExport(blob, filename);
+            }
+            else {
+                file_saver_1.saveAs(blob, filename);
+            }
         }
     }, 'image/jpeg', (options === null || options === void 0 ? void 0 : options.quality) || 1);
 }
@@ -2490,15 +2513,14 @@ function recordFrame(capture) {
             var frameName = "frame_" + (numFrames + 1);
             var options = __assign({}, (zipOptions || {}));
             options.name = frameName;
+            options.onExport = function (blob, filename) {
+                capturer.file(filename, blob);
+            };
             if (type === JPEGZIP) {
-                takeJPEGSnapshot(options, function (blob, filename) {
-                    capturer.file(filename, blob);
-                });
+                takeJPEGSnapshot(options);
             }
             else if (type === PNGZIP) {
-                takePNGSnapshot(options, function (blob, filename) {
-                    capturer.file(filename, blob);
-                });
+                takePNGSnapshot(options);
             }
         }
         else {
@@ -2512,7 +2534,7 @@ function recordFrame(capture) {
 }
 exports.recordFrame = recordFrame;
 function stopRecordAtIndex(index) {
-    var _a = activeCaptures[index], name = _a.name, capturer = _a.capturer, numFrames = _a.numFrames, type = _a.type, onExportProgress = _a.onExportProgress, onExportFinish = _a.onExportFinish, ffmpegOptions = _a.ffmpegOptions;
+    var _a = activeCaptures[index], name = _a.name, capturer = _a.capturer, numFrames = _a.numFrames, type = _a.type, onExportProgress = _a.onExportProgress, onExport = _a.onExport, onExportFinish = _a.onExportFinish, ffmpegOptions = _a.ffmpegOptions;
     // Remove ref to capturer.
     activeCaptures.splice(index, 1);
     if (type !== PNGZIP && type !== JPEGZIP)
@@ -2530,6 +2552,7 @@ function stopRecordAtIndex(index) {
                     name: name,
                     blob: blob,
                     onProgress: onExportProgress,
+                    onSave: onExport,
                     onFinish: onExportFinish,
                     ffmpegOptions: ffmpegOptions,
                 });
@@ -2539,9 +2562,15 @@ function stopRecordAtIndex(index) {
             if (onExportProgress)
                 onExportProgress(0);
             capturer.save(function (blob) {
-                file_saver_1.saveAs(blob, name + ".webm");
                 if (onExportProgress)
                     onExportProgress(1); // Save is nearly immediate.
+                var filename = name + ".webm";
+                if (onExport) {
+                    onExport(blob, filename);
+                }
+                else {
+                    file_saver_1.saveAs(blob, filename);
+                }
                 if (onExportFinish)
                     onExportFinish();
             });
@@ -2551,7 +2580,13 @@ function stopRecordAtIndex(index) {
             modals_1.showDialog('Processing...', 'GIF is processing and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
             // onExportProgress callback already passed to CCapture.
             capturer.save(function (blob) {
-                file_saver_1.saveAs(blob, name + ".gif");
+                var filename = name + ".gif";
+                if (onExport) {
+                    onExport(blob, filename);
+                }
+                else {
+                    file_saver_1.saveAs(blob, filename);
+                }
                 if (onExportFinish)
                     onExportFinish();
             });
@@ -2563,8 +2598,14 @@ function stopRecordAtIndex(index) {
             capturer.generateAsync({ type: 'blob' }, function (metadata) {
                 if (onExportProgress)
                     onExportProgress(metadata.percent / 100);
-            }).then(function (content) {
-                file_saver_1.saveAs(content, name + ".zip");
+            }).then(function (blob) {
+                var filename = name + ".zip";
+                if (onExport) {
+                    onExport(blob, filename);
+                }
+                else {
+                    file_saver_1.saveAs(blob, filename);
+                }
                 if (onExportFinish)
                     onExportFinish();
             });
@@ -2616,7 +2657,7 @@ exports.isRecording = isRecording;
 var ffmpegLoaded = false;
 function convertWEBMtoMP4(options) {
     return __awaiter(this, void 0, void 0, function () {
-        var e_1, name, blob, onProgress, onFinish, ffmpegOptions, data, defaultFFMPEGOptions, combinedOptions, _ffmpegOptions, output, outputBlob;
+        var e_1, name, blob, onProgress, onSave, onFinish, ffmpegOptions, data, defaultFFMPEGOptions, combinedOptions, _ffmpegOptions, filename, output, outputBlob;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -2634,7 +2675,7 @@ function convertWEBMtoMP4(options) {
                     modals_1.showAlert('MP4 export not supported in this browser, try again in the latest version of Chrome.');
                     return [2 /*return*/];
                 case 4:
-                    name = options.name, blob = options.blob, onProgress = options.onProgress, onFinish = options.onFinish, ffmpegOptions = options.ffmpegOptions;
+                    name = options.name, blob = options.blob, onProgress = options.onProgress, onSave = options.onSave, onFinish = options.onFinish, ffmpegOptions = options.ffmpegOptions;
                     return [4 /*yield*/, ffmpeg_1.fetchFile(blob)];
                 case 5:
                     data = _a.sent();
@@ -2659,18 +2700,25 @@ function convertWEBMtoMP4(options) {
                     Object.keys(combinedOptions).forEach(function (key) {
                         _ffmpegOptions.push(key, combinedOptions[key]);
                     });
+                    filename = name + ".mp4";
                     return [4 /*yield*/, ffmpeg.run.apply(ffmpeg, __spreadArrays(['-i', name + ".webm"], _ffmpegOptions, ['-vf', 'crop=trunc(iw/2)*2:trunc(ih/2)*2',
-                            '-an', name + ".mp4"]))];
+                            '-an',
+                            filename]))];
                 case 6:
                     _a.sent();
-                    return [4 /*yield*/, ffmpeg.FS('readFile', name + ".mp4")];
+                    return [4 /*yield*/, ffmpeg.FS('readFile', filename)];
                 case 7:
                     output = _a.sent();
                     outputBlob = new Blob([output], { type: 'video/mp4' });
-                    file_saver_1.saveAs(outputBlob, name + ".mp4");
+                    if (onSave) {
+                        onSave(blob, filename);
+                    }
+                    else {
+                        file_saver_1.saveAs(outputBlob, filename);
+                    }
                     // Delete files in MEMFS.
                     ffmpeg.FS('unlink', name + ".webm");
-                    ffmpeg.FS('unlink', name + ".mp4");
+                    ffmpeg.FS('unlink', filename);
                     if (onFinish)
                         onFinish();
                     return [2 /*return*/];

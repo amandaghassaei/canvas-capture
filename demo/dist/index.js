@@ -2357,6 +2357,7 @@ function beginVideoRecord(options) {
         type: format,
         ffmpegOptions: (_a = options) === null || _a === void 0 ? void 0 : _a.ffmpegOptions,
         onExportProgress: options === null || options === void 0 ? void 0 : options.onExportProgress,
+        onExport: options === null || options === void 0 ? void 0 : options.onExport,
         onExportFinish: options === null || options === void 0 ? void 0 : options.onExportFinish,
     };
     startCapture(capture);
@@ -2404,6 +2405,7 @@ function beginPNGFramesRecord(options) {
         numFrames: 0,
         type: PNGZIP,
         onExportProgress: options === null || options === void 0 ? void 0 : options.onExportProgress,
+        onExport: options === null || options === void 0 ? void 0 : options.onExport,
         onExportFinish: options === null || options === void 0 ? void 0 : options.onExportFinish,
     };
     startCapture(capture);
@@ -2419,18 +2421,19 @@ function beginJPEGFramesRecord(options) {
         numFrames: 0,
         type: JPEGZIP,
         onExportProgress: options === null || options === void 0 ? void 0 : options.onExportProgress,
+        onExport: options === null || options === void 0 ? void 0 : options.onExport,
         onExportFinish: options === null || options === void 0 ? void 0 : options.onExportFinish,
     };
     startCapture(capture);
     return capture;
 }
 exports.beginJPEGFramesRecord = beginJPEGFramesRecord;
-function takePNGSnapshot(options, callback) {
-    if (callback === void 0) { callback = file_saver_1.saveAs; }
+function takePNGSnapshot(options) {
     var name = (options === null || options === void 0 ? void 0 : options.name) || 'PNG_Capture';
     if (!checkCanvas()) {
         return;
     }
+    var filename = name + ".png";
     canvas.toBlob(function (blob) {
         if (!blob) {
             modals_1.showAlert('Problem saving PNG, please try again!');
@@ -2438,22 +2441,32 @@ function takePNGSnapshot(options, callback) {
         }
         if (options === null || options === void 0 ? void 0 : options.dpi) {
             changedpi_1.changeDpiBlob(blob, options === null || options === void 0 ? void 0 : options.dpi).then(function (blob) {
-                callback(blob, name + ".png");
+                if (options === null || options === void 0 ? void 0 : options.onExport) {
+                    options.onExport(blob, filename);
+                }
+                else {
+                    file_saver_1.saveAs(blob, filename);
+                }
             });
         }
         else {
-            callback(blob, name + ".png");
+            if (options === null || options === void 0 ? void 0 : options.onExport) {
+                options.onExport(blob, filename);
+            }
+            else {
+                file_saver_1.saveAs(blob, filename);
+            }
         }
     }, 'image/png');
 }
 exports.takePNGSnapshot = takePNGSnapshot;
-function takeJPEGSnapshot(options, callback) {
-    if (callback === void 0) { callback = file_saver_1.saveAs; }
+function takeJPEGSnapshot(options) {
     var name = (options === null || options === void 0 ? void 0 : options.name) || 'JPEG_Capture';
     if (!checkCanvas()) {
         return;
     }
     // Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+    var filename = name + ".jpg";
     canvas.toBlob(function (blob) {
         if (!blob) {
             modals_1.showAlert('Problem saving JPEG, please try again!');
@@ -2461,11 +2474,21 @@ function takeJPEGSnapshot(options, callback) {
         }
         if (options === null || options === void 0 ? void 0 : options.dpi) {
             changedpi_1.changeDpiBlob(blob, options === null || options === void 0 ? void 0 : options.dpi).then(function (blob) {
-                callback(blob, name + ".jpg");
+                if (options === null || options === void 0 ? void 0 : options.onExport) {
+                    options.onExport(blob, filename);
+                }
+                else {
+                    file_saver_1.saveAs(blob, filename);
+                }
             });
         }
         else {
-            callback(blob, name + ".jpg");
+            if (options === null || options === void 0 ? void 0 : options.onExport) {
+                options.onExport(blob, filename);
+            }
+            else {
+                file_saver_1.saveAs(blob, filename);
+            }
         }
     }, 'image/jpeg', (options === null || options === void 0 ? void 0 : options.quality) || 1);
 }
@@ -2494,15 +2517,14 @@ function recordFrame(capture) {
             var frameName = "frame_" + (numFrames + 1);
             var options = __assign({}, (zipOptions || {}));
             options.name = frameName;
+            options.onExport = function (blob, filename) {
+                capturer.file(filename, blob);
+            };
             if (type === JPEGZIP) {
-                takeJPEGSnapshot(options, function (blob, filename) {
-                    capturer.file(filename, blob);
-                });
+                takeJPEGSnapshot(options);
             }
             else if (type === PNGZIP) {
-                takePNGSnapshot(options, function (blob, filename) {
-                    capturer.file(filename, blob);
-                });
+                takePNGSnapshot(options);
             }
         }
         else {
@@ -2516,7 +2538,7 @@ function recordFrame(capture) {
 }
 exports.recordFrame = recordFrame;
 function stopRecordAtIndex(index) {
-    var _a = activeCaptures[index], name = _a.name, capturer = _a.capturer, numFrames = _a.numFrames, type = _a.type, onExportProgress = _a.onExportProgress, onExportFinish = _a.onExportFinish, ffmpegOptions = _a.ffmpegOptions;
+    var _a = activeCaptures[index], name = _a.name, capturer = _a.capturer, numFrames = _a.numFrames, type = _a.type, onExportProgress = _a.onExportProgress, onExport = _a.onExport, onExportFinish = _a.onExportFinish, ffmpegOptions = _a.ffmpegOptions;
     // Remove ref to capturer.
     activeCaptures.splice(index, 1);
     if (type !== PNGZIP && type !== JPEGZIP)
@@ -2534,6 +2556,7 @@ function stopRecordAtIndex(index) {
                     name: name,
                     blob: blob,
                     onProgress: onExportProgress,
+                    onSave: onExport,
                     onFinish: onExportFinish,
                     ffmpegOptions: ffmpegOptions,
                 });
@@ -2543,9 +2566,15 @@ function stopRecordAtIndex(index) {
             if (onExportProgress)
                 onExportProgress(0);
             capturer.save(function (blob) {
-                file_saver_1.saveAs(blob, name + ".webm");
                 if (onExportProgress)
                     onExportProgress(1); // Save is nearly immediate.
+                var filename = name + ".webm";
+                if (onExport) {
+                    onExport(blob, filename);
+                }
+                else {
+                    file_saver_1.saveAs(blob, filename);
+                }
                 if (onExportFinish)
                     onExportFinish();
             });
@@ -2555,7 +2584,13 @@ function stopRecordAtIndex(index) {
             modals_1.showDialog('Processing...', 'GIF is processing and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
             // onExportProgress callback already passed to CCapture.
             capturer.save(function (blob) {
-                file_saver_1.saveAs(blob, name + ".gif");
+                var filename = name + ".gif";
+                if (onExport) {
+                    onExport(blob, filename);
+                }
+                else {
+                    file_saver_1.saveAs(blob, filename);
+                }
                 if (onExportFinish)
                     onExportFinish();
             });
@@ -2567,8 +2602,14 @@ function stopRecordAtIndex(index) {
             capturer.generateAsync({ type: 'blob' }, function (metadata) {
                 if (onExportProgress)
                     onExportProgress(metadata.percent / 100);
-            }).then(function (content) {
-                file_saver_1.saveAs(content, name + ".zip");
+            }).then(function (blob) {
+                var filename = name + ".zip";
+                if (onExport) {
+                    onExport(blob, filename);
+                }
+                else {
+                    file_saver_1.saveAs(blob, filename);
+                }
                 if (onExportFinish)
                     onExportFinish();
             });
@@ -2620,7 +2661,7 @@ exports.isRecording = isRecording;
 var ffmpegLoaded = false;
 function convertWEBMtoMP4(options) {
     return __awaiter(this, void 0, void 0, function () {
-        var e_1, name, blob, onProgress, onFinish, ffmpegOptions, data, defaultFFMPEGOptions, combinedOptions, _ffmpegOptions, output, outputBlob;
+        var e_1, name, blob, onProgress, onSave, onFinish, ffmpegOptions, data, defaultFFMPEGOptions, combinedOptions, _ffmpegOptions, filename, output, outputBlob;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -2638,7 +2679,7 @@ function convertWEBMtoMP4(options) {
                     modals_1.showAlert('MP4 export not supported in this browser, try again in the latest version of Chrome.');
                     return [2 /*return*/];
                 case 4:
-                    name = options.name, blob = options.blob, onProgress = options.onProgress, onFinish = options.onFinish, ffmpegOptions = options.ffmpegOptions;
+                    name = options.name, blob = options.blob, onProgress = options.onProgress, onSave = options.onSave, onFinish = options.onFinish, ffmpegOptions = options.ffmpegOptions;
                     return [4 /*yield*/, ffmpeg_1.fetchFile(blob)];
                 case 5:
                     data = _a.sent();
@@ -2663,18 +2704,25 @@ function convertWEBMtoMP4(options) {
                     Object.keys(combinedOptions).forEach(function (key) {
                         _ffmpegOptions.push(key, combinedOptions[key]);
                     });
+                    filename = name + ".mp4";
                     return [4 /*yield*/, ffmpeg.run.apply(ffmpeg, __spreadArrays(['-i', name + ".webm"], _ffmpegOptions, ['-vf', 'crop=trunc(iw/2)*2:trunc(ih/2)*2',
-                            '-an', name + ".mp4"]))];
+                            '-an',
+                            filename]))];
                 case 6:
                     _a.sent();
-                    return [4 /*yield*/, ffmpeg.FS('readFile', name + ".mp4")];
+                    return [4 /*yield*/, ffmpeg.FS('readFile', filename)];
                 case 7:
                     output = _a.sent();
                     outputBlob = new Blob([output], { type: 'video/mp4' });
-                    file_saver_1.saveAs(outputBlob, name + ".mp4");
+                    if (onSave) {
+                        onSave(blob, filename);
+                    }
+                    else {
+                        file_saver_1.saveAs(outputBlob, filename);
+                    }
                     // Delete files in MEMFS.
                     ffmpeg.FS('unlink', name + ".webm");
-                    ffmpeg.FS('unlink', name + ".mp4");
+                    ffmpeg.FS('unlink', filename);
                     if (onFinish)
                         onFinish();
                     return [2 /*return*/];
@@ -2733,7 +2781,7 @@ exports.css = "\n/**************************  Basic Modal Styles\n**************
 /***/ }),
 
 /***/ 330:
-/***/ (function(__unused_webpack_module, exports, __nested_webpack_require_202241__) {
+/***/ (function(__unused_webpack_module, exports, __nested_webpack_require_204010__) {
 
 "use strict";
 
@@ -2750,9 +2798,9 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.showDot = exports.initDotWithCSS = exports.showDialog = exports.showAlert = void 0;
-var micromodal_1 = __nested_webpack_require_202241__(650);
-var micromodal_css_1 = __nested_webpack_require_202241__(713);
-var params_1 = __nested_webpack_require_202241__(848);
+var micromodal_1 = __nested_webpack_require_204010__(650);
+var micromodal_css_1 = __nested_webpack_require_204010__(713);
+var params_1 = __nested_webpack_require_204010__(848);
 // Add modal styling.
 var style = document.createElement('style');
 style.textContent = micromodal_css_1.css;
@@ -2849,16 +2897,16 @@ exports.PARAMS = {
 /***/ }),
 
 /***/ 886:
-/***/ ((module, exports, __nested_webpack_require_206810__) => {
+/***/ ((module, exports, __nested_webpack_require_208579__) => {
 
-/* module decorator */ module = __nested_webpack_require_206810__.nmd(module);
+/* module decorator */ module = __nested_webpack_require_208579__.nmd(module);
 var __WEBPACK_AMD_DEFINE_RESULT__;;(function() {
 
 if (  true && typeof module.exports !== 'undefined') {
-  var Tar = __nested_webpack_require_206810__(846);
-  var download = __nested_webpack_require_206810__(173);
-  var GIF = __nested_webpack_require_206810__(769);
-  var WebMWriter = __nested_webpack_require_206810__(166);
+  var Tar = __nested_webpack_require_208579__(846);
+  var download = __nested_webpack_require_208579__(173);
+  var GIF = __nested_webpack_require_208579__(769);
+  var WebMWriter = __nested_webpack_require_208579__(166);
 }
 
 "use strict";
@@ -2892,7 +2940,7 @@ var moduleExports = (freeModule && freeModule.exports === freeExports)
 : undefined;
 
 /** Detect free variable `global` from Node.js. */
-var freeGlobal = checkGlobal(freeExports && freeModule && typeof __nested_webpack_require_206810__.g == 'object' && __nested_webpack_require_206810__.g);
+var freeGlobal = checkGlobal(freeExports && freeModule && typeof __nested_webpack_require_208579__.g == 'object' && __nested_webpack_require_208579__.g);
 
 /** Detect free variable `self`. */
 var freeSelf = checkGlobal(objectTypes[typeof self] && self);
@@ -3817,7 +3865,7 @@ function CCapture( settings ) {
     // referenced as the "underscore" module.
     !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {
     	return CCapture;
-    }).call(exports, __nested_webpack_require_206810__, exports, module),
+    }).call(exports, __nested_webpack_require_208579__, exports, module),
 		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 }
   // Check for `exports` after `define` in case a build optimizer adds an `exports` object.
@@ -5447,7 +5495,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_315363__(moduleId) {
+/******/ 	function __nested_webpack_require_317132__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -5461,7 +5509,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_315363__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_317132__);
 /******/ 	
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
@@ -5474,9 +5522,9 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
-/******/ 		__nested_webpack_require_315363__.d = (exports, definition) => {
+/******/ 		__nested_webpack_require_317132__.d = (exports, definition) => {
 /******/ 			for(var key in definition) {
-/******/ 				if(__nested_webpack_require_315363__.o(definition, key) && !__nested_webpack_require_315363__.o(exports, key)) {
+/******/ 				if(__nested_webpack_require_317132__.o(definition, key) && !__nested_webpack_require_317132__.o(exports, key)) {
 /******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 				}
 /******/ 			}
@@ -5485,7 +5533,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_315363__.g = (function() {
+/******/ 		__nested_webpack_require_317132__.g = (function() {
 /******/ 			if (typeof globalThis === 'object') return globalThis;
 /******/ 			try {
 /******/ 				return this || new Function('return this')();
@@ -5497,13 +5545,13 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_315363__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 		__nested_webpack_require_317132__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
-/******/ 		__nested_webpack_require_315363__.r = (exports) => {
+/******/ 		__nested_webpack_require_317132__.r = (exports) => {
 /******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
 /******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
 /******/ 			}
@@ -5513,7 +5561,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/node module decorator */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_315363__.nmd = (module) => {
+/******/ 		__nested_webpack_require_317132__.nmd = (module) => {
 /******/ 			module.paths = [];
 /******/ 			if (!module.children) module.children = [];
 /******/ 			return module;
@@ -5525,7 +5573,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nested_webpack_require_315363__(607);
+/******/ 	var __webpack_exports__ = __nested_webpack_require_317132__(607);
 /******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()

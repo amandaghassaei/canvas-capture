@@ -109,11 +109,10 @@ CanvasCapture.stopRecord();
 // Or you can call `takeXXXSnapshot` to take a single snapshot.
 // No need to call `recordFrame` or `stopRecord` for these methods.
 CanvasCapture.takePNGSnapshot();
-CanvasCapture.takeJPEGSnapshot({ dpi: 600 }, (blob, filename) => {
+CanvasCapture.takeJPEGSnapshot({ dpi: 600, onExport: (blob, filename) => {
   // Instead of automatically downloading the file, you can pass an
-  // optional callback  as the second argument to takeJPEGSnapshot()
-  // and takePNGSnapshot().
-});
+  // optional onExport callback to handle blob manually.
+}});
 
 ```
 
@@ -126,7 +125,8 @@ videoOptions = {
   fps: number, // Frames per second of the output video, defaults to 60.
   quality: number, // A number between 0 and 1, defaults to 1.
   onExportProgress: (progress: number) => void, // progress: range [0-1].
-  onExportFinish: () => void, // Callback after save complete.
+  onExport: (blob: Blob, filename: string), // Handle blob manually.
+  onExportFinish: () => void, // Callback after export complete.
   // Options below for ffmpeg conversion to mp4, not used for webm export.
   ffmpegOptions?: { [key: string]: string }, // FFMPEG option flags
   // Defaults to
@@ -144,26 +144,29 @@ gifOptions = {
   fps: number, // The frames per second of the output gif, defaults to 60.
   quality: number, // A number between 0 and 1, defaults to 1.
   onExportProgress: (progress: number) => void, // progress: range [0-1].
-  onExportFinish: () => void, // Callback after save complete.
+  onExport: (blob: Blob, filename: string), // Handle blob manually.
+  onExportFinish: () => void, // Callback after export complete.
 }
 pngOptions = {
   name: string, // Defaults to 'PNG_Capture'.
   dpi: number, // Defaults to screen resolution (72 dpi).
+  onExport: (blob: Blob, filename: string), // Handle blob manually.
   // onExportProgress and onExportFinish gives zipping updates for
   // recording PNG frames (only used by bindKeyToPNGFrames()
   // and beginPNGFramesRecord()):
   onExportProgress: (progress: number) => void, // progress: range [0-1].
-  onExportFinish: () => void, // Callback after save complete.
+  onExportFinish: () => void, // Callback after export complete.
 }
 jpegOptions = {
   name: string, // Defaults to 'JPEG_Capture'.
   quality: number, // A number between 0 and 1, defaults to 1.
   dpi: number, // Defaults to screen resolution (72 dpi).
+  onExport: (blob: Blob, filename: string), // Handle blob manually.
   // onExportProgress and onExportFinish gives zipping updates for
   // recording JPEG frames (only used by bindKeyToJPEGFrames()
   // and beginJPEGFramesRecord()):
   onExportProgress: (progress: number) => void, // progress: range [0-1].
-  onExportFinish: () => void, // Callback after save complete.
+  onExportFinish: () => void, // Callback after export complete.
 }
 ```
 
