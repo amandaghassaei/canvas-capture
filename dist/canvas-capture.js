@@ -2387,6 +2387,8 @@ function beginGIFRecord(options) {
         capturer: capturer,
         numFrames: 0,
         type: GIF,
+        onExport: options === null || options === void 0 ? void 0 : options.onExport,
+        onExportFinish: options === null || options === void 0 ? void 0 : options.onExportFinish,
     };
     startCapture(capture);
     return capture;

@@ -99,6 +99,8 @@ export declare function beginGIFRecord(options?: GIF_OPTIONS): {
     capturer: any;
     numFrames: number;
     type: CAPTURE_TYPE;
+    onExport: onExport | undefined;
+    onExportFinish: (() => void) | undefined;
 } | undefined;
 export declare function beginPNGFramesRecord(options?: PNG_OPTIONS): {
     name: string;

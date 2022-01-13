@@ -332,6 +332,8 @@ export function beginGIFRecord(options?: GIF_OPTIONS) {
 		capturer,
 		numFrames: 0,
 		type: GIF as CAPTURE_TYPE,
+		onExport: options?.onExport,
+		onExportFinish: options?.onExportFinish,
 	};
 	startCapture(capture);
 	return capture;
