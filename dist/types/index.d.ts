@@ -127,9 +127,9 @@ export declare function beginJPEGFramesRecord(options?: JPEG_OPTIONS): {
     onExport: onExport | undefined;
     onExportFinish: (() => void) | undefined;
 };
-export declare function takePNGSnapshot(options?: PNG_OPTIONS): void;
-export declare function takeJPEGSnapshot(options?: JPEG_OPTIONS): void;
-export declare function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]): void;
+export declare function takePNGSnapshot(options?: PNG_OPTIONS): Promise<void>;
+export declare function takeJPEGSnapshot(options?: JPEG_OPTIONS): Promise<void>;
+export declare function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]): Promise<void>;
 export declare function stopRecord(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]): void;
 export declare function isRecording(): boolean;
 export declare function browserSupportsWEBM(): boolean;

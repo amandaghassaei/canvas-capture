@@ -374,65 +374,66 @@ export function beginJPEGFramesRecord(options?: JPEG_OPTIONS) {
 }
 
 export function takePNGSnapshot(options?: PNG_OPTIONS) {
-	const name = options?.name || 'PNG_Capture';
-	if (!checkCanvas()) {
-		return;
-	}
-	const filename = `${name}.png`;
-	canvas!.toBlob((blob) => {
-		if (!blob) {
-			showAlert('Problem saving PNG, please try again!');
+	return new Promise<void>((resolve, reject) => {
+		const name = options?.name || 'PNG_Capture';
+		if (!checkCanvas()) {
+			reject();
 			return;
 		}
-		if (options?.dpi) {
-			changeDpiBlob(blob, options?.dpi).then((blob: Blob) => {
-				if (options?.onExport) {
-					options.onExport(blob, filename);
-				} else {
-					saveAs(blob, filename);
-				}
-			});
-		} else {
-			if (options?.onExport) {
-				options.onExport(blob, filename);
+		const filename = `${name}.png`;
+		canvas!.toBlob((blob) => {
+			if (handleImageBlob(blob, filename, options)) {
+				resolve();
 			} else {
-				saveAs(blob, filename);
+				reject();
 			}
-		}
-	}, 'image/png');
+		}, 'image/png');
+	});
 }
 
 export function takeJPEGSnapshot(options?: JPEG_OPTIONS) {
-	const name = options?.name || 'JPEG_Capture';
-	if (!checkCanvas()) {
-		return;
-	}
-	// Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
-	const filename = `${name}.jpg`;
-	canvas!.toBlob((blob) => {
-		if (!blob) {
-			showAlert('Problem saving JPEG, please try again!');
+	return new Promise<void>((resolve, reject) => {
+		const name = options?.name || 'JPEG_Capture';
+		if (!checkCanvas()) {
+			reject();
 			return;
 		}
-		if (options?.dpi) {
-			changeDpiBlob(blob, options?.dpi).then((blob: Blob) => {
-				if (options?.onExport) {
-					options.onExport(blob, filename);
-				} else {
-					saveAs(blob, filename);
-				}
-			});
-		} else {
+		// Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+		const filename = `${name}.jpg`;
+		canvas!.toBlob((blob) => {
+			if (handleImageBlob(blob, filename, options)) {
+				resolve();
+			} else {
+				reject();
+			}
+		}, 'image/jpeg', options?.quality || 1);
+	});
+}
+
+function handleImageBlob(blob: Blob | null, filename: string, options?: JPEG_OPTIONS | PNG_OPTIONS) {
+	if (!blob) {
+		showAlert('Problem saving JPEG, please try again!');
+		return false;
+	}
+	if (options?.dpi) {
+		changeDpiBlob(blob, options?.dpi).then((blob: Blob) => {
 			if (options?.onExport) {
 				options.onExport(blob, filename);
 			} else {
 				saveAs(blob, filename);
 			}
+		});
+	} else {
+		if (options?.onExport) {
+			options.onExport(blob, filename);
+		} else {
+			saveAs(blob, filename);
 		}
-	}, 'image/jpeg', options?.quality || 1);
+	}
+	return true;
 }
 
-export function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]) {
+export async function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]) {
 	if (!checkCanvas()) {
 		return;
 	}
@@ -450,6 +451,7 @@ export function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]) {
 		}
 	}
 
+	const promises: Promise<void>[] = [];
 	for (let i = 0; i < captures.length; i++) {
 		const { capturer, type, zipOptions, numFrames } = captures[i];
 		if (type === JPEGZIP || type === PNGZIP) {
@@ -463,15 +465,16 @@ export function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]) {
 				},
 			};
 			if (type === JPEGZIP) {
-				takeJPEGSnapshot(options);
+				promises.push(takeJPEGSnapshot(options));
 			} else if (type === PNGZIP) {
-				takePNGSnapshot(options);
+				promises.push(takePNGSnapshot(options));
 			}
 		} else {
 			(capturer as CCapture).capture(canvas!);
 		}
 		captures[i].numFrames = numFrames + 1
 	}
+	await Promise.all(promises);
 }
 
 function stopRecordAtIndex(index: number) {
