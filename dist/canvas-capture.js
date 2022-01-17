@@ -2396,9 +2396,10 @@ function beginGIFRecord(options) {
 exports.beginGIFRecord = beginGIFRecord;
 function beginPNGFramesRecord(options) {
     var name = (options === null || options === void 0 ? void 0 : options.name) || 'PNG_Frames_Capture';
+    var zipOptions = { dpi: options === null || options === void 0 ? void 0 : options.dpi };
     var capture = {
         name: name,
-        zipOptions: options,
+        zipOptions: zipOptions,
         capturer: new JSZip(),
         numFrames: 0,
         type: PNGZIP,
@@ -2412,9 +2413,10 @@ function beginPNGFramesRecord(options) {
 exports.beginPNGFramesRecord = beginPNGFramesRecord;
 function beginJPEGFramesRecord(options) {
     var name = (options === null || options === void 0 ? void 0 : options.name) || 'JPEG_Frames_Capture';
+    var zipOptions = { dpi: options === null || options === void 0 ? void 0 : options.dpi, quality: options === null || options === void 0 ? void 0 : options.quality };
     var capture = {
         name: name,
-        zipOptions: options,
+        zipOptions: zipOptions,
         capturer: new JSZip(),
         numFrames: 0,
         type: JPEGZIP,
@@ -2513,11 +2515,9 @@ function recordFrame(capture) {
         if (type === JPEGZIP || type === PNGZIP) {
             // Name should correspond to current frame.
             var frameName = "frame_" + (numFrames + 1);
-            var options = __assign({}, (zipOptions || {}));
-            options.name = frameName;
-            options.onExport = function (blob, filename) {
-                capturer.file(filename, blob);
-            };
+            var options = __assign(__assign({}, zipOptions), { name: frameName, onExport: function (blob, filename) {
+                    capturer.file(filename, blob);
+                } });
             if (type === JPEGZIP) {
                 takeJPEGSnapshot(options);
             }

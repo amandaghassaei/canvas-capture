@@ -104,7 +104,9 @@ export declare function beginGIFRecord(options?: GIF_OPTIONS): {
 } | undefined;
 export declare function beginPNGFramesRecord(options?: PNG_OPTIONS): {
     name: string;
-    zipOptions: PNG_OPTIONS | undefined;
+    zipOptions: {
+        dpi: number | undefined;
+    };
     capturer: JSZip;
     numFrames: number;
     type: CAPTURE_TYPE;
@@ -114,7 +116,10 @@ export declare function beginPNGFramesRecord(options?: PNG_OPTIONS): {
 };
 export declare function beginJPEGFramesRecord(options?: JPEG_OPTIONS): {
     name: string;
-    zipOptions: JPEG_OPTIONS | undefined;
+    zipOptions: {
+        dpi: number | undefined;
+        quality: number | undefined;
+    };
     capturer: JSZip;
     numFrames: number;
     type: CAPTURE_TYPE;

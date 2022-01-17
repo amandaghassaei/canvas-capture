@@ -341,9 +341,10 @@ export function beginGIFRecord(options?: GIF_OPTIONS) {
 
 export function beginPNGFramesRecord(options?: PNG_OPTIONS) {
 	const name = options?.name || 'PNG_Frames_Capture';
+	const zipOptions = { dpi: options?.dpi };
 	const capture = {
 		name,
-		zipOptions: options,
+		zipOptions,
 		capturer: new JSZip(),
 		numFrames: 0,
 		type: PNGZIP as CAPTURE_TYPE,
@@ -357,9 +358,10 @@ export function beginPNGFramesRecord(options?: PNG_OPTIONS) {
 
 export function beginJPEGFramesRecord(options?: JPEG_OPTIONS) {
 	const name = options?.name || 'JPEG_Frames_Capture';
+	const zipOptions = { dpi: options?.dpi, quality: options?.quality };
 	const capture = {
 		name,
-		zipOptions: options,
+		zipOptions,
 		capturer: new JSZip(),
 		numFrames: 0,
 		type: JPEGZIP as CAPTURE_TYPE,
@@ -453,11 +455,13 @@ export function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]) {
 		if (type === JPEGZIP || type === PNGZIP) {
 			// Name should correspond to current frame.
 			const frameName = `frame_${numFrames + 1}`;
-			const options = { ...(zipOptions || {}) };
-			options.name = frameName;
-			options.onExport = (blob, filename) => {
-				(capturer as JSZip).file(filename, blob);
-			}
+			const options = {
+				...zipOptions,
+				name: frameName,
+				onExport: (blob: Blob, filename: string) => {
+					(capturer as JSZip).file(filename, blob);
+				},
+			};
 			if (type === JPEGZIP) {
 				takeJPEGSnapshot(options);
 			} else if (type === PNGZIP) {
