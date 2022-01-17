@@ -2689,7 +2689,7 @@ function convertWEBMtoMP4(options) {
                     if (onProgress)
                         ffmpeg.setProgress(function (_a) {
                             var ratio = _a.ratio;
-                            onProgress(ratio);
+                            onProgress(Math.max(0, Math.min(ratio, 1)));
                         });
                     defaultFFMPEGOptions = {
                         '-c:v': 'libx264',

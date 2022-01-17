@@ -2,7 +2,7 @@
 A small wrapper around [CCapture.js](https://github.com/spite/ccapture.js) and [ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm) to record the canvas as an image (png/jpeg), video (mp4/webm), or gif – all from the browser!
 
 Demo at: [apps.amandaghassaei.com/canvas-capture/demo/](https://apps.amandaghassaei.com/canvas-capture/demo/)  
-Video export currently only works in Chrome (see [Caveats](#caveats) for more details about browser support and server header requirements).
+all media formats are currently supported by both Chrome and Firefox (see [Caveats](#caveats) for more details about browser support and server header requirements).
 
 - [Installation](#installation)
 - [Use](#use)
@@ -237,7 +237,7 @@ CanvasCapture.showDialog(title, message, options);
 
 ## Caveats
 
-Video export currently only works in Chrome.  mp4 and webm video export should be possible in Firefox once [this Firefox bug is addressed](https://bugzilla.mozilla.org/show_bug.cgi?id=1559743).
+mp4 export currently works best in Chrome, but it does work in the latest release of Firefox (96.0.1), now that [this Firefox bug seems to have been addressed](https://bugzilla.mozilla.org/show_bug.cgi?id=1559743).  I have noticed that ffmpeg can get stuck in Firefox, but only when the console/devtools are open, see [this issue](https://github.com/ffmpegwasm/ffmpeg.wasm/issues/175).
 
 This repo depends on [ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm/) to export mp4 video, not all browsers are supported:
 

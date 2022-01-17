@@ -635,7 +635,7 @@ async function convertWEBMtoMP4(options: {
 	// TODO: onProgress callback is not working quite right yet.
 	// https://github.com/ffmpegwasm/ffmpeg.wasm/issues/112
 	if (onProgress) ffmpeg.setProgress(({ ratio }) => {
-		onProgress(ratio);
+		onProgress(Math.max(0, Math.min(ratio, 1)));
 	});
 	// -vf "crop=trunc(iw/2)*2:trunc(ih/2)*2" ensures the dimensions of the mp4 are divisible by 2.
 	// -c:v libx264 -preset slow -crf 22 encodes as h.264 with better compression settings.
