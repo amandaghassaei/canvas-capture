@@ -2437,11 +2437,21 @@ function takePNGSnapshot(options) {
         }
         var filename = name + ".png";
         canvas.toBlob(function (blob) {
-            if (handleImageBlob(blob, filename, options)) {
-                resolve();
+            if (!blob) {
+                modals_1.showAlert('Problem saving PNG, please try again!');
+                reject();
+                return;
+            }
+            var onExport = (options === null || options === void 0 ? void 0 : options.onExport) || file_saver_1.saveAs;
+            if (options === null || options === void 0 ? void 0 : options.dpi) {
+                changedpi_1.changeDpiBlob(blob, options === null || options === void 0 ? void 0 : options.dpi).then(function (blob) {
+                    onExport(blob, filename);
+                    resolve();
+                });
             }
             else {
-                reject();
+                onExport(blob, filename);
+                resolve();
             }
         }, 'image/png');
     });
@@ -2457,41 +2467,26 @@ function takeJPEGSnapshot(options) {
         // Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
         var filename = name + ".jpg";
         canvas.toBlob(function (blob) {
-            if (handleImageBlob(blob, filename, options)) {
-                resolve();
+            if (!blob) {
+                modals_1.showAlert('Problem saving JPEG, please try again!');
+                reject();
+                return;
+            }
+            var onExport = (options === null || options === void 0 ? void 0 : options.onExport) || file_saver_1.saveAs;
+            if (options === null || options === void 0 ? void 0 : options.dpi) {
+                changedpi_1.changeDpiBlob(blob, options === null || options === void 0 ? void 0 : options.dpi).then(function (blob) {
+                    onExport(blob, filename);
+                    resolve();
+                });
             }
             else {
-                reject();
+                onExport(blob, filename);
+                resolve();
             }
         }, 'image/jpeg', (options === null || options === void 0 ? void 0 : options.quality) || 1);
     });
 }
 exports.takeJPEGSnapshot = takeJPEGSnapshot;
-function handleImageBlob(blob, filename, options) {
-    if (!blob) {
-        modals_1.showAlert('Problem saving JPEG, please try again!');
-        return false;
-    }
-    if (options === null || options === void 0 ? void 0 : options.dpi) {
-        changedpi_1.changeDpiBlob(blob, options === null || options === void 0 ? void 0 : options.dpi).then(function (blob) {
-            if (options === null || options === void 0 ? void 0 : options.onExport) {
-                options.onExport(blob, filename);
-            }
-            else {
-                file_saver_1.saveAs(blob, filename);
-            }
-        });
-    }
-    else {
-        if (options === null || options === void 0 ? void 0 : options.onExport) {
-            options.onExport(blob, filename);
-        }
-        else {
-            file_saver_1.saveAs(blob, filename);
-        }
-    }
-    return true;
-}
 function recordFrame(capture) {
     return __awaiter(this, void 0, void 0, function () {
         var captures, promises, _loop_1, i;

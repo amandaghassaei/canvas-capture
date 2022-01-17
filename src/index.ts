@@ -382,10 +382,20 @@ export function takePNGSnapshot(options?: PNG_OPTIONS) {
 		}
 		const filename = `${name}.png`;
 		canvas!.toBlob((blob) => {
-			if (handleImageBlob(blob, filename, options)) {
-				resolve();
-			} else {
+			if (!blob) {
+				showAlert('Problem saving PNG, please try again!');
 				reject();
+				return;
+			}
+			const onExport = options?.onExport || saveAs;
+			if (options?.dpi) {
+				changeDpiBlob(blob, options?.dpi).then((blob: Blob) => {
+					onExport(blob, filename);
+					resolve();
+				});
+			} else {
+				onExport(blob, filename);
+				resolve();
 			}
 		}, 'image/png');
 	});
@@ -401,36 +411,23 @@ export function takeJPEGSnapshot(options?: JPEG_OPTIONS) {
 		// Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
 		const filename = `${name}.jpg`;
 		canvas!.toBlob((blob) => {
-			if (handleImageBlob(blob, filename, options)) {
-				resolve();
-			} else {
+			if (!blob) {
+				showAlert('Problem saving JPEG, please try again!');
 				reject();
+				return;
+			}
+			const onExport = options?.onExport || saveAs;
+			if (options?.dpi) {
+				changeDpiBlob(blob, options?.dpi).then((blob: Blob) => {
+					onExport(blob, filename);
+					resolve();
+				});
+			} else {
+				onExport(blob, filename);
+				resolve();
 			}
 		}, 'image/jpeg', options?.quality || 1);
 	});
-}
-
-function handleImageBlob(blob: Blob | null, filename: string, options?: JPEG_OPTIONS | PNG_OPTIONS) {
-	if (!blob) {
-		showAlert('Problem saving JPEG, please try again!');
-		return false;
-	}
-	if (options?.dpi) {
-		changeDpiBlob(blob, options?.dpi).then((blob: Blob) => {
-			if (options?.onExport) {
-				options.onExport(blob, filename);
-			} else {
-				saveAs(blob, filename);
-			}
-		});
-	} else {
-		if (options?.onExport) {
-			options.onExport(blob, filename);
-		} else {
-			saveAs(blob, filename);
-		}
-	}
-	return true;
 }
 
 export async function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]) {
