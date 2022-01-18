@@ -2490,61 +2490,45 @@ function takeJPEGSnapshot(options) {
 }
 exports.takeJPEGSnapshot = takeJPEGSnapshot;
 function recordFrame(capture) {
-    return __awaiter(this, void 0, void 0, function () {
-        var captures, promises, _loop_1, i;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    if (!checkCanvas()) {
-                        return [2 /*return*/];
-                    }
-                    if (activeCaptures.length === 0) {
-                        modals_1.showAlert('No valid capturer inited, please call CanvasCapture.beginVideoRecord(), CanvasCapture.beginGIFRecord(), CanvasCapture.beginPNGFramesRecord(), or CanvasCapture.beginJPEGFramesRecord() first.');
-                        return [2 /*return*/];
-                    }
-                    captures = activeCaptures;
-                    if (capture) {
-                        if (!Array.isArray(capture)) {
-                            captures = [capture];
-                        }
-                        else {
-                            captures = capture;
-                        }
-                    }
-                    promises = [];
-                    _loop_1 = function (i) {
-                        var _a = captures[i], capturer = _a.capturer, type = _a.type, zipOptions = _a.zipOptions, zipPromises = _a.zipPromises, numFrames = _a.numFrames;
-                        if (type === JPEGZIP || type === PNGZIP) {
-                            // Name should correspond to current frame.
-                            var frameName = "frame_" + (numFrames + 1);
-                            var options = __assign(__assign({}, zipOptions), { name: frameName, onExport: function (blob, filename) {
-                                    capturer.file(filename, blob);
-                                } });
-                            var promise = void 0;
-                            if (type === JPEGZIP) {
-                                promise = takeJPEGSnapshot(options);
-                            }
-                            else {
-                                promise = takePNGSnapshot(options);
-                            }
-                            zipPromises.push(promise);
-                            promises.push(promise);
-                        }
-                        else {
-                            capturer.capture(canvas);
-                        }
-                        captures[i].numFrames = numFrames + 1;
-                    };
-                    for (i = 0; i < captures.length; i++) {
-                        _loop_1(i);
-                    }
-                    return [4 /*yield*/, Promise.all(promises)];
-                case 1:
-                    _a.sent();
-                    return [2 /*return*/];
+    if (!checkCanvas()) {
+        return;
+    }
+    if (activeCaptures.length === 0) {
+        modals_1.showAlert('No valid capturer inited, please call CanvasCapture.beginVideoRecord(), CanvasCapture.beginGIFRecord(), CanvasCapture.beginPNGFramesRecord(), or CanvasCapture.beginJPEGFramesRecord() first.');
+        return;
+    }
+    var captures = activeCaptures;
+    if (capture) {
+        if (!Array.isArray(capture)) {
+            captures = [capture];
+        }
+        else {
+            captures = capture;
+        }
+    }
+    var _loop_1 = function (i) {
+        var _a = captures[i], capturer = _a.capturer, type = _a.type, zipOptions = _a.zipOptions, zipPromises = _a.zipPromises, numFrames = _a.numFrames;
+        if (type === JPEGZIP || type === PNGZIP) {
+            // Name should correspond to current frame.
+            var frameName = "frame_" + (numFrames + 1);
+            var options = __assign(__assign({}, zipOptions), { name: frameName, onExport: function (blob, filename) {
+                    capturer.file(filename, blob);
+                } });
+            if (type === JPEGZIP) {
+                zipPromises.push(takeJPEGSnapshot(options));
             }
-        });
-    });
+            else {
+                zipPromises.push(takePNGSnapshot(options));
+            }
+        }
+        else {
+            capturer.capture(canvas);
+        }
+        captures[i].numFrames = numFrames + 1;
+    };
+    for (var i = 0; i < captures.length; i++) {
+        _loop_1(i);
+    }
 }
 exports.recordFrame = recordFrame;
 function stopRecordAtIndex(index) {

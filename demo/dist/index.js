@@ -2494,61 +2494,45 @@ function takeJPEGSnapshot(options) {
 }
 exports.takeJPEGSnapshot = takeJPEGSnapshot;
 function recordFrame(capture) {
-    return __awaiter(this, void 0, void 0, function () {
-        var captures, promises, _loop_1, i;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    if (!checkCanvas()) {
-                        return [2 /*return*/];
-                    }
-                    if (activeCaptures.length === 0) {
-                        modals_1.showAlert('No valid capturer inited, please call CanvasCapture.beginVideoRecord(), CanvasCapture.beginGIFRecord(), CanvasCapture.beginPNGFramesRecord(), or CanvasCapture.beginJPEGFramesRecord() first.');
-                        return [2 /*return*/];
-                    }
-                    captures = activeCaptures;
-                    if (capture) {
-                        if (!Array.isArray(capture)) {
-                            captures = [capture];
-                        }
-                        else {
-                            captures = capture;
-                        }
-                    }
-                    promises = [];
-                    _loop_1 = function (i) {
-                        var _a = captures[i], capturer = _a.capturer, type = _a.type, zipOptions = _a.zipOptions, zipPromises = _a.zipPromises, numFrames = _a.numFrames;
-                        if (type === JPEGZIP || type === PNGZIP) {
-                            // Name should correspond to current frame.
-                            var frameName = "frame_" + (numFrames + 1);
-                            var options = __assign(__assign({}, zipOptions), { name: frameName, onExport: function (blob, filename) {
-                                    capturer.file(filename, blob);
-                                } });
-                            var promise = void 0;
-                            if (type === JPEGZIP) {
-                                promise = takeJPEGSnapshot(options);
-                            }
-                            else {
-                                promise = takePNGSnapshot(options);
-                            }
-                            zipPromises.push(promise);
-                            promises.push(promise);
-                        }
-                        else {
-                            capturer.capture(canvas);
-                        }
-                        captures[i].numFrames = numFrames + 1;
-                    };
-                    for (i = 0; i < captures.length; i++) {
-                        _loop_1(i);
-                    }
-                    return [4 /*yield*/, Promise.all(promises)];
-                case 1:
-                    _a.sent();
-                    return [2 /*return*/];
+    if (!checkCanvas()) {
+        return;
+    }
+    if (activeCaptures.length === 0) {
+        modals_1.showAlert('No valid capturer inited, please call CanvasCapture.beginVideoRecord(), CanvasCapture.beginGIFRecord(), CanvasCapture.beginPNGFramesRecord(), or CanvasCapture.beginJPEGFramesRecord() first.');
+        return;
+    }
+    var captures = activeCaptures;
+    if (capture) {
+        if (!Array.isArray(capture)) {
+            captures = [capture];
+        }
+        else {
+            captures = capture;
+        }
+    }
+    var _loop_1 = function (i) {
+        var _a = captures[i], capturer = _a.capturer, type = _a.type, zipOptions = _a.zipOptions, zipPromises = _a.zipPromises, numFrames = _a.numFrames;
+        if (type === JPEGZIP || type === PNGZIP) {
+            // Name should correspond to current frame.
+            var frameName = "frame_" + (numFrames + 1);
+            var options = __assign(__assign({}, zipOptions), { name: frameName, onExport: function (blob, filename) {
+                    capturer.file(filename, blob);
+                } });
+            if (type === JPEGZIP) {
+                zipPromises.push(takeJPEGSnapshot(options));
             }
-        });
-    });
+            else {
+                zipPromises.push(takePNGSnapshot(options));
+            }
+        }
+        else {
+            capturer.capture(canvas);
+        }
+        captures[i].numFrames = numFrames + 1;
+    };
+    for (var i = 0; i < captures.length; i++) {
+        _loop_1(i);
+    }
 }
 exports.recordFrame = recordFrame;
 function stopRecordAtIndex(index) {
@@ -2814,7 +2798,7 @@ exports.css = "\n/**************************  Basic Modal Styles\n**************
 /***/ }),
 
 /***/ 330:
-/***/ (function(__unused_webpack_module, exports, __nested_webpack_require_207425__) {
+/***/ (function(__unused_webpack_module, exports, __nested_webpack_require_206204__) {
 
 "use strict";
 
@@ -2831,9 +2815,9 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.showDot = exports.initDotWithCSS = exports.showDialog = exports.showAlert = void 0;
-var micromodal_1 = __nested_webpack_require_207425__(650);
-var micromodal_css_1 = __nested_webpack_require_207425__(713);
-var params_1 = __nested_webpack_require_207425__(848);
+var micromodal_1 = __nested_webpack_require_206204__(650);
+var micromodal_css_1 = __nested_webpack_require_206204__(713);
+var params_1 = __nested_webpack_require_206204__(848);
 // Add modal styling.
 var style = document.createElement('style');
 style.textContent = micromodal_css_1.css;
@@ -2930,16 +2914,16 @@ exports.PARAMS = {
 /***/ }),
 
 /***/ 886:
-/***/ ((module, exports, __nested_webpack_require_211994__) => {
+/***/ ((module, exports, __nested_webpack_require_210773__) => {
 
-/* module decorator */ module = __nested_webpack_require_211994__.nmd(module);
+/* module decorator */ module = __nested_webpack_require_210773__.nmd(module);
 var __WEBPACK_AMD_DEFINE_RESULT__;;(function() {
 
 if (  true && typeof module.exports !== 'undefined') {
-  var Tar = __nested_webpack_require_211994__(846);
-  var download = __nested_webpack_require_211994__(173);
-  var GIF = __nested_webpack_require_211994__(769);
-  var WebMWriter = __nested_webpack_require_211994__(166);
+  var Tar = __nested_webpack_require_210773__(846);
+  var download = __nested_webpack_require_210773__(173);
+  var GIF = __nested_webpack_require_210773__(769);
+  var WebMWriter = __nested_webpack_require_210773__(166);
 }
 
 "use strict";
@@ -2973,7 +2957,7 @@ var moduleExports = (freeModule && freeModule.exports === freeExports)
 : undefined;
 
 /** Detect free variable `global` from Node.js. */
-var freeGlobal = checkGlobal(freeExports && freeModule && typeof __nested_webpack_require_211994__.g == 'object' && __nested_webpack_require_211994__.g);
+var freeGlobal = checkGlobal(freeExports && freeModule && typeof __nested_webpack_require_210773__.g == 'object' && __nested_webpack_require_210773__.g);
 
 /** Detect free variable `self`. */
 var freeSelf = checkGlobal(objectTypes[typeof self] && self);
@@ -3898,7 +3882,7 @@ function CCapture( settings ) {
     // referenced as the "underscore" module.
     !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {
     	return CCapture;
-    }).call(exports, __nested_webpack_require_211994__, exports, module),
+    }).call(exports, __nested_webpack_require_210773__, exports, module),
 		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 }
   // Check for `exports` after `define` in case a build optimizer adds an `exports` object.
@@ -5528,7 +5512,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_320547__(moduleId) {
+/******/ 	function __nested_webpack_require_319326__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -5542,7 +5526,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_320547__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_319326__);
 /******/ 	
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
@@ -5555,9 +5539,9 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
-/******/ 		__nested_webpack_require_320547__.d = (exports, definition) => {
+/******/ 		__nested_webpack_require_319326__.d = (exports, definition) => {
 /******/ 			for(var key in definition) {
-/******/ 				if(__nested_webpack_require_320547__.o(definition, key) && !__nested_webpack_require_320547__.o(exports, key)) {
+/******/ 				if(__nested_webpack_require_319326__.o(definition, key) && !__nested_webpack_require_319326__.o(exports, key)) {
 /******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 				}
 /******/ 			}
@@ -5566,7 +5550,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_320547__.g = (function() {
+/******/ 		__nested_webpack_require_319326__.g = (function() {
 /******/ 			if (typeof globalThis === 'object') return globalThis;
 /******/ 			try {
 /******/ 				return this || new Function('return this')();
@@ -5578,13 +5562,13 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_320547__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 		__nested_webpack_require_319326__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
-/******/ 		__nested_webpack_require_320547__.r = (exports) => {
+/******/ 		__nested_webpack_require_319326__.r = (exports) => {
 /******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
 /******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
 /******/ 			}
@@ -5594,7 +5578,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/node module decorator */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_320547__.nmd = (module) => {
+/******/ 		__nested_webpack_require_319326__.nmd = (module) => {
 /******/ 			module.paths = [];
 /******/ 			if (!module.children) module.children = [];
 /******/ 			return module;
@@ -5606,7 +5590,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nested_webpack_require_320547__(607);
+/******/ 	var __webpack_exports__ = __nested_webpack_require_319326__(607);
 /******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()

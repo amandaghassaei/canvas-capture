@@ -433,7 +433,7 @@ export function takeJPEGSnapshot(options?: JPEG_OPTIONS) {
 	});
 }
 
-export async function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]) {
+export function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]) {
 	if (!checkCanvas()) {
 		return;
 	}
@@ -451,7 +451,6 @@ export async function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]) {
 		}
 	}
 
-	const promises: Promise<void>[] = [];
 	for (let i = 0; i < captures.length; i++) {
 		const { capturer, type, zipOptions, zipPromises, numFrames } = captures[i];
 		if (type === JPEGZIP || type === PNGZIP) {
@@ -464,20 +463,16 @@ export async function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]) {
 					(capturer as JSZip).file(filename, blob);
 				},
 			};
-			let promise: Promise<void>;
 			if (type === JPEGZIP) {
-				promise = takeJPEGSnapshot(options);
+				zipPromises!.push(takeJPEGSnapshot(options));
 			} else {
-				promise = takePNGSnapshot(options);
+				zipPromises!.push(takePNGSnapshot(options));
 			}
-			zipPromises!.push(promise);
-			promises.push(promise);
 		} else {
 			(capturer as CCapture).capture(canvas!);
 		}
 		captures[i].numFrames = numFrames + 1
 	}
-	await Promise.all(promises);
 }
 
 async function stopRecordAtIndex(index: number) {
