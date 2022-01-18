@@ -376,20 +376,23 @@ export function beginJPEGFramesRecord(options?: JPEG_OPTIONS) {
 
 function takeImageSnapshot(filename: string, type: 'png' | 'jpeg', quality?: number, options?: JPEG_OPTIONS | PNG_OPTIONS) {
 	checkCanvas();
+	const onExportFinish = options?.onExportFinish;
 	canvas!.toBlob((blob) => {
 		if (!blob) {
 			showAlert(`Problem saving ${type.toUpperCase()}, please try again!`);
-		} else {
-			const onExport = options?.onExport || saveAs;
-			if (options?.dpi) {
-				changeDpiBlob(blob, options?.dpi).then((blob: Blob) => {
-					onExport(blob, filename);
-				});
-			} else {
-				onExport(blob, filename);
-			}
+			if (onExportFinish) onExportFinish();
+			return;
 		}
-		if (options?.onExportFinish) options.onExportFinish();
+		const onExport = options?.onExport || saveAs;
+		if (options?.dpi) {
+			changeDpiBlob(blob, options?.dpi).then((blob: Blob) => {
+				onExport(blob, filename);
+				if (onExportFinish) onExportFinish();
+			});
+		} else {
+			onExport(blob, filename);
+			if (onExportFinish) onExportFinish();
+		}
 	}, `image/${type}`, quality);
 }
 

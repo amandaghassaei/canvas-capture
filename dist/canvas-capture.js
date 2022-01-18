@@ -2430,23 +2430,27 @@ function beginJPEGFramesRecord(options) {
 exports.beginJPEGFramesRecord = beginJPEGFramesRecord;
 function takeImageSnapshot(filename, type, quality, options) {
     checkCanvas();
+    var onExportFinish = options === null || options === void 0 ? void 0 : options.onExportFinish;
     canvas.toBlob(function (blob) {
         if (!blob) {
             modals_1.showAlert("Problem saving " + type.toUpperCase() + ", please try again!");
+            if (onExportFinish)
+                onExportFinish();
+            return;
+        }
+        var onExport = (options === null || options === void 0 ? void 0 : options.onExport) || file_saver_1.saveAs;
+        if (options === null || options === void 0 ? void 0 : options.dpi) {
+            changedpi_1.changeDpiBlob(blob, options === null || options === void 0 ? void 0 : options.dpi).then(function (blob) {
+                onExport(blob, filename);
+                if (onExportFinish)
+                    onExportFinish();
+            });
         }
         else {
-            var onExport_1 = (options === null || options === void 0 ? void 0 : options.onExport) || file_saver_1.saveAs;
-            if (options === null || options === void 0 ? void 0 : options.dpi) {
-                changedpi_1.changeDpiBlob(blob, options === null || options === void 0 ? void 0 : options.dpi).then(function (blob) {
-                    onExport_1(blob, filename);
-                });
-            }
-            else {
-                onExport_1(blob, filename);
-            }
+            onExport(blob, filename);
+            if (onExportFinish)
+                onExportFinish();
         }
-        if (options === null || options === void 0 ? void 0 : options.onExportFinish)
-            options.onExportFinish();
     }, "image/" + type, quality);
 }
 function takePNGSnapshot(options) {
