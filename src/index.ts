@@ -155,10 +155,8 @@ export function setVerbose(state: boolean) {
 
 function checkCanvas() {
 	if (canvas === null) {
-		showAlert('No canvas supplied, please call CanvasCapture.init() and pass in canvas element.');
-		return false;
+		throw new Error('No canvas supplied, please call CanvasCapture.init() and pass in canvas element.');
 	}
-	return true;
 }
 
 function setHotkey(key: string, type: HOTKEY_TYPE) {
@@ -376,67 +374,40 @@ export function beginJPEGFramesRecord(options?: JPEG_OPTIONS) {
 	return capture;
 }
 
-export function takePNGSnapshot(options?: PNG_OPTIONS) {
-	return new Promise<void>((resolve, reject) => {
-		const name = options?.name || 'PNG_Capture';
-		if (!checkCanvas()) {
-			reject();
-			return;
-		}
-		const filename = `${name}.png`;
-		canvas!.toBlob((blob) => {
-			if (!blob) {
-				showAlert('Problem saving PNG, please try again!');
-				reject();
-				return;
-			}
+function takeImageSnapshot(filename: string, type: 'png' | 'jpeg', quality?: number, options?: JPEG_OPTIONS | PNG_OPTIONS) {
+	checkCanvas();
+	canvas!.toBlob((blob) => {
+		if (!blob) {
+			showAlert(`Problem saving ${type.toUpperCase()}, please try again!`);
+		} else {
 			const onExport = options?.onExport || saveAs;
 			if (options?.dpi) {
 				changeDpiBlob(blob, options?.dpi).then((blob: Blob) => {
 					onExport(blob, filename);
-					resolve();
 				});
 			} else {
 				onExport(blob, filename);
-				resolve();
 			}
-		}, 'image/png');
-	});
+		}
+		if (options?.onExportFinish) options.onExportFinish();
+	}, `image/${type}`, quality);
+}
+
+export function takePNGSnapshot(options?: PNG_OPTIONS) {
+	const name = options?.name || 'PNG_Capture';
+	const filename = `${name}.png`;
+	takeImageSnapshot(filename, 'png', undefined, options);
 }
 
 export function takeJPEGSnapshot(options?: JPEG_OPTIONS) {
-	return new Promise<void>((resolve, reject) => {
-		const name = options?.name || 'JPEG_Capture';
-		if (!checkCanvas()) {
-			reject();
-			return;
-		}
-		// Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
-		const filename = `${name}.jpg`;
-		canvas!.toBlob((blob) => {
-			if (!blob) {
-				showAlert('Problem saving JPEG, please try again!');
-				reject();
-				return;
-			}
-			const onExport = options?.onExport || saveAs;
-			if (options?.dpi) {
-				changeDpiBlob(blob, options?.dpi).then((blob: Blob) => {
-					onExport(blob, filename);
-					resolve();
-				});
-			} else {
-				onExport(blob, filename);
-				resolve();
-			}
-		}, 'image/jpeg', options?.quality || 1);
-	});
+	const name = options?.name || 'JPEG_Capture';
+	const filename = `${name}.jpg`;
+	// Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+	takeImageSnapshot(filename, 'png', options?.quality || 1, options);
 }
 
 export function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]) {
-	if (!checkCanvas()) {
-		return;
-	}
+	checkCanvas();
 	if (activeCaptures.length === 0) {
 		showAlert('No valid capturer inited, please call CanvasCapture.beginVideoRecord(), CanvasCapture.beginGIFRecord(), CanvasCapture.beginPNGFramesRecord(), or CanvasCapture.beginJPEGFramesRecord() first.');
 		return;
@@ -456,18 +427,23 @@ export function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]) {
 		if (type === JPEGZIP || type === PNGZIP) {
 			// Name should correspond to current frame.
 			const frameName = `frame_${numFrames + 1}`;
-			const options = {
-				...zipOptions,
-				name: frameName,
-				onExport: (blob: Blob, filename: string) => {
-					(capturer as JSZip).file(filename, blob);
-				},
-			};
-			if (type === JPEGZIP) {
-				zipPromises!.push(takeJPEGSnapshot(options));
-			} else {
-				zipPromises!.push(takePNGSnapshot(options));
-			}
+			const promise = new Promise<void>((resolve) => {
+				const options = {
+					dpi: zipOptions?.dpi,
+					quality: (zipOptions as JPEG_OPTIONS).quality,
+					name: frameName,
+					onExport: (blob: Blob, filename: string) => {
+						(capturer as JSZip).file(filename, blob);
+					},
+					onExportFinish: resolve,
+				};
+				if (type === JPEGZIP) {
+					takeJPEGSnapshot(options);
+				} else {
+					takePNGSnapshot(options);
+				}
+			});
+			zipPromises!.push(promise);
 		} else {
 			(capturer as CCapture).capture(canvas!);
 		}
