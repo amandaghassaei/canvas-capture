@@ -80,6 +80,7 @@ export type ACTIVE_CAPTURE = {
 	numFrames: number,
 	type: CAPTURE_TYPE,
 	zipOptions?: PNG_OPTIONS | JPEG_OPTIONS, // Only used for frame zip record.
+	zipPromises?: Promise<void>[],
 	onExportProgress?: (progress: number) => void,
 	onExport?: onExport,
 	onExportFinish?: () => void,
@@ -345,6 +346,7 @@ export function beginPNGFramesRecord(options?: PNG_OPTIONS) {
 	const capture = {
 		name,
 		zipOptions,
+		zipPromises: [],
 		capturer: new JSZip(),
 		numFrames: 0,
 		type: PNGZIP as CAPTURE_TYPE,
@@ -362,6 +364,7 @@ export function beginJPEGFramesRecord(options?: JPEG_OPTIONS) {
 	const capture = {
 		name,
 		zipOptions,
+		zipPromises: [],
 		capturer: new JSZip(),
 		numFrames: 0,
 		type: JPEGZIP as CAPTURE_TYPE,
@@ -450,7 +453,7 @@ export async function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]) {
 
 	const promises: Promise<void>[] = [];
 	for (let i = 0; i < captures.length; i++) {
-		const { capturer, type, zipOptions, numFrames } = captures[i];
+		const { capturer, type, zipOptions, zipPromises, numFrames } = captures[i];
 		if (type === JPEGZIP || type === PNGZIP) {
 			// Name should correspond to current frame.
 			const frameName = `frame_${numFrames + 1}`;
@@ -461,11 +464,14 @@ export async function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]) {
 					(capturer as JSZip).file(filename, blob);
 				},
 			};
+			let promise: Promise<void>;
 			if (type === JPEGZIP) {
-				promises.push(takeJPEGSnapshot(options));
-			} else if (type === PNGZIP) {
-				promises.push(takePNGSnapshot(options));
+				promise = takeJPEGSnapshot(options);
+			} else {
+				promise = takePNGSnapshot(options);
 			}
+			zipPromises!.push(promise);
+			promises.push(promise);
 		} else {
 			(capturer as CCapture).capture(canvas!);
 		}
@@ -474,12 +480,13 @@ export async function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]) {
 	await Promise.all(promises);
 }
 
-function stopRecordAtIndex(index: number) {
+async function stopRecordAtIndex(index: number) {
 	const {
 		name,
 		capturer,
 		numFrames,
 		type,
+		zipPromises,
 		onExportProgress,
 		onExport,
 		onExportFinish,
@@ -547,6 +554,8 @@ function stopRecordAtIndex(index: number) {
 			break;
 		case PNGZIP:
 		case JPEGZIP:
+			// Wait for all frames to finish saving.
+			await Promise.all(zipPromises!);
 			// Tell the user that frames take a sec to zip.
 			showDialog(
 				'Processing...',

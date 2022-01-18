@@ -2400,6 +2400,7 @@ function beginPNGFramesRecord(options) {
     var capture = {
         name: name,
         zipOptions: zipOptions,
+        zipPromises: [],
         capturer: new JSZip(),
         numFrames: 0,
         type: PNGZIP,
@@ -2417,6 +2418,7 @@ function beginJPEGFramesRecord(options) {
     var capture = {
         name: name,
         zipOptions: zipOptions,
+        zipPromises: [],
         capturer: new JSZip(),
         numFrames: 0,
         type: JPEGZIP,
@@ -2511,19 +2513,22 @@ function recordFrame(capture) {
                     }
                     promises = [];
                     _loop_1 = function (i) {
-                        var _a = captures[i], capturer = _a.capturer, type = _a.type, zipOptions = _a.zipOptions, numFrames = _a.numFrames;
+                        var _a = captures[i], capturer = _a.capturer, type = _a.type, zipOptions = _a.zipOptions, zipPromises = _a.zipPromises, numFrames = _a.numFrames;
                         if (type === JPEGZIP || type === PNGZIP) {
                             // Name should correspond to current frame.
                             var frameName = "frame_" + (numFrames + 1);
                             var options = __assign(__assign({}, zipOptions), { name: frameName, onExport: function (blob, filename) {
                                     capturer.file(filename, blob);
                                 } });
+                            var promise = void 0;
                             if (type === JPEGZIP) {
-                                promises.push(takeJPEGSnapshot(options));
+                                promise = takeJPEGSnapshot(options);
                             }
-                            else if (type === PNGZIP) {
-                                promises.push(takePNGSnapshot(options));
+                            else {
+                                promise = takePNGSnapshot(options);
                             }
+                            zipPromises.push(promise);
+                            promises.push(promise);
                         }
                         else {
                             capturer.capture(canvas);
@@ -2543,85 +2548,104 @@ function recordFrame(capture) {
 }
 exports.recordFrame = recordFrame;
 function stopRecordAtIndex(index) {
-    var _a = activeCaptures[index], name = _a.name, capturer = _a.capturer, numFrames = _a.numFrames, type = _a.type, onExportProgress = _a.onExportProgress, onExport = _a.onExport, onExportFinish = _a.onExportFinish, ffmpegOptions = _a.ffmpegOptions;
-    // Remove ref to capturer.
-    activeCaptures.splice(index, 1);
-    if (type !== PNGZIP && type !== JPEGZIP)
-        capturer.stop();
-    if (numFrames === 0) {
-        modals_1.showAlert('No frames recorded, call CanvasCapture.recordFrame().');
-        return;
-    }
-    switch (type) {
-        case exports.MP4:
-            capturer.save(function (blob) {
-                // Tell the user that mp4s take a sec to process.
-                modals_1.showDialog('Processing...', 'MP4 is processing and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
-                convertWEBMtoMP4({
-                    name: name,
-                    blob: blob,
-                    onProgress: onExportProgress,
-                    onSave: onExport,
-                    onFinish: onExportFinish,
-                    ffmpegOptions: ffmpegOptions,
-                });
-            });
-            break;
-        case exports.WEBM:
-            if (onExportProgress)
-                onExportProgress(0);
-            capturer.save(function (blob) {
-                if (onExportProgress)
-                    onExportProgress(1); // Save is nearly immediate.
-                var filename = name + ".webm";
-                if (onExport) {
-                    onExport(blob, filename);
-                }
-                else {
-                    file_saver_1.saveAs(blob, filename);
-                }
-                if (onExportFinish)
-                    onExportFinish();
-            });
-            break;
-        case GIF:
-            // Tell the user that gifs take a sec to process.
-            modals_1.showDialog('Processing...', 'GIF is processing and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
-            // onExportProgress callback already passed to CCapture.
-            capturer.save(function (blob) {
-                var filename = name + ".gif";
-                if (onExport) {
-                    onExport(blob, filename);
-                }
-                else {
-                    file_saver_1.saveAs(blob, filename);
-                }
-                if (onExportFinish)
-                    onExportFinish();
-            });
-            break;
-        case PNGZIP:
-        case JPEGZIP:
-            // Tell the user that frames take a sec to zip.
-            modals_1.showDialog('Processing...', 'Frames are being zipped and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
-            capturer.generateAsync({ type: 'blob' }, function (metadata) {
-                if (onExportProgress)
-                    onExportProgress(metadata.percent / 100);
-            }).then(function (blob) {
-                var filename = name + ".zip";
-                if (onExport) {
-                    onExport(blob, filename);
-                }
-                else {
-                    file_saver_1.saveAs(blob, filename);
-                }
-                if (onExportFinish)
-                    onExportFinish();
-            });
-            break;
-        default:
-            throw new Error("Need to handle saving type " + type + ".");
-    }
+    return __awaiter(this, void 0, void 0, function () {
+        var _a, name, capturer, numFrames, type, zipPromises, onExportProgress, onExport, onExportFinish, ffmpegOptions, _b;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0:
+                    _a = activeCaptures[index], name = _a.name, capturer = _a.capturer, numFrames = _a.numFrames, type = _a.type, zipPromises = _a.zipPromises, onExportProgress = _a.onExportProgress, onExport = _a.onExport, onExportFinish = _a.onExportFinish, ffmpegOptions = _a.ffmpegOptions;
+                    // Remove ref to capturer.
+                    activeCaptures.splice(index, 1);
+                    if (type !== PNGZIP && type !== JPEGZIP)
+                        capturer.stop();
+                    if (numFrames === 0) {
+                        modals_1.showAlert('No frames recorded, call CanvasCapture.recordFrame().');
+                        return [2 /*return*/];
+                    }
+                    _b = type;
+                    switch (_b) {
+                        case exports.MP4: return [3 /*break*/, 1];
+                        case exports.WEBM: return [3 /*break*/, 2];
+                        case GIF: return [3 /*break*/, 3];
+                        case PNGZIP: return [3 /*break*/, 4];
+                        case JPEGZIP: return [3 /*break*/, 4];
+                    }
+                    return [3 /*break*/, 6];
+                case 1:
+                    capturer.save(function (blob) {
+                        // Tell the user that mp4s take a sec to process.
+                        modals_1.showDialog('Processing...', 'MP4 is processing and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
+                        convertWEBMtoMP4({
+                            name: name,
+                            blob: blob,
+                            onProgress: onExportProgress,
+                            onSave: onExport,
+                            onFinish: onExportFinish,
+                            ffmpegOptions: ffmpegOptions,
+                        });
+                    });
+                    return [3 /*break*/, 7];
+                case 2:
+                    if (onExportProgress)
+                        onExportProgress(0);
+                    capturer.save(function (blob) {
+                        if (onExportProgress)
+                            onExportProgress(1); // Save is nearly immediate.
+                        var filename = name + ".webm";
+                        if (onExport) {
+                            onExport(blob, filename);
+                        }
+                        else {
+                            file_saver_1.saveAs(blob, filename);
+                        }
+                        if (onExportFinish)
+                            onExportFinish();
+                    });
+                    return [3 /*break*/, 7];
+                case 3:
+                    // Tell the user that gifs take a sec to process.
+                    modals_1.showDialog('Processing...', 'GIF is processing and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
+                    // onExportProgress callback already passed to CCapture.
+                    capturer.save(function (blob) {
+                        var filename = name + ".gif";
+                        if (onExport) {
+                            onExport(blob, filename);
+                        }
+                        else {
+                            file_saver_1.saveAs(blob, filename);
+                        }
+                        if (onExportFinish)
+                            onExportFinish();
+                    });
+                    return [3 /*break*/, 7];
+                case 4: 
+                // Wait for all frames to finish saving.
+                return [4 /*yield*/, Promise.all(zipPromises)];
+                case 5:
+                    // Wait for all frames to finish saving.
+                    _c.sent();
+                    // Tell the user that frames take a sec to zip.
+                    modals_1.showDialog('Processing...', 'Frames are being zipped and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
+                    capturer.generateAsync({ type: 'blob' }, function (metadata) {
+                        if (onExportProgress)
+                            onExportProgress(metadata.percent / 100);
+                    }).then(function (blob) {
+                        var filename = name + ".zip";
+                        if (onExport) {
+                            onExport(blob, filename);
+                        }
+                        else {
+                            file_saver_1.saveAs(blob, filename);
+                        }
+                        if (onExportFinish)
+                            onExportFinish();
+                    });
+                    return [3 /*break*/, 7];
+                case 6: throw new Error("Need to handle saving type " + type + ".");
+                case 7: return [2 /*return*/];
+            }
+        });
+    });
 }
 function stopRecord(capture) {
     if (activeCaptures.length === 0) {

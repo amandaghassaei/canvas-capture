@@ -58,6 +58,7 @@ export declare type ACTIVE_CAPTURE = {
     numFrames: number;
     type: CAPTURE_TYPE;
     zipOptions?: PNG_OPTIONS | JPEG_OPTIONS;
+    zipPromises?: Promise<void>[];
     onExportProgress?: (progress: number) => void;
     onExport?: onExport;
     onExportFinish?: () => void;
@@ -107,6 +108,7 @@ export declare function beginPNGFramesRecord(options?: PNG_OPTIONS): {
     zipOptions: {
         dpi: number | undefined;
     };
+    zipPromises: never[];
     capturer: JSZip;
     numFrames: number;
     type: CAPTURE_TYPE;
@@ -120,6 +122,7 @@ export declare function beginJPEGFramesRecord(options?: JPEG_OPTIONS): {
         dpi: number | undefined;
         quality: number | undefined;
     };
+    zipPromises: never[];
     capturer: JSZip;
     numFrames: number;
     type: CAPTURE_TYPE;
