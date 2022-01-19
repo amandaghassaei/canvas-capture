@@ -5730,6 +5730,7 @@ CanvasCapture.init(canvas, {
     showAlerts: true,
     showDialogs: true,
     verbose: false,
+    ffmpegCorePath: './dist/ffmpeg-core.js',
 });
 // Bind key presses to begin/end recordings.
 var MP4_OPTIONS = {
