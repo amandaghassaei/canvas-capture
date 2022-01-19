@@ -3,7 +3,7 @@ import { saveAs } from 'file-saver';
 // @ts-ignore
 import { changeDpiBlob } from 'changedpi';
 import { PARAMS } from './params';
-import { initDotWithCSS, showWarning, showError, showDialog, showDot } from './modals';
+import { initDotWithCSS, showWarning, showDialog, showDot } from './modals';
 import { createFFmpeg, fetchFile, FFmpeg } from '@ffmpeg/ffmpeg';
 
 // Make it so we don't have to specify workersPath for CCapture gif recorder.
@@ -218,7 +218,7 @@ window.addEventListener('keydown', (e: KeyboardEvent) => {
 				const errorMsg = `This browser does not support MP4 video recording, please try again in Chrome.`;
 				const onError = hotkeyOptions[MP4]?.onError;
 				if (onError) onError(new Error(errorMsg));
-				showError(errorMsg);
+				showWarning(errorMsg);
 			}
 			beginVideoRecord(hotkeyOptions[MP4]);
 		}
@@ -231,7 +231,7 @@ window.addEventListener('keydown', (e: KeyboardEvent) => {
 				const errorMsg = `This browser does not support WEBM video recording, please try again in Chrome.`;
 				const onError = hotkeyOptions[WEBM]?.onError;
 				if (onError) onError(new Error(errorMsg));
-				showError(errorMsg);
+				showWarning(errorMsg);
 			}
 			beginVideoRecord(hotkeyOptions[WEBM]);
 		}
