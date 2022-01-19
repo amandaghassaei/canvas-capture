@@ -126,7 +126,8 @@ videoOptions = {
   quality: number, // A number between 0 and 1, defaults to 1.
   onExportProgress: (progress: number) => void, // progress: range [0-1].
   onExport: (blob: Blob, filename: string), // Handle blob manually.
-  onExportFinish: () => void, // Callback after export complete.
+  onExportFinish: () => void, // Callback after successful export.
+  onError: (error: Error | any) => void, // Callback on error.
   // Options below for ffmpeg conversion to mp4, not used for webm export.
   ffmpegOptions?: { [key: string]: string }, // FFMPEG option flags
   // Defaults to
@@ -145,7 +146,8 @@ gifOptions = {
   quality: number, // A number between 0 and 1, defaults to 1.
   onExportProgress: (progress: number) => void, // progress: range [0-1].
   onExport: (blob: Blob, filename: string), // Handle blob manually.
-  onExportFinish: () => void, // Callback after export complete.
+  onExportFinish: () => void, // Callback after successful export.
+  onError: (error: Error | any) => void, // Callback on error.
 }
 pngOptions = {
   name: string, // Defaults to 'PNG_Capture'.
@@ -155,7 +157,8 @@ pngOptions = {
   // recording PNG frames (only used by bindKeyToPNGFrames()
   // and beginPNGFramesRecord()):
   onExportProgress: (progress: number) => void, // progress: range [0-1].
-  onExportFinish: () => void, // Callback after export complete.
+  onExportFinish: () => void, // Callback after successful export.
+  onError: (error: Error | any) => void, // Callback on error.
 }
 jpegOptions = {
   name: string, // Defaults to 'JPEG_Capture'.
@@ -166,7 +169,8 @@ jpegOptions = {
   // recording JPEG frames (only used by bindKeyToJPEGFrames()
   // and beginJPEGFramesRecord()):
   onExportProgress: (progress: number) => void, // progress: range [0-1].
-  onExportFinish: () => void, // Callback after export complete.
+  onExportFinish: () => void, // Callback after successful export.
+  onError: (error: Error | any) => void, // Callback on error.
 }
 ```
 
