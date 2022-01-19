@@ -41,6 +41,7 @@
     "changedpi": "^1.0.4",
     "file-saver": "^2.0.5",
     "jszip": "^3.7.1",
+    "mdn-polyfills": "^5.20.0",
     "micromodal": "^0.4.6"
   },
   "devDependencies": {

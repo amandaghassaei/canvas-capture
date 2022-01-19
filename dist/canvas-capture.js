@@ -791,6 +791,14 @@ https://github.com/nodeca/pako/blob/master/LICENSE
 
 /***/ }),
 
+/***/ 560:
+/***/ (() => {
+
+HTMLCanvasElement.prototype.toBlob||(HTMLCanvasElement.prototype.toBlob=function(a,r,t){var i=this.toDataURL(r,t).split(",")[1];setTimeout(function(){for(var t=atob(i),o=t.length,e=new Uint8Array(o),n=0;n<o;n++)e[n]=t.charCodeAt(n);a(new Blob([e],{type:r||"image/png"}))})});
+
+
+/***/ }),
+
 /***/ 650:
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -2134,6 +2142,8 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.browserSupportsGIF = exports.browserSupportsMP4 = exports.browserSupportsWEBM = exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginJPEGFramesRecord = exports.beginPNGFramesRecord = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToJPEGFrames = exports.bindKeyToPNGFrames = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = exports.MP4 = exports.WEBM = exports.showDialog = void 0;
 var CCapture_1 = __webpack_require__(886);
 var file_saver_1 = __webpack_require__(162);
+// Polyfill for canvas.toBlob needed for some browsers.
+__webpack_require__(560);
 // @ts-ignore
 var changedpi_1 = __webpack_require__(809);
 var params_1 = __webpack_require__(848);
@@ -2183,7 +2193,8 @@ function init(_canvas, options) {
     }
     canvas.addEventListener('resize', function () {
         if (activeCaptures.length) {
-            modals_1.showAlert("Don't resize while recording canvas!");
+            var warningMsg = "Don't resize while recording canvas!";
+            modals_1.showWarning(warningMsg);
         }
     });
 }
@@ -2248,56 +2259,63 @@ function bindKeyToJPEGSnapshot(key, options) {
 }
 exports.bindKeyToJPEGSnapshot = bindKeyToJPEGSnapshot;
 window.addEventListener('keydown', function (e) {
-    if (hotkeys.mp4 && e.key === hotkeys.mp4) {
+    var _a, _b;
+    if (hotkeys.mp4 && e.key === hotkeys[exports.MP4]) {
         var MP4s = activeCapturesOfType(exports.MP4);
         if (MP4s.length)
             stopRecord(MP4s);
         else {
             if (!browserSupportsMP4()) {
-                modals_1.showAlert("This browser does not support MP4 video recording, please try again in Chrome.");
-                return;
+                var errorMsg = "This browser does not support MP4 video recording, please try again in Chrome.";
+                var onError = (_a = hotkeyOptions[exports.MP4]) === null || _a === void 0 ? void 0 : _a.onError;
+                if (onError)
+                    onError(new Error(errorMsg));
+                modals_1.showWarning(errorMsg);
             }
-            beginVideoRecord(hotkeyOptions.mp4);
+            beginVideoRecord(hotkeyOptions[exports.MP4]);
         }
     }
-    if (hotkeys.webm && e.key === hotkeys.webm) {
+    if (hotkeys.webm && e.key === hotkeys[exports.WEBM]) {
         var WEBMs = activeCapturesOfType(exports.WEBM);
         if (WEBMs.length)
             stopRecord(WEBMs);
         else {
             if (!browserSupportsWEBM()) {
-                modals_1.showAlert("This browser does not support WEBM video recording, please try again in Chrome.");
-                return;
+                var errorMsg = "This browser does not support WEBM video recording, please try again in Chrome.";
+                var onError = (_b = hotkeyOptions[exports.WEBM]) === null || _b === void 0 ? void 0 : _b.onError;
+                if (onError)
+                    onError(new Error(errorMsg));
+                modals_1.showWarning(errorMsg);
             }
-            beginVideoRecord(hotkeyOptions.webm);
+            beginVideoRecord(hotkeyOptions[exports.WEBM]);
         }
     }
-    if (hotkeys.gif && e.key === hotkeys.gif) {
+    if (hotkeys.gif && e.key === hotkeys[GIF]) {
         var GIFs = activeCapturesOfType(GIF);
         if (GIFs.length)
             stopRecord(GIFs);
         else
-            beginGIFRecord(hotkeyOptions.gif);
+            beginGIFRecord(hotkeyOptions[GIF]);
     }
-    if (hotkeys.pngzip && e.key === hotkeys.pngzip) {
+    if (hotkeys.pngzip && e.key === hotkeys[PNGZIP]) {
         var pngzips = activeCapturesOfType(PNGZIP);
         if (pngzips.length)
             stopRecord(pngzips);
         else
-            beginPNGFramesRecord(hotkeyOptions.pngzip);
+            beginPNGFramesRecord(hotkeyOptions[PNGZIP]);
     }
-    if (hotkeys.jpegzip && e.key === hotkeys.jpegzip) {
+    if (hotkeys.jpegzip && e.key === hotkeys[JPEGZIP]) {
         var jpgzips = activeCapturesOfType(JPEGZIP);
         if (jpgzips.length)
             stopRecord(jpgzips);
         else
-            beginJPEGFramesRecord(hotkeyOptions.jpegzip);
+            beginJPEGFramesRecord(hotkeyOptions[JPEGZIP]);
     }
-    if (hotkeys.png && e.key === hotkeys.png) {
-        takePNGSnapshot(hotkeyOptions.png);
+    if (hotkeys.png && e.key === hotkeys[PNG]) {
+        takePNGSnapshot(hotkeyOptions[PNG]);
     }
-    if (hotkeys.jpeg && e.key === hotkeys.jpeg) {
-        takeJPEGSnapshot(hotkeyOptions.jpeg);
+    if (hotkeys.jpeg && e.key === hotkeys[JPEG]) {
+        takeJPEGSnapshot(hotkeyOptions[JPEG]);
     }
 });
 function startCapture(capture) {
@@ -2309,123 +2327,162 @@ function startCapture(capture) {
 }
 function beginVideoRecord(options) {
     var _a;
-    var format = (options === null || options === void 0 ? void 0 : options.format) || exports.MP4; // Default to MP4 record.
-    if (format === exports.MP4) {
-        if (!browserSupportsMP4()) {
-            modals_1.showAlert("This browser does not support MP4 video recording, please try again in Chrome.");
-            return;
+    try {
+        var format = (options === null || options === void 0 ? void 0 : options.format) || exports.MP4; // Default to MP4 record.
+        if (format === exports.MP4) {
+            if (!browserSupportsMP4()) {
+                var errorMsg = "This browser does not support MP4 video recording, please try again in Chrome.";
+                modals_1.showWarning(errorMsg);
+                throw new Error(errorMsg);
+            }
         }
-    }
-    else if (format === exports.WEBM) {
-        if (!browserSupportsWEBM()) {
-            modals_1.showAlert("This browser does not support WEBM video recording, please try again in Chrome.");
-            return;
+        else if (format === exports.WEBM) {
+            if (!browserSupportsWEBM()) {
+                var errorMsg = "This browser does not support WEBM video recording, please try again in Chrome.";
+                modals_1.showWarning(errorMsg);
+                throw new Error(errorMsg);
+            }
         }
+        else {
+            throw new Error("invalid video format " + format + ".");
+        }
+        if (activeVideoGifCaptures().length) {
+            var errorMsg = "CCapture.js only supports one video/gif capture at a time.";
+            modals_1.showWarning(errorMsg);
+            throw new Error(errorMsg);
+        }
+        var quality = 1;
+        if (options && options.quality) {
+            quality = options.quality;
+        }
+        var name_1 = (options === null || options === void 0 ? void 0 : options.name) || 'Video_Capture';
+        // Create a capturer that exports a WebM video.
+        // @ts-ignore
+        var capturer = new window.CCapture({
+            format: 'webm',
+            name: name_1,
+            framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
+            quality: quality * 100,
+            verbose: params_1.PARAMS.VERBOSE,
+        });
+        var capture = {
+            name: name_1,
+            capturer: capturer,
+            numFrames: 0,
+            type: format,
+            ffmpegOptions: (_a = options) === null || _a === void 0 ? void 0 : _a.ffmpegOptions,
+            onExportProgress: options === null || options === void 0 ? void 0 : options.onExportProgress,
+            onExport: options === null || options === void 0 ? void 0 : options.onExport,
+            onExportFinish: options === null || options === void 0 ? void 0 : options.onExportFinish,
+            onError: options === null || options === void 0 ? void 0 : options.onError,
+        };
+        startCapture(capture);
+        return capture;
     }
-    else {
-        modals_1.showAlert("invalid video format " + format + ".");
-        return;
+    catch (error) {
+        if (options === null || options === void 0 ? void 0 : options.onError)
+            options.onError(error);
+        else
+            throw error;
     }
-    if (activeVideoGifCaptures().length) {
-        modals_1.showAlert("CCapture.js only supports one video/gif capture at a time.");
-        return;
-    }
-    var quality = 1;
-    if (options && options.quality) {
-        quality = options.quality;
-    }
-    var name = (options === null || options === void 0 ? void 0 : options.name) || 'Video_Capture';
-    // Create a capturer that exports a WebM video.
-    // @ts-ignore
-    var capturer = new window.CCapture({
-        format: 'webm',
-        name: name,
-        framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
-        quality: quality * 100,
-        verbose: params_1.PARAMS.VERBOSE,
-    });
-    var capture = {
-        name: name,
-        capturer: capturer,
-        numFrames: 0,
-        type: format,
-        ffmpegOptions: (_a = options) === null || _a === void 0 ? void 0 : _a.ffmpegOptions,
-        onExportProgress: options === null || options === void 0 ? void 0 : options.onExportProgress,
-        onExport: options === null || options === void 0 ? void 0 : options.onExport,
-        onExportFinish: options === null || options === void 0 ? void 0 : options.onExportFinish,
-    };
-    startCapture(capture);
-    return capture;
 }
 exports.beginVideoRecord = beginVideoRecord;
 function beginGIFRecord(options) {
-    if (activeVideoGifCaptures().length) {
-        modals_1.showAlert("CCapture.js only supports one video/gif capture at a time.");
-        return;
+    try {
+        if (activeVideoGifCaptures().length) {
+            var errorMsg = "CCapture.js only supports one video/gif capture at a time.";
+            modals_1.showWarning(errorMsg);
+            throw new Error(errorMsg);
+        }
+        // CCapture seems to expect a quality between 0 and 100.
+        var quality = 100;
+        if (options && options.quality) {
+            quality = options.quality * 100;
+        }
+        var name_2 = (options === null || options === void 0 ? void 0 : options.name) || 'GIF_Capture';
+        // Create a capturer that exports a GIF.
+        // @ts-ignore
+        var capturer = new window.CCapture({
+            format: 'gif',
+            name: name_2,
+            framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
+            workersPath: gifWorkersPath,
+            quality: quality,
+            verbose: params_1.PARAMS.VERBOSE,
+            onProgress: options === null || options === void 0 ? void 0 : options.onExportProgress,
+        });
+        var capture = {
+            name: name_2,
+            capturer: capturer,
+            numFrames: 0,
+            type: GIF,
+            onExport: options === null || options === void 0 ? void 0 : options.onExport,
+            onExportFinish: options === null || options === void 0 ? void 0 : options.onExportFinish,
+            onError: options === null || options === void 0 ? void 0 : options.onError,
+        };
+        startCapture(capture);
+        return capture;
     }
-    // CCapture seems to expect a quality between 0 and 100.
-    var quality = 100;
-    if (options && options.quality) {
-        quality = options.quality * 100;
+    catch (error) {
+        if (options === null || options === void 0 ? void 0 : options.onError)
+            options.onError(error);
+        else
+            throw error;
     }
-    var name = (options === null || options === void 0 ? void 0 : options.name) || 'GIF_Capture';
-    // Create a capturer that exports a GIF.
-    // @ts-ignore
-    var capturer = new window.CCapture({
-        format: 'gif',
-        name: name,
-        framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
-        workersPath: gifWorkersPath,
-        quality: quality,
-        verbose: params_1.PARAMS.VERBOSE,
-        onProgress: options === null || options === void 0 ? void 0 : options.onExportProgress,
-    });
-    var capture = {
-        name: name,
-        capturer: capturer,
-        numFrames: 0,
-        type: GIF,
-        onExport: options === null || options === void 0 ? void 0 : options.onExport,
-        onExportFinish: options === null || options === void 0 ? void 0 : options.onExportFinish,
-    };
-    startCapture(capture);
-    return capture;
 }
 exports.beginGIFRecord = beginGIFRecord;
 function beginPNGFramesRecord(options) {
-    var name = (options === null || options === void 0 ? void 0 : options.name) || 'PNG_Frames_Capture';
-    var zipOptions = { dpi: options === null || options === void 0 ? void 0 : options.dpi };
-    var capture = {
-        name: name,
-        zipOptions: zipOptions,
-        zipPromises: [],
-        capturer: new JSZip(),
-        numFrames: 0,
-        type: PNGZIP,
-        onExportProgress: options === null || options === void 0 ? void 0 : options.onExportProgress,
-        onExport: options === null || options === void 0 ? void 0 : options.onExport,
-        onExportFinish: options === null || options === void 0 ? void 0 : options.onExportFinish,
-    };
-    startCapture(capture);
-    return capture;
+    try {
+        var name_3 = (options === null || options === void 0 ? void 0 : options.name) || 'PNG_Frames_Capture';
+        var zipOptions = { dpi: options === null || options === void 0 ? void 0 : options.dpi };
+        var capture = {
+            name: name_3,
+            zipOptions: zipOptions,
+            zipPromises: [],
+            capturer: new JSZip(),
+            numFrames: 0,
+            type: PNGZIP,
+            onExportProgress: options === null || options === void 0 ? void 0 : options.onExportProgress,
+            onExport: options === null || options === void 0 ? void 0 : options.onExport,
+            onExportFinish: options === null || options === void 0 ? void 0 : options.onExportFinish,
+            onError: options === null || options === void 0 ? void 0 : options.onError,
+        };
+        startCapture(capture);
+        return capture;
+    }
+    catch (error) {
+        if (options === null || options === void 0 ? void 0 : options.onError)
+            options.onError(error);
+        else
+            throw error;
+    }
 }
 exports.beginPNGFramesRecord = beginPNGFramesRecord;
 function beginJPEGFramesRecord(options) {
-    var name = (options === null || options === void 0 ? void 0 : options.name) || 'JPEG_Frames_Capture';
-    var zipOptions = { dpi: options === null || options === void 0 ? void 0 : options.dpi, quality: options === null || options === void 0 ? void 0 : options.quality };
-    var capture = {
-        name: name,
-        zipOptions: zipOptions,
-        zipPromises: [],
-        capturer: new JSZip(),
-        numFrames: 0,
-        type: JPEGZIP,
-        onExportProgress: options === null || options === void 0 ? void 0 : options.onExportProgress,
-        onExport: options === null || options === void 0 ? void 0 : options.onExport,
-        onExportFinish: options === null || options === void 0 ? void 0 : options.onExportFinish,
-    };
-    startCapture(capture);
-    return capture;
+    try {
+        var name_4 = (options === null || options === void 0 ? void 0 : options.name) || 'JPEG_Frames_Capture';
+        var zipOptions = { dpi: options === null || options === void 0 ? void 0 : options.dpi, quality: options === null || options === void 0 ? void 0 : options.quality };
+        var capture = {
+            name: name_4,
+            zipOptions: zipOptions,
+            zipPromises: [],
+            capturer: new JSZip(),
+            numFrames: 0,
+            type: JPEGZIP,
+            onExportProgress: options === null || options === void 0 ? void 0 : options.onExportProgress,
+            onExport: options === null || options === void 0 ? void 0 : options.onExport,
+            onExportFinish: options === null || options === void 0 ? void 0 : options.onExportFinish,
+            onError: options === null || options === void 0 ? void 0 : options.onError,
+        };
+        startCapture(capture);
+        return capture;
+    }
+    catch (error) {
+        if (options === null || options === void 0 ? void 0 : options.onError)
+            options.onError(error);
+        else
+            throw error;
+    }
 }
 exports.beginJPEGFramesRecord = beginJPEGFramesRecord;
 function takeImageSnapshot(filename, type, quality, options) {
@@ -2433,10 +2490,9 @@ function takeImageSnapshot(filename, type, quality, options) {
     var onExportFinish = options === null || options === void 0 ? void 0 : options.onExportFinish;
     canvas.toBlob(function (blob) {
         if (!blob) {
-            modals_1.showAlert("Problem saving " + type.toUpperCase() + ", please try again!");
-            if (onExportFinish)
-                onExportFinish();
-            return;
+            var errorMsg = "Problem saving " + type.toUpperCase() + ", please try again!";
+            modals_1.showWarning(errorMsg);
+            throw new Error(errorMsg);
         }
         var onExport = (options === null || options === void 0 ? void 0 : options.onExport) || file_saver_1.saveAs;
         if (options === null || options === void 0 ? void 0 : options.dpi) {
@@ -2454,24 +2510,35 @@ function takeImageSnapshot(filename, type, quality, options) {
     }, "image/" + type, quality);
 }
 function takePNGSnapshot(options) {
-    var name = (options === null || options === void 0 ? void 0 : options.name) || 'PNG_Capture';
-    var filename = name + ".png";
-    takeImageSnapshot(filename, 'png', undefined, options);
+    try {
+        var name_5 = (options === null || options === void 0 ? void 0 : options.name) || 'PNG_Capture';
+        var filename = name_5 + ".png";
+        takeImageSnapshot(filename, 'png', undefined, options);
+    }
+    catch (error) {
+        if (options === null || options === void 0 ? void 0 : options.onError)
+            options.onError(error);
+        else
+            throw error;
+    }
 }
 exports.takePNGSnapshot = takePNGSnapshot;
 function takeJPEGSnapshot(options) {
-    var name = (options === null || options === void 0 ? void 0 : options.name) || 'JPEG_Capture';
-    var filename = name + ".jpg";
-    // Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
-    takeImageSnapshot(filename, 'png', (options === null || options === void 0 ? void 0 : options.quality) || 1, options);
+    try {
+        var name_6 = (options === null || options === void 0 ? void 0 : options.name) || 'JPEG_Capture';
+        var filename = name_6 + ".jpg";
+        // Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+        takeImageSnapshot(filename, 'png', (options === null || options === void 0 ? void 0 : options.quality) || 1, options);
+    }
+    catch (error) {
+        if (options === null || options === void 0 ? void 0 : options.onError)
+            options.onError(error);
+        else
+            throw error;
+    }
 }
 exports.takeJPEGSnapshot = takeJPEGSnapshot;
 function recordFrame(capture) {
-    checkCanvas();
-    if (activeCaptures.length === 0) {
-        modals_1.showAlert('No valid capturer inited, please call CanvasCapture.beginVideoRecord(), CanvasCapture.beginGIFRecord(), CanvasCapture.beginPNGFramesRecord(), or CanvasCapture.beginJPEGFramesRecord() first.');
-        return;
-    }
     var captures = activeCaptures;
     if (capture) {
         if (!Array.isArray(capture)) {
@@ -2481,54 +2548,77 @@ function recordFrame(capture) {
             captures = capture;
         }
     }
-    var _loop_1 = function (i) {
-        var _a = captures[i], capturer = _a.capturer, type = _a.type, zipOptions = _a.zipOptions, zipPromises = _a.zipPromises, numFrames = _a.numFrames;
-        if (type === JPEGZIP || type === PNGZIP) {
-            // Name should correspond to current frame.
-            var frameName_1 = "frame_" + (numFrames + 1);
-            var promise = new Promise(function (resolve) {
-                var options = {
-                    dpi: zipOptions === null || zipOptions === void 0 ? void 0 : zipOptions.dpi,
-                    quality: zipOptions.quality,
-                    name: frameName_1,
-                    onExport: function (blob, filename) {
-                        capturer.file(filename, blob);
-                    },
-                    onExportFinish: resolve,
-                };
-                if (type === JPEGZIP) {
-                    takeJPEGSnapshot(options);
-                }
-                else {
-                    takePNGSnapshot(options);
-                }
-            });
-            zipPromises.push(promise);
+    try {
+        checkCanvas();
+        if (captures.length === 0) {
+            var errorMsg = 'No valid capturer inited, please call CanvasCapture.beginVideoRecord(), CanvasCapture.beginGIFRecord(), CanvasCapture.beginPNGFramesRecord(), or CanvasCapture.beginJPEGFramesRecord() first.';
+            modals_1.showWarning(errorMsg);
+            throw new Error(errorMsg);
         }
-        else {
-            capturer.capture(canvas);
+        var _loop_1 = function (i) {
+            var _a = captures[i], capturer = _a.capturer, type = _a.type, zipOptions = _a.zipOptions, zipPromises = _a.zipPromises, numFrames = _a.numFrames;
+            if (type === JPEGZIP || type === PNGZIP) {
+                // Name should correspond to current frame.
+                var frameName_1 = "frame_" + (numFrames + 1);
+                var promise = new Promise(function (resolve, reject) {
+                    var options = {
+                        dpi: zipOptions === null || zipOptions === void 0 ? void 0 : zipOptions.dpi,
+                        quality: zipOptions.quality,
+                        name: frameName_1,
+                        onExport: function (blob, filename) {
+                            capturer.file(filename, blob);
+                        },
+                        onExportFinish: resolve,
+                        onError: reject,
+                    };
+                    if (type === JPEGZIP) {
+                        takeJPEGSnapshot(options);
+                    }
+                    else {
+                        takePNGSnapshot(options);
+                    }
+                });
+                zipPromises.push(promise);
+            }
+            else {
+                capturer.capture(canvas);
+            }
+            captures[i].numFrames = numFrames + 1;
+        };
+        for (var i = 0; i < captures.length; i++) {
+            _loop_1(i);
         }
-        captures[i].numFrames = numFrames + 1;
-    };
-    for (var i = 0; i < captures.length; i++) {
-        _loop_1(i);
+    }
+    catch (error) {
+        var handled = true;
+        for (var i = 0; i < captures.length; i++) {
+            var capture_1 = captures[i];
+            if (capture_1.onError)
+                capture_1.onError(error);
+            else
+                handled = false;
+        }
+        if (!captures.length || !handled) {
+            throw error;
+        }
     }
 }
 exports.recordFrame = recordFrame;
 function stopRecordAtIndex(index) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, name, capturer, numFrames, type, zipPromises, onExportProgress, onExport, onExportFinish, ffmpegOptions, _b;
+        var _a, name, capturer, numFrames, type, zipPromises, onExportProgress, onExport, onExportFinish, onError, ffmpegOptions, errorMsg, _b;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
-                    _a = activeCaptures[index], name = _a.name, capturer = _a.capturer, numFrames = _a.numFrames, type = _a.type, zipPromises = _a.zipPromises, onExportProgress = _a.onExportProgress, onExport = _a.onExport, onExportFinish = _a.onExportFinish, ffmpegOptions = _a.ffmpegOptions;
+                    _a = activeCaptures[index], name = _a.name, capturer = _a.capturer, numFrames = _a.numFrames, type = _a.type, zipPromises = _a.zipPromises, onExportProgress = _a.onExportProgress, onExport = _a.onExport, onExportFinish = _a.onExportFinish, onError = _a.onError, ffmpegOptions = _a.ffmpegOptions;
                     // Remove ref to capturer.
                     activeCaptures.splice(index, 1);
                     if (type !== PNGZIP && type !== JPEGZIP)
                         capturer.stop();
                     if (numFrames === 0) {
-                        modals_1.showAlert('No frames recorded, call CanvasCapture.recordFrame().');
-                        return [2 /*return*/];
+                        errorMsg = 'No frames recorded, call CanvasCapture.recordFrame().';
+                        modals_1.showWarning(errorMsg);
+                        throw new Error(errorMsg);
                     }
                     _b = type;
                     switch (_b) {
@@ -2616,27 +2706,37 @@ function stopRecordAtIndex(index) {
     });
 }
 function stopRecord(capture) {
-    if (activeCaptures.length === 0) {
-        modals_1.showAlert('No valid capturer inited, please call CanvasCapture.beginVideoRecord(), CanvasCapture.beginGIFRecord(), CanvasCapture.beginPNGFramesRecord(), or CanvasCapture.beginJPEGFramesRecord() first.');
-        return;
+    if (capture && !Array.isArray(capture)) {
+        capture = [capture];
     }
-    if (capture) {
-        if (!Array.isArray(capture)) {
-            capture = [capture];
+    var captures = capture || activeCaptures;
+    try {
+        if (activeCaptures.length === 0) {
+            var errorMsg = 'No valid capturer inited, please call CanvasCapture.beginVideoRecord(), CanvasCapture.beginGIFRecord(), CanvasCapture.beginPNGFramesRecord(), or CanvasCapture.beginJPEGFramesRecord() first.';
+            modals_1.showWarning(errorMsg);
+            throw new Error(errorMsg);
         }
-        for (var i = 0; i < capture.length; i++) {
-            var index = activeCaptures.indexOf(capture[i]);
+        for (var i = 0; i < captures.length; i++) {
+            var index = activeCaptures.indexOf(captures[i]);
             if (index < 0)
-                throw new Error("Invalid capture " + capture[i] + " \u2013 may have already been stopped.");
+                throw new Error("Invalid capture " + captures[i] + " \u2013 may have already been stopped.");
             stopRecordAtIndex(index);
         }
+        modals_1.showDot(isRecording());
     }
-    else {
-        for (var i = activeCaptures.length - 1; i >= 0; i--) {
-            stopRecordAtIndex(i);
+    catch (error) {
+        var handled = true;
+        for (var i = 0; i < captures.length; i++) {
+            var capture_2 = captures[i];
+            if (capture_2.onError)
+                capture_2.onError(error);
+            else
+                handled = false;
+        }
+        if (!captures.length || !handled) {
+            throw error;
         }
     }
-    modals_1.showDot(isRecording());
 }
 exports.stopRecord = stopRecord;
 function activeCapturesOfType(type) {
@@ -2658,7 +2758,7 @@ exports.isRecording = isRecording;
 var ffmpegLoaded = false;
 function convertWEBMtoMP4(options) {
     return __awaiter(this, void 0, void 0, function () {
-        var e_1, name, blob, onProgress, onSave, onFinish, ffmpegOptions, data, defaultFFMPEGOptions, combinedOptions, _ffmpegOptions, filename, output, outputBlob;
+        var e_1, errorMsg, name, blob, onProgress, onSave, onFinish, ffmpegOptions, data, defaultFFMPEGOptions, combinedOptions, _ffmpegOptions, filename, output, outputBlob;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -2673,8 +2773,9 @@ function convertWEBMtoMP4(options) {
                     return [3 /*break*/, 4];
                 case 3:
                     e_1 = _a.sent();
-                    modals_1.showAlert('MP4 export not supported in this browser, try again in the latest version of Chrome.');
-                    return [2 /*return*/];
+                    errorMsg = 'MP4 export not supported in this browser, try again in the latest version of Chrome.';
+                    modals_1.showWarning(errorMsg);
+                    throw new Error(errorMsg);
                 case 4:
                     name = options.name, blob = options.blob, onProgress = options.onProgress, onSave = options.onSave, onFinish = options.onFinish, ffmpegOptions = options.ffmpegOptions;
                     return [4 /*yield*/, ffmpeg_1.fetchFile(blob)];
@@ -2794,7 +2895,7 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.showDot = exports.initDotWithCSS = exports.showDialog = exports.showAlert = void 0;
+exports.showDot = exports.initDotWithCSS = exports.showDialog = exports.showWarning = void 0;
 var micromodal_1 = __webpack_require__(650);
 var micromodal_css_1 = __webpack_require__(713);
 var params_1 = __webpack_require__(848);
@@ -2817,7 +2918,7 @@ var ALERT_MODAL_ID = 'alert';
 var alertModal = initModalHTML(ALERT_MODAL_ID, 'Warning');
 var DIALOG_MODAL_ID = 'dialog';
 var dialogModal = initModalHTML(DIALOG_MODAL_ID, 'Saving...');
-function showAlert(message) {
+function showWarning(message) {
     console.warn(message);
     if (!params_1.PARAMS.SHOW_ALERTS) {
         return;
@@ -2829,7 +2930,7 @@ function showAlert(message) {
     document.getElementById("modal-" + ALERT_MODAL_ID + "-content").innerHTML = message;
     micromodal_1.default.show("modal-" + ALERT_MODAL_ID);
 }
-exports.showAlert = showAlert;
+exports.showWarning = showWarning;
 function showDialog(title, message, options) {
     if (params_1.PARAMS.VERBOSE)
         console.log(title, message);

@@ -1,5 +1,7 @@
 import CCapture from './CCapture.js/CCapture';
 import { saveAs } from 'file-saver';
+// Polyfill for canvas.toBlob needed for some browsers.
+import 'mdn-polyfills/HTMLCanvasElement.prototype.toBlob';
 // @ts-ignore
 import { changeDpiBlob } from 'changedpi';
 import { PARAMS } from './params';

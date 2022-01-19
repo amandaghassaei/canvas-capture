@@ -1,4 +1,4 @@
-export declare function showAlert(message: string): void;
+export declare function showWarning(message: string): void;
 export declare function showDialog(title: string, message: string, options?: {
     autoCloseDelay?: number;
 }): void;
