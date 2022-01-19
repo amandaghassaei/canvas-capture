@@ -2985,7 +2985,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PARAMS = void 0;
 // Params.
 exports.PARAMS = {
-    VERBOSE: true,
+    VERBOSE: false,
     SHOW_ALERTS: false,
     SHOW_DIALOGS: false,
     SHOW_REC_DOT: false,

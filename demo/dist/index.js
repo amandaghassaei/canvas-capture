@@ -2989,7 +2989,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.PARAMS = void 0;
 // Params.
 exports.PARAMS = {
-    VERBOSE: true,
+    VERBOSE: false,
     SHOW_ALERTS: false,
     SHOW_DIALOGS: false,
     SHOW_REC_DOT: false,
@@ -2999,16 +2999,16 @@ exports.PARAMS = {
 /***/ }),
 
 /***/ 886:
-/***/ ((module, exports, __nested_webpack_require_214657__) => {
+/***/ ((module, exports, __nested_webpack_require_214658__) => {
 
-/* module decorator */ module = __nested_webpack_require_214657__.nmd(module);
+/* module decorator */ module = __nested_webpack_require_214658__.nmd(module);
 var __WEBPACK_AMD_DEFINE_RESULT__;;(function() {
 
 if (  true && typeof module.exports !== 'undefined') {
-  var Tar = __nested_webpack_require_214657__(846);
-  var download = __nested_webpack_require_214657__(173);
-  var GIF = __nested_webpack_require_214657__(769);
-  var WebMWriter = __nested_webpack_require_214657__(166);
+  var Tar = __nested_webpack_require_214658__(846);
+  var download = __nested_webpack_require_214658__(173);
+  var GIF = __nested_webpack_require_214658__(769);
+  var WebMWriter = __nested_webpack_require_214658__(166);
 }
 
 "use strict";
@@ -3042,7 +3042,7 @@ var moduleExports = (freeModule && freeModule.exports === freeExports)
 : undefined;
 
 /** Detect free variable `global` from Node.js. */
-var freeGlobal = checkGlobal(freeExports && freeModule && typeof __nested_webpack_require_214657__.g == 'object' && __nested_webpack_require_214657__.g);
+var freeGlobal = checkGlobal(freeExports && freeModule && typeof __nested_webpack_require_214658__.g == 'object' && __nested_webpack_require_214658__.g);
 
 /** Detect free variable `self`. */
 var freeSelf = checkGlobal(objectTypes[typeof self] && self);
@@ -3967,7 +3967,7 @@ function CCapture( settings ) {
     // referenced as the "underscore" module.
     !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {
     	return CCapture;
-    }).call(exports, __nested_webpack_require_214657__, exports, module),
+    }).call(exports, __nested_webpack_require_214658__, exports, module),
 		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 }
   // Check for `exports` after `define` in case a build optimizer adds an `exports` object.
@@ -5597,7 +5597,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_323210__(moduleId) {
+/******/ 	function __nested_webpack_require_323211__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -5611,7 +5611,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_323210__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_323211__);
 /******/ 	
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
@@ -5624,9 +5624,9 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
-/******/ 		__nested_webpack_require_323210__.d = (exports, definition) => {
+/******/ 		__nested_webpack_require_323211__.d = (exports, definition) => {
 /******/ 			for(var key in definition) {
-/******/ 				if(__nested_webpack_require_323210__.o(definition, key) && !__nested_webpack_require_323210__.o(exports, key)) {
+/******/ 				if(__nested_webpack_require_323211__.o(definition, key) && !__nested_webpack_require_323211__.o(exports, key)) {
 /******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 				}
 /******/ 			}
@@ -5635,7 +5635,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_323210__.g = (function() {
+/******/ 		__nested_webpack_require_323211__.g = (function() {
 /******/ 			if (typeof globalThis === 'object') return globalThis;
 /******/ 			try {
 /******/ 				return this || new Function('return this')();
@@ -5647,13 +5647,13 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_323210__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 		__nested_webpack_require_323211__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
-/******/ 		__nested_webpack_require_323210__.r = (exports) => {
+/******/ 		__nested_webpack_require_323211__.r = (exports) => {
 /******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
 /******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
 /******/ 			}
@@ -5663,7 +5663,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/node module decorator */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_323210__.nmd = (module) => {
+/******/ 		__nested_webpack_require_323211__.nmd = (module) => {
 /******/ 			module.paths = [];
 /******/ 			if (!module.children) module.children = [];
 /******/ 			return module;
@@ -5675,7 +5675,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nested_webpack_require_323210__(607);
+/******/ 	var __webpack_exports__ = __nested_webpack_require_323211__(607);
 /******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()

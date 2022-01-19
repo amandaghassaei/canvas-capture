@@ -183,7 +183,7 @@ import * as CanvasCapture from 'canvas-capture';
 
 CanvasCapture.init(document.getElementById('my-canvas'), {
   // Verbosity of console output.
-  verbose: true, // Default is true.
+  verbose: true, // Default is false.
   // Show a red dot on the screen during records.
   showRecDot: true, // Default is false.
   // CSS overrides for record dot.
