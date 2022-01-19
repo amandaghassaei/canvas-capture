@@ -41,10 +41,22 @@ const alertModal = initModalHTML(ALERT_MODAL_ID, 'Warning');
 const DIALOG_MODAL_ID = 'dialog';
 const dialogModal = initModalHTML(DIALOG_MODAL_ID, 'Saving...');
 
-export function showAlert(message: string) {
+export function showWarning(message: string) {
 	console.warn(message);
 	if (!PARAMS.SHOW_ALERTS) {
 		return;
+	}
+	if (!alertModalInited) {
+		alertModalInited = true;
+		document.getElementsByTagName('body')[0].appendChild(alertModal);
+	}
+	(document.getElementById(`modal-${ALERT_MODAL_ID}-content`) as HTMLElement).innerHTML = message;
+	MicroModal.show(`modal-${ALERT_MODAL_ID}`);
+}
+
+export function showError(message: string) {
+	if (!PARAMS.SHOW_ALERTS) {
+		throw new Error(message);
 	}
 	if (!alertModalInited) {
 		alertModalInited = true;
