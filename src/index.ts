@@ -733,7 +733,7 @@ async function convertWEBMtoMP4(options: {
 }
 
 function browserSupportsWEBP() {
-	const _canvas = new HTMLCanvasElement();
+	const _canvas = document.createElement('canvas');
 	const url = _canvas!.toDataURL('image/webp', { quality: 1 });
 	if (typeof url !== "string" || !url.match(/^data:image\/webp;base64,/i)) {
 		return false;

@@ -2829,7 +2829,7 @@ function convertWEBMtoMP4(options) {
     });
 }
 function browserSupportsWEBP() {
-    var _canvas = new HTMLCanvasElement();
+    var _canvas = document.createElement('canvas');
     var url = _canvas.toDataURL('image/webp', { quality: 1 });
     if (typeof url !== "string" || !url.match(/^data:image\/webp;base64,/i)) {
         return false;
