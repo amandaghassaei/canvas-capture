@@ -13,6 +13,7 @@ import { createFFmpeg, fetchFile, FFmpeg } from '@ffmpeg/ffmpeg';
 // @ts-ignore
 import gifWorkerString from 'raw-loader!./CCapture.js/gif.worker.js';
 import JSZip = require('jszip');
+import { rejects } from 'assert';
 const gifWorkersPath = URL.createObjectURL(new Blob([gifWorkerString]));
 
 let ffmpeg: FFmpeg;
@@ -414,45 +415,52 @@ export function beginJPEGFramesRecord(options?: JPEG_OPTIONS) {
 	}
 }
 
-function takeImageSnapshot(filename: string, type: 'png' | 'jpeg', quality?: number, options?: JPEG_OPTIONS | PNG_OPTIONS) {
-	checkCanvas();
-	const onExportFinish = options?.onExportFinish;
-	canvas!.toBlob((blob) => {
-		if (!blob) {
-			const errorMsg = `Problem saving ${type.toUpperCase()}, please try again!`;
-			showWarning(errorMsg);
-			throw new Error(errorMsg);
-		}
-		const onExport = options?.onExport || saveAs;
-		if (options?.dpi) {
-			changeDpiBlob(blob, options?.dpi).then((blob: Blob) => {
-				onExport(blob, filename);
-				if (onExportFinish) onExportFinish();
-			});
-		} else {
-			onExport(blob, filename);
-			if (onExportFinish) onExportFinish();
-		}
-	}, `image/${type}`, quality);
+async function canvasToBlobAsync(canvas: HTMLCanvasElement, type: 'png' | 'jpeg', quality?: number) {
+	return new Promise((resolve: (blob: Blob | null) => void) => {
+		canvas.toBlob((blob: Blob | null) => {
+			resolve(blob);
+		}, `image/${type}`, quality);
+	});
 }
 
-export function takePNGSnapshot(options?: PNG_OPTIONS) {
+async function takeImageSnapshot(filename: string, type: 'png' | 'jpeg', quality?: number, options?: JPEG_OPTIONS | PNG_OPTIONS) {
+	checkCanvas();
+	const onExportFinish = options?.onExportFinish;
+	const blob = await canvasToBlobAsync(canvas!, type, quality);
+	if (!blob) {
+		const errorMsg = `Problem saving ${type.toUpperCase()}, please try again!`;
+		showWarning(errorMsg);
+		throw new Error(errorMsg);
+	}
+	const onExport = options?.onExport || saveAs;
+	if (options?.dpi) {
+		await changeDpiBlob(blob, options?.dpi).then((blob: Blob) => {
+			onExport(blob, filename);
+			if (onExportFinish) onExportFinish();
+		});
+	} else {
+		onExport(blob, filename);
+		if (onExportFinish) onExportFinish();
+	}
+}
+
+export async function takePNGSnapshot(options?: PNG_OPTIONS) {
 	try {
 		const name = options?.name || 'PNG_Capture';
 		const filename = `${name}.png`;
-		takeImageSnapshot(filename, 'png', undefined, options);
+		await takeImageSnapshot(filename, 'png', undefined, options);
 	} catch (error) {
 		if (options?.onError) options.onError(error);
 		else throw error;
 	}
 }
 
-export function takeJPEGSnapshot(options?: JPEG_OPTIONS) {
+export async function takeJPEGSnapshot(options?: JPEG_OPTIONS) {
 	try {
 		const name = options?.name || 'JPEG_Capture';
 		const filename = `${name}.jpg`;
 		// Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
-		takeImageSnapshot(filename, 'png', options?.quality || 1, options);
+		await takeImageSnapshot(filename, 'png', options?.quality || 1, options);
 	} catch (error) {
 		if (options?.onError) options.onError(error);
 		else throw error;
@@ -516,6 +524,14 @@ export function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]) {
 	}
 }
 
+async function CCaptureSaveAsync(capturer: CCapture) {
+	return new Promise((resolve: (blob: Blob) => void) => {
+		capturer.save((blob: Blob) => {
+			resolve(blob);
+		});
+	});
+}
+
 async function stopRecordAtIndex(index: number) {
 	const {
 		name,
@@ -542,14 +558,15 @@ async function stopRecordAtIndex(index: number) {
 
 	switch (type) {
 		case MP4:
-			(capturer as CCapture).save((blob: Blob) => {
+			{
+				const blob = await CCaptureSaveAsync(capturer as CCapture);
 				// Tell the user that mp4s take a sec to process.
 				showDialog(
 					'Processing...',
 					'MP4 is processing and may take a minute to save.  You can close this dialog in the meantime.',
 					{ autoCloseDelay: 7000 },
 				);
-				convertWEBMtoMP4({
+				await convertWEBMtoMP4({
 					name,
 					blob,
 					onProgress: onExportProgress,
@@ -557,11 +574,12 @@ async function stopRecordAtIndex(index: number) {
 					onFinish: onExportFinish,
 					ffmpegOptions,
 				});
-			});
-			break;
+				break;
+			}
 		case WEBM:
-			if (onExportProgress) onExportProgress(0);
-			(capturer as CCapture).save((blob: Blob) => {
+			{
+				if (onExportProgress) onExportProgress(0);
+				const blob = await CCaptureSaveAsync(capturer as CCapture);
 				if (onExportProgress) onExportProgress(1);// Save is nearly immediate.
 				const filename = `${name}.webm`;
 				if (onExport) {
@@ -570,17 +588,18 @@ async function stopRecordAtIndex(index: number) {
 					saveAs(blob, filename);
 				}
 				if (onExportFinish) onExportFinish();
-			});
-			break;
+				break;
+			}
 		case GIF:
-			// Tell the user that gifs take a sec to process.
-			showDialog(
-				'Processing...',
-				'GIF is processing and may take a minute to save.  You can close this dialog in the meantime.',
-				{ autoCloseDelay: 7000 },
-			);
-			// onExportProgress callback already passed to CCapture.
-			(capturer as CCapture).save((blob: Blob) => {
+			{
+				// Tell the user that gifs take a sec to process.
+				showDialog(
+					'Processing...',
+					'GIF is processing and may take a minute to save.  You can close this dialog in the meantime.',
+					{ autoCloseDelay: 7000 },
+				);
+				// onExportProgress callback already passed to CCapture.
+				const blob = await CCaptureSaveAsync(capturer as CCapture);
 				const filename = `${name}.gif`;
 				if (onExport) {
 					onExport(blob, filename);
@@ -588,36 +607,38 @@ async function stopRecordAtIndex(index: number) {
 					saveAs(blob, filename);
 				}
 				if (onExportFinish) onExportFinish();
-			});
-			break;
+				break;
+			}
 		case PNGZIP:
 		case JPEGZIP:
-			// Wait for all frames to finish saving.
-			await Promise.all(zipPromises!);
-			// Tell the user that frames take a sec to zip.
-			showDialog(
-				'Processing...',
-				'Frames are being zipped and may take a minute to save.  You can close this dialog in the meantime.',
-				{ autoCloseDelay: 7000 },
-			);
-			(capturer as JSZip).generateAsync({ type: 'blob' }, (metadata) => {
-				if (onExportProgress) onExportProgress(metadata.percent / 100);
-			}).then((blob) => {
-				const filename = `${name}.zip`;
-				if (onExport) {
-					onExport(blob, filename);
-				} else {
-					saveAs(blob, filename);
-				}
-				if (onExportFinish) onExportFinish();
-			});
-			break;
+			{
+				// Wait for all frames to finish saving.
+				await Promise.all(zipPromises!);
+				// Tell the user that frames take a sec to zip.
+				showDialog(
+					'Processing...',
+					'Frames are being zipped and may take a minute to save.  You can close this dialog in the meantime.',
+					{ autoCloseDelay: 7000 },
+				);
+				await (capturer as JSZip).generateAsync({ type: 'blob' }, (metadata) => {
+					if (onExportProgress) onExportProgress(metadata.percent / 100);
+				}).then((blob) => {
+					const filename = `${name}.zip`;
+					if (onExport) {
+						onExport(blob, filename);
+					} else {
+						saveAs(blob, filename);
+					}
+					if (onExportFinish) onExportFinish();
+				});
+				break;
+			}
 		default:
 			throw new Error(`Need to handle saving type ${type}.`);
 	}
 }
 
-export function stopRecord(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]) {
+export async function stopRecord(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]) {
 	if (capture && !Array.isArray(capture)) {
 		capture = [capture];
 	}
@@ -629,12 +650,14 @@ export function stopRecord(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]) {
 			throw new Error(errorMsg);
 		}
 
+		const promises: Promise<void>[] = [];
 		for (let i = 0; i < captures.length; i++) {
 			const index = activeCaptures.indexOf(captures[i]);
 			if (index < 0) throw new Error(`Invalid capture ${captures[i]} – may have already been stopped.`);
-			stopRecordAtIndex(index);
+			promises.push(stopRecordAtIndex(index));
 		}
 		showDot(isRecording());
+		await Promise.all(promises);
 	} catch (error) {
 		let handled = true;
 		for (let i = 0; i < captures.length; i++) {

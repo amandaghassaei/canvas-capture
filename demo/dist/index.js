@@ -2489,57 +2489,105 @@ function beginJPEGFramesRecord(options) {
     }
 }
 exports.beginJPEGFramesRecord = beginJPEGFramesRecord;
+function canvasToBlobAsync(canvas, type, quality) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            return [2 /*return*/, new Promise(function (resolve) {
+                    canvas.toBlob(function (blob) {
+                        resolve(blob);
+                    }, "image/" + type, quality);
+                })];
+        });
+    });
+}
 function takeImageSnapshot(filename, type, quality, options) {
-    checkCanvas();
-    var onExportFinish = options === null || options === void 0 ? void 0 : options.onExportFinish;
-    canvas.toBlob(function (blob) {
-        if (!blob) {
-            var errorMsg = "Problem saving " + type.toUpperCase() + ", please try again!";
-            modals_1.showWarning(errorMsg);
-            throw new Error(errorMsg);
-        }
-        var onExport = (options === null || options === void 0 ? void 0 : options.onExport) || file_saver_1.saveAs;
-        if (options === null || options === void 0 ? void 0 : options.dpi) {
-            changedpi_1.changeDpiBlob(blob, options === null || options === void 0 ? void 0 : options.dpi).then(function (blob) {
-                onExport(blob, filename);
-                if (onExportFinish)
-                    onExportFinish();
-            });
-        }
-        else {
-            onExport(blob, filename);
-            if (onExportFinish)
-                onExportFinish();
-        }
-    }, "image/" + type, quality);
+    return __awaiter(this, void 0, void 0, function () {
+        var onExportFinish, blob, errorMsg, onExport;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    checkCanvas();
+                    onExportFinish = options === null || options === void 0 ? void 0 : options.onExportFinish;
+                    return [4 /*yield*/, canvasToBlobAsync(canvas, type, quality)];
+                case 1:
+                    blob = _a.sent();
+                    if (!blob) {
+                        errorMsg = "Problem saving " + type.toUpperCase() + ", please try again!";
+                        modals_1.showWarning(errorMsg);
+                        throw new Error(errorMsg);
+                    }
+                    onExport = (options === null || options === void 0 ? void 0 : options.onExport) || file_saver_1.saveAs;
+                    if (!(options === null || options === void 0 ? void 0 : options.dpi)) return [3 /*break*/, 3];
+                    return [4 /*yield*/, changedpi_1.changeDpiBlob(blob, options === null || options === void 0 ? void 0 : options.dpi).then(function (blob) {
+                            onExport(blob, filename);
+                            if (onExportFinish)
+                                onExportFinish();
+                        })];
+                case 2:
+                    _a.sent();
+                    return [3 /*break*/, 4];
+                case 3:
+                    onExport(blob, filename);
+                    if (onExportFinish)
+                        onExportFinish();
+                    _a.label = 4;
+                case 4: return [2 /*return*/];
+            }
+        });
+    });
 }
 function takePNGSnapshot(options) {
-    try {
-        var name_5 = (options === null || options === void 0 ? void 0 : options.name) || 'PNG_Capture';
-        var filename = name_5 + ".png";
-        takeImageSnapshot(filename, 'png', undefined, options);
-    }
-    catch (error) {
-        if (options === null || options === void 0 ? void 0 : options.onError)
-            options.onError(error);
-        else
-            throw error;
-    }
+    return __awaiter(this, void 0, void 0, function () {
+        var name_5, filename, error_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    name_5 = (options === null || options === void 0 ? void 0 : options.name) || 'PNG_Capture';
+                    filename = name_5 + ".png";
+                    return [4 /*yield*/, takeImageSnapshot(filename, 'png', undefined, options)];
+                case 1:
+                    _a.sent();
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_1 = _a.sent();
+                    if (options === null || options === void 0 ? void 0 : options.onError)
+                        options.onError(error_1);
+                    else
+                        throw error_1;
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
 }
 exports.takePNGSnapshot = takePNGSnapshot;
 function takeJPEGSnapshot(options) {
-    try {
-        var name_6 = (options === null || options === void 0 ? void 0 : options.name) || 'JPEG_Capture';
-        var filename = name_6 + ".jpg";
-        // Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
-        takeImageSnapshot(filename, 'png', (options === null || options === void 0 ? void 0 : options.quality) || 1, options);
-    }
-    catch (error) {
-        if (options === null || options === void 0 ? void 0 : options.onError)
-            options.onError(error);
-        else
-            throw error;
-    }
+    return __awaiter(this, void 0, void 0, function () {
+        var name_6, filename, error_2;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    name_6 = (options === null || options === void 0 ? void 0 : options.name) || 'JPEG_Capture';
+                    filename = name_6 + ".jpg";
+                    // Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+                    return [4 /*yield*/, takeImageSnapshot(filename, 'png', (options === null || options === void 0 ? void 0 : options.quality) || 1, options)];
+                case 1:
+                    // Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+                    _a.sent();
+                    return [3 /*break*/, 3];
+                case 2:
+                    error_2 = _a.sent();
+                    if (options === null || options === void 0 ? void 0 : options.onError)
+                        options.onError(error_2);
+                    else
+                        throw error_2;
+                    return [3 /*break*/, 3];
+                case 3: return [2 /*return*/];
+            }
+        });
+    });
 }
 exports.takeJPEGSnapshot = takeJPEGSnapshot;
 function recordFrame(capture) {
@@ -2608,9 +2656,20 @@ function recordFrame(capture) {
     }
 }
 exports.recordFrame = recordFrame;
+function CCaptureSaveAsync(capturer) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            return [2 /*return*/, new Promise(function (resolve) {
+                    capturer.save(function (blob) {
+                        resolve(blob);
+                    });
+                })];
+        });
+    });
+}
 function stopRecordAtIndex(index) {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, name, capturer, numFrames, type, zipPromises, onExportProgress, onExport, onExportFinish, onError, ffmpegOptions, errorMsg, _b;
+        var _a, name, capturer, numFrames, type, zipPromises, onExportProgress, onExport, onExportFinish, onError, ffmpegOptions, errorMsg, _b, blob, blob, filename, blob, filename;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -2627,120 +2686,141 @@ function stopRecordAtIndex(index) {
                     _b = type;
                     switch (_b) {
                         case exports.MP4: return [3 /*break*/, 1];
-                        case exports.WEBM: return [3 /*break*/, 2];
-                        case GIF: return [3 /*break*/, 3];
-                        case PNGZIP: return [3 /*break*/, 4];
-                        case JPEGZIP: return [3 /*break*/, 4];
+                        case exports.WEBM: return [3 /*break*/, 4];
+                        case GIF: return [3 /*break*/, 6];
+                        case PNGZIP: return [3 /*break*/, 8];
+                        case JPEGZIP: return [3 /*break*/, 8];
                     }
-                    return [3 /*break*/, 6];
-                case 1:
-                    capturer.save(function (blob) {
-                        // Tell the user that mp4s take a sec to process.
-                        modals_1.showDialog('Processing...', 'MP4 is processing and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
-                        convertWEBMtoMP4({
+                    return [3 /*break*/, 11];
+                case 1: return [4 /*yield*/, CCaptureSaveAsync(capturer)];
+                case 2:
+                    blob = _c.sent();
+                    // Tell the user that mp4s take a sec to process.
+                    modals_1.showDialog('Processing...', 'MP4 is processing and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
+                    return [4 /*yield*/, convertWEBMtoMP4({
                             name: name,
                             blob: blob,
                             onProgress: onExportProgress,
                             onSave: onExport,
                             onFinish: onExportFinish,
                             ffmpegOptions: ffmpegOptions,
-                        });
-                    });
-                    return [3 /*break*/, 7];
-                case 2:
+                        })];
+                case 3:
+                    _c.sent();
+                    return [3 /*break*/, 12];
+                case 4:
                     if (onExportProgress)
                         onExportProgress(0);
-                    capturer.save(function (blob) {
-                        if (onExportProgress)
-                            onExportProgress(1); // Save is nearly immediate.
-                        var filename = name + ".webm";
-                        if (onExport) {
-                            onExport(blob, filename);
-                        }
-                        else {
-                            file_saver_1.saveAs(blob, filename);
-                        }
-                        if (onExportFinish)
-                            onExportFinish();
-                    });
-                    return [3 /*break*/, 7];
-                case 3:
+                    return [4 /*yield*/, CCaptureSaveAsync(capturer)];
+                case 5:
+                    blob = _c.sent();
+                    if (onExportProgress)
+                        onExportProgress(1); // Save is nearly immediate.
+                    filename = name + ".webm";
+                    if (onExport) {
+                        onExport(blob, filename);
+                    }
+                    else {
+                        file_saver_1.saveAs(blob, filename);
+                    }
+                    if (onExportFinish)
+                        onExportFinish();
+                    return [3 /*break*/, 12];
+                case 6:
                     // Tell the user that gifs take a sec to process.
                     modals_1.showDialog('Processing...', 'GIF is processing and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
-                    // onExportProgress callback already passed to CCapture.
-                    capturer.save(function (blob) {
-                        var filename = name + ".gif";
-                        if (onExport) {
-                            onExport(blob, filename);
-                        }
-                        else {
-                            file_saver_1.saveAs(blob, filename);
-                        }
-                        if (onExportFinish)
-                            onExportFinish();
-                    });
-                    return [3 /*break*/, 7];
-                case 4: 
+                    return [4 /*yield*/, CCaptureSaveAsync(capturer)];
+                case 7:
+                    blob = _c.sent();
+                    filename = name + ".gif";
+                    if (onExport) {
+                        onExport(blob, filename);
+                    }
+                    else {
+                        file_saver_1.saveAs(blob, filename);
+                    }
+                    if (onExportFinish)
+                        onExportFinish();
+                    return [3 /*break*/, 12];
+                case 8: 
                 // Wait for all frames to finish saving.
                 return [4 /*yield*/, Promise.all(zipPromises)];
-                case 5:
+                case 9:
                     // Wait for all frames to finish saving.
                     _c.sent();
                     // Tell the user that frames take a sec to zip.
                     modals_1.showDialog('Processing...', 'Frames are being zipped and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
-                    capturer.generateAsync({ type: 'blob' }, function (metadata) {
-                        if (onExportProgress)
-                            onExportProgress(metadata.percent / 100);
-                    }).then(function (blob) {
-                        var filename = name + ".zip";
-                        if (onExport) {
-                            onExport(blob, filename);
-                        }
-                        else {
-                            file_saver_1.saveAs(blob, filename);
-                        }
-                        if (onExportFinish)
-                            onExportFinish();
-                    });
-                    return [3 /*break*/, 7];
-                case 6: throw new Error("Need to handle saving type " + type + ".");
-                case 7: return [2 /*return*/];
+                    return [4 /*yield*/, capturer.generateAsync({ type: 'blob' }, function (metadata) {
+                            if (onExportProgress)
+                                onExportProgress(metadata.percent / 100);
+                        }).then(function (blob) {
+                            var filename = name + ".zip";
+                            if (onExport) {
+                                onExport(blob, filename);
+                            }
+                            else {
+                                file_saver_1.saveAs(blob, filename);
+                            }
+                            if (onExportFinish)
+                                onExportFinish();
+                        })];
+                case 10:
+                    _c.sent();
+                    return [3 /*break*/, 12];
+                case 11: throw new Error("Need to handle saving type " + type + ".");
+                case 12: return [2 /*return*/];
             }
         });
     });
 }
 function stopRecord(capture) {
-    if (capture && !Array.isArray(capture)) {
-        capture = [capture];
-    }
-    var captures = capture || activeCaptures;
-    try {
-        if (activeCaptures.length === 0) {
-            var errorMsg = 'No valid capturer inited, please call CanvasCapture.beginVideoRecord(), CanvasCapture.beginGIFRecord(), CanvasCapture.beginPNGFramesRecord(), or CanvasCapture.beginJPEGFramesRecord() first.';
-            modals_1.showWarning(errorMsg);
-            throw new Error(errorMsg);
-        }
-        for (var i = 0; i < captures.length; i++) {
-            var index = activeCaptures.indexOf(captures[i]);
-            if (index < 0)
-                throw new Error("Invalid capture " + captures[i] + " \u2013 may have already been stopped.");
-            stopRecordAtIndex(index);
-        }
-        modals_1.showDot(isRecording());
-    }
-    catch (error) {
-        var handled = true;
-        for (var i = 0; i < captures.length; i++) {
-            var capture_2 = captures[i];
-            if (capture_2.onError)
-                capture_2.onError(error);
-            else
-                handled = false;
-        }
-        if (!captures.length || !handled) {
-            throw error;
-        }
-    }
+    return __awaiter(this, void 0, void 0, function () {
+        var captures, errorMsg, promises, i, index, error_3, handled, i, capture_2;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (capture && !Array.isArray(capture)) {
+                        capture = [capture];
+                    }
+                    captures = capture || activeCaptures;
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    if (activeCaptures.length === 0) {
+                        errorMsg = 'No valid capturer inited, please call CanvasCapture.beginVideoRecord(), CanvasCapture.beginGIFRecord(), CanvasCapture.beginPNGFramesRecord(), or CanvasCapture.beginJPEGFramesRecord() first.';
+                        modals_1.showWarning(errorMsg);
+                        throw new Error(errorMsg);
+                    }
+                    promises = [];
+                    for (i = 0; i < captures.length; i++) {
+                        index = activeCaptures.indexOf(captures[i]);
+                        if (index < 0)
+                            throw new Error("Invalid capture " + captures[i] + " \u2013 may have already been stopped.");
+                        promises.push(stopRecordAtIndex(index));
+                    }
+                    modals_1.showDot(isRecording());
+                    return [4 /*yield*/, Promise.all(promises)];
+                case 2:
+                    _a.sent();
+                    return [3 /*break*/, 4];
+                case 3:
+                    error_3 = _a.sent();
+                    handled = true;
+                    for (i = 0; i < captures.length; i++) {
+                        capture_2 = captures[i];
+                        if (capture_2.onError)
+                            capture_2.onError(error_3);
+                        else
+                            handled = false;
+                    }
+                    if (!captures.length || !handled) {
+                        throw error_3;
+                    }
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
+            }
+        });
+    });
 }
 exports.stopRecord = stopRecord;
 function activeCapturesOfType(type) {
@@ -2883,7 +2963,7 @@ exports.css = "\n/**************************  Basic Modal Styles\n**************
 /***/ }),
 
 /***/ 330:
-/***/ (function(__unused_webpack_module, exports, __nested_webpack_require_210080__) {
+/***/ (function(__unused_webpack_module, exports, __nested_webpack_require_214187__) {
 
 "use strict";
 
@@ -2900,9 +2980,9 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.showDot = exports.initDotWithCSS = exports.showDialog = exports.showWarning = void 0;
-var micromodal_1 = __nested_webpack_require_210080__(650);
-var micromodal_css_1 = __nested_webpack_require_210080__(713);
-var params_1 = __nested_webpack_require_210080__(848);
+var micromodal_1 = __nested_webpack_require_214187__(650);
+var micromodal_css_1 = __nested_webpack_require_214187__(713);
+var params_1 = __nested_webpack_require_214187__(848);
 // Add modal styling.
 var style = document.createElement('style');
 style.textContent = micromodal_css_1.css;
@@ -2999,16 +3079,16 @@ exports.PARAMS = {
 /***/ }),
 
 /***/ 886:
-/***/ ((module, exports, __nested_webpack_require_214658__) => {
+/***/ ((module, exports, __nested_webpack_require_218765__) => {
 
-/* module decorator */ module = __nested_webpack_require_214658__.nmd(module);
+/* module decorator */ module = __nested_webpack_require_218765__.nmd(module);
 var __WEBPACK_AMD_DEFINE_RESULT__;;(function() {
 
 if (  true && typeof module.exports !== 'undefined') {
-  var Tar = __nested_webpack_require_214658__(846);
-  var download = __nested_webpack_require_214658__(173);
-  var GIF = __nested_webpack_require_214658__(769);
-  var WebMWriter = __nested_webpack_require_214658__(166);
+  var Tar = __nested_webpack_require_218765__(846);
+  var download = __nested_webpack_require_218765__(173);
+  var GIF = __nested_webpack_require_218765__(769);
+  var WebMWriter = __nested_webpack_require_218765__(166);
 }
 
 "use strict";
@@ -3042,7 +3122,7 @@ var moduleExports = (freeModule && freeModule.exports === freeExports)
 : undefined;
 
 /** Detect free variable `global` from Node.js. */
-var freeGlobal = checkGlobal(freeExports && freeModule && typeof __nested_webpack_require_214658__.g == 'object' && __nested_webpack_require_214658__.g);
+var freeGlobal = checkGlobal(freeExports && freeModule && typeof __nested_webpack_require_218765__.g == 'object' && __nested_webpack_require_218765__.g);
 
 /** Detect free variable `self`. */
 var freeSelf = checkGlobal(objectTypes[typeof self] && self);
@@ -3967,7 +4047,7 @@ function CCapture( settings ) {
     // referenced as the "underscore" module.
     !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {
     	return CCapture;
-    }).call(exports, __nested_webpack_require_214658__, exports, module),
+    }).call(exports, __nested_webpack_require_218765__, exports, module),
 		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 }
   // Check for `exports` after `define` in case a build optimizer adds an `exports` object.
@@ -5597,7 +5677,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_323211__(moduleId) {
+/******/ 	function __nested_webpack_require_327318__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -5611,7 +5691,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_323211__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_327318__);
 /******/ 	
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
@@ -5624,9 +5704,9 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
-/******/ 		__nested_webpack_require_323211__.d = (exports, definition) => {
+/******/ 		__nested_webpack_require_327318__.d = (exports, definition) => {
 /******/ 			for(var key in definition) {
-/******/ 				if(__nested_webpack_require_323211__.o(definition, key) && !__nested_webpack_require_323211__.o(exports, key)) {
+/******/ 				if(__nested_webpack_require_327318__.o(definition, key) && !__nested_webpack_require_327318__.o(exports, key)) {
 /******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 				}
 /******/ 			}
@@ -5635,7 +5715,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_323211__.g = (function() {
+/******/ 		__nested_webpack_require_327318__.g = (function() {
 /******/ 			if (typeof globalThis === 'object') return globalThis;
 /******/ 			try {
 /******/ 				return this || new Function('return this')();
@@ -5647,13 +5727,13 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_323211__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 		__nested_webpack_require_327318__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
-/******/ 		__nested_webpack_require_323211__.r = (exports) => {
+/******/ 		__nested_webpack_require_327318__.r = (exports) => {
 /******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
 /******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
 /******/ 			}
@@ -5663,7 +5743,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/node module decorator */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_323211__.nmd = (module) => {
+/******/ 		__nested_webpack_require_327318__.nmd = (module) => {
 /******/ 			module.paths = [];
 /******/ 			if (!module.children) module.children = [];
 /******/ 			return module;
@@ -5675,7 +5755,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nested_webpack_require_323211__(607);
+/******/ 	var __webpack_exports__ = __nested_webpack_require_327318__(607);
 /******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()
