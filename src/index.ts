@@ -699,14 +699,12 @@ async function convertWEBMtoMP4(options: {
 	ffmpegOptions?: { [key: string]: string },
 }) {
 	if (!ffmpegLoaded) {
-		try {
-			await ffmpeg.load();
-			ffmpegLoaded = true;
-		} catch (e) {
+		await ffmpeg.load().catch(() => {
 			const errorMsg = 'MP4 export not supported in this browser, try again in the latest version of Chrome.';
 			showWarning(errorMsg);
 			throw new Error(errorMsg);
-		}
+		});
+		ffmpegLoaded = true;
 	}
 	const { name, blob, onProgress, onSave, onFinish, ffmpegOptions } = options;
 	// Convert blob to Uint8 array.

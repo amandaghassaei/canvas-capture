@@ -2838,28 +2838,24 @@ exports.isRecording = isRecording;
 var ffmpegLoaded = false;
 function convertWEBMtoMP4(options) {
     return __awaiter(this, void 0, void 0, function () {
-        var e_1, errorMsg, name, blob, onProgress, onSave, onFinish, ffmpegOptions, data, defaultFFMPEGOptions, combinedOptions, _ffmpegOptions, filename, output, outputBlob;
+        var name, blob, onProgress, onSave, onFinish, ffmpegOptions, data, defaultFFMPEGOptions, combinedOptions, _ffmpegOptions, filename, output, outputBlob;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!!ffmpegLoaded) return [3 /*break*/, 4];
-                    _a.label = 1;
+                    if (!!ffmpegLoaded) return [3 /*break*/, 2];
+                    return [4 /*yield*/, ffmpeg.load().catch(function () {
+                            var errorMsg = 'MP4 export not supported in this browser, try again in the latest version of Chrome.';
+                            modals_1.showWarning(errorMsg);
+                            throw new Error(errorMsg);
+                        })];
                 case 1:
-                    _a.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, ffmpeg.load()];
-                case 2:
                     _a.sent();
                     ffmpegLoaded = true;
-                    return [3 /*break*/, 4];
-                case 3:
-                    e_1 = _a.sent();
-                    errorMsg = 'MP4 export not supported in this browser, try again in the latest version of Chrome.';
-                    modals_1.showWarning(errorMsg);
-                    throw new Error(errorMsg);
-                case 4:
+                    _a.label = 2;
+                case 2:
                     name = options.name, blob = options.blob, onProgress = options.onProgress, onSave = options.onSave, onFinish = options.onFinish, ffmpegOptions = options.ffmpegOptions;
                     return [4 /*yield*/, ffmpeg_1.fetchFile(blob)];
-                case 5:
+                case 3:
                     data = _a.sent();
                     // Write data to MEMFS, need to use Uint8Array for binary data.
                     ffmpeg.FS('writeFile', name + ".webm", data);
@@ -2886,10 +2882,10 @@ function convertWEBMtoMP4(options) {
                     return [4 /*yield*/, ffmpeg.run.apply(ffmpeg, __spreadArrays(['-i', name + ".webm"], _ffmpegOptions, ['-vf', 'crop=trunc(iw/2)*2:trunc(ih/2)*2',
                             '-an',
                             filename]))];
-                case 6:
+                case 4:
                     _a.sent();
                     return [4 /*yield*/, ffmpeg.FS('readFile', filename)];
-                case 7:
+                case 5:
                     output = _a.sent();
                     outputBlob = new Blob([output], { type: 'video/mp4' });
                     if (onSave) {

@@ -2842,28 +2842,24 @@ exports.isRecording = isRecording;
 var ffmpegLoaded = false;
 function convertWEBMtoMP4(options) {
     return __awaiter(this, void 0, void 0, function () {
-        var e_1, errorMsg, name, blob, onProgress, onSave, onFinish, ffmpegOptions, data, defaultFFMPEGOptions, combinedOptions, _ffmpegOptions, filename, output, outputBlob;
+        var name, blob, onProgress, onSave, onFinish, ffmpegOptions, data, defaultFFMPEGOptions, combinedOptions, _ffmpegOptions, filename, output, outputBlob;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!!ffmpegLoaded) return [3 /*break*/, 4];
-                    _a.label = 1;
+                    if (!!ffmpegLoaded) return [3 /*break*/, 2];
+                    return [4 /*yield*/, ffmpeg.load().catch(function () {
+                            var errorMsg = 'MP4 export not supported in this browser, try again in the latest version of Chrome.';
+                            modals_1.showWarning(errorMsg);
+                            throw new Error(errorMsg);
+                        })];
                 case 1:
-                    _a.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, ffmpeg.load()];
-                case 2:
                     _a.sent();
                     ffmpegLoaded = true;
-                    return [3 /*break*/, 4];
-                case 3:
-                    e_1 = _a.sent();
-                    errorMsg = 'MP4 export not supported in this browser, try again in the latest version of Chrome.';
-                    modals_1.showWarning(errorMsg);
-                    throw new Error(errorMsg);
-                case 4:
+                    _a.label = 2;
+                case 2:
                     name = options.name, blob = options.blob, onProgress = options.onProgress, onSave = options.onSave, onFinish = options.onFinish, ffmpegOptions = options.ffmpegOptions;
                     return [4 /*yield*/, ffmpeg_1.fetchFile(blob)];
-                case 5:
+                case 3:
                     data = _a.sent();
                     // Write data to MEMFS, need to use Uint8Array for binary data.
                     ffmpeg.FS('writeFile', name + ".webm", data);
@@ -2890,10 +2886,10 @@ function convertWEBMtoMP4(options) {
                     return [4 /*yield*/, ffmpeg.run.apply(ffmpeg, __spreadArrays(['-i', name + ".webm"], _ffmpegOptions, ['-vf', 'crop=trunc(iw/2)*2:trunc(ih/2)*2',
                             '-an',
                             filename]))];
-                case 6:
+                case 4:
                     _a.sent();
                     return [4 /*yield*/, ffmpeg.FS('readFile', filename)];
-                case 7:
+                case 5:
                     output = _a.sent();
                     outputBlob = new Blob([output], { type: 'video/mp4' });
                     if (onSave) {
@@ -2963,7 +2959,7 @@ exports.css = "\n/**************************  Basic Modal Styles\n**************
 /***/ }),
 
 /***/ 330:
-/***/ (function(__unused_webpack_module, exports, __nested_webpack_require_214187__) {
+/***/ (function(__unused_webpack_module, exports, __nested_webpack_require_214070__) {
 
 "use strict";
 
@@ -2980,9 +2976,9 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.showDot = exports.initDotWithCSS = exports.showDialog = exports.showWarning = void 0;
-var micromodal_1 = __nested_webpack_require_214187__(650);
-var micromodal_css_1 = __nested_webpack_require_214187__(713);
-var params_1 = __nested_webpack_require_214187__(848);
+var micromodal_1 = __nested_webpack_require_214070__(650);
+var micromodal_css_1 = __nested_webpack_require_214070__(713);
+var params_1 = __nested_webpack_require_214070__(848);
 // Add modal styling.
 var style = document.createElement('style');
 style.textContent = micromodal_css_1.css;
@@ -3079,16 +3075,16 @@ exports.PARAMS = {
 /***/ }),
 
 /***/ 886:
-/***/ ((module, exports, __nested_webpack_require_218765__) => {
+/***/ ((module, exports, __nested_webpack_require_218648__) => {
 
-/* module decorator */ module = __nested_webpack_require_218765__.nmd(module);
+/* module decorator */ module = __nested_webpack_require_218648__.nmd(module);
 var __WEBPACK_AMD_DEFINE_RESULT__;;(function() {
 
 if (  true && typeof module.exports !== 'undefined') {
-  var Tar = __nested_webpack_require_218765__(846);
-  var download = __nested_webpack_require_218765__(173);
-  var GIF = __nested_webpack_require_218765__(769);
-  var WebMWriter = __nested_webpack_require_218765__(166);
+  var Tar = __nested_webpack_require_218648__(846);
+  var download = __nested_webpack_require_218648__(173);
+  var GIF = __nested_webpack_require_218648__(769);
+  var WebMWriter = __nested_webpack_require_218648__(166);
 }
 
 "use strict";
@@ -3122,7 +3118,7 @@ var moduleExports = (freeModule && freeModule.exports === freeExports)
 : undefined;
 
 /** Detect free variable `global` from Node.js. */
-var freeGlobal = checkGlobal(freeExports && freeModule && typeof __nested_webpack_require_218765__.g == 'object' && __nested_webpack_require_218765__.g);
+var freeGlobal = checkGlobal(freeExports && freeModule && typeof __nested_webpack_require_218648__.g == 'object' && __nested_webpack_require_218648__.g);
 
 /** Detect free variable `self`. */
 var freeSelf = checkGlobal(objectTypes[typeof self] && self);
@@ -4047,7 +4043,7 @@ function CCapture( settings ) {
     // referenced as the "underscore" module.
     !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {
     	return CCapture;
-    }).call(exports, __nested_webpack_require_218765__, exports, module),
+    }).call(exports, __nested_webpack_require_218648__, exports, module),
 		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 }
   // Check for `exports` after `define` in case a build optimizer adds an `exports` object.
@@ -5677,7 +5673,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_327318__(moduleId) {
+/******/ 	function __nested_webpack_require_327201__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -5691,7 +5687,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_327318__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_327201__);
 /******/ 	
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
@@ -5704,9 +5700,9 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
-/******/ 		__nested_webpack_require_327318__.d = (exports, definition) => {
+/******/ 		__nested_webpack_require_327201__.d = (exports, definition) => {
 /******/ 			for(var key in definition) {
-/******/ 				if(__nested_webpack_require_327318__.o(definition, key) && !__nested_webpack_require_327318__.o(exports, key)) {
+/******/ 				if(__nested_webpack_require_327201__.o(definition, key) && !__nested_webpack_require_327201__.o(exports, key)) {
 /******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 				}
 /******/ 			}
@@ -5715,7 +5711,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_327318__.g = (function() {
+/******/ 		__nested_webpack_require_327201__.g = (function() {
 /******/ 			if (typeof globalThis === 'object') return globalThis;
 /******/ 			try {
 /******/ 				return this || new Function('return this')();
@@ -5727,13 +5723,13 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_327318__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 		__nested_webpack_require_327201__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
-/******/ 		__nested_webpack_require_327318__.r = (exports) => {
+/******/ 		__nested_webpack_require_327201__.r = (exports) => {
 /******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
 /******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
 /******/ 			}
@@ -5743,7 +5739,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/node module decorator */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_327318__.nmd = (module) => {
+/******/ 		__nested_webpack_require_327201__.nmd = (module) => {
 /******/ 			module.paths = [];
 /******/ 			if (!module.children) module.children = [];
 /******/ 			return module;
@@ -5755,7 +5751,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nested_webpack_require_327318__(607);
+/******/ 	var __webpack_exports__ = __nested_webpack_require_327201__(607);
 /******/ 	
 /******/ 	return __webpack_exports__;
 /******/ })()
