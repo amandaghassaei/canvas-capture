@@ -29,7 +29,7 @@ To install this package:
 
 ```npm install canvas-capture```
 
-You can also try adding [dist/canvas-capture.js](dist/canvas-capture.js) or [dist/canvas-capture.min.js](dist/canvas-capture.min.js) to your project and it should be available as `window.CanvasCapture` or possibly globally as `CanvasCapture`.  I have not tested this yet, please let me know if this works!
+You can also add [dist/canvas-capture.js](dist/canvas-capture.js) or [dist/canvas-capture.min.js](dist/canvas-capture.min.js) to your project and it will be available as `window.CanvasCapture` or globally as `CanvasCapture`.
 
 
 ## Use
