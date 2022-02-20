@@ -86,8 +86,8 @@ export declare function init(_canvas: HTMLCanvasElement, options?: {
 export declare function setVerbose(state: boolean): void;
 export declare function bindKeyToVideoRecord(key: string, options?: WEBM_OPTIONS | MP4_OPTIONS): void;
 export declare function bindKeyToGIFRecord(key: string, options?: GIF_OPTIONS): void;
-export declare function bindKeyToPNGFrames(key: string, options?: PNG_OPTIONS): void;
-export declare function bindKeyToJPEGFrames(key: string, options?: JPEG_OPTIONS): void;
+export declare function bindKeyToPNGFramesRecord(key: string, options?: PNG_OPTIONS): void;
+export declare function bindKeyToJPEGFramesRecord(key: string, options?: JPEG_OPTIONS): void;
 export declare function bindKeyToPNGSnapshot(key: string, options?: PNG_OPTIONS): void;
 export declare function bindKeyToJPEGSnapshot(key: string, options?: JPEG_OPTIONS): void;
 export declare function beginVideoRecord(options?: WEBM_OPTIONS | MP4_OPTIONS): {

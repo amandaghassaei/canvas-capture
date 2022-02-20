@@ -2139,7 +2139,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.browserSupportsGIF = exports.browserSupportsMP4 = exports.browserSupportsWEBM = exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginJPEGFramesRecord = exports.beginPNGFramesRecord = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToJPEGFrames = exports.bindKeyToPNGFrames = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = exports.MP4 = exports.WEBM = exports.showDialog = void 0;
+exports.browserSupportsGIF = exports.browserSupportsMP4 = exports.browserSupportsWEBM = exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginJPEGFramesRecord = exports.beginPNGFramesRecord = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToJPEGFramesRecord = exports.bindKeyToPNGFramesRecord = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = exports.MP4 = exports.WEBM = exports.showDialog = void 0;
 var CCapture_1 = __webpack_require__(886);
 var file_saver_1 = __webpack_require__(162);
 // Polyfill for canvas.toBlob needed for some browsers.
@@ -2237,16 +2237,16 @@ function bindKeyToGIFRecord(key, options) {
     setHotkey(key, GIF);
 }
 exports.bindKeyToGIFRecord = bindKeyToGIFRecord;
-function bindKeyToPNGFrames(key, options) {
+function bindKeyToPNGFramesRecord(key, options) {
     hotkeyOptions.pngzip = options;
     setHotkey(key, PNGZIP);
 }
-exports.bindKeyToPNGFrames = bindKeyToPNGFrames;
-function bindKeyToJPEGFrames(key, options) {
+exports.bindKeyToPNGFramesRecord = bindKeyToPNGFramesRecord;
+function bindKeyToJPEGFramesRecord(key, options) {
     hotkeyOptions.jpegzip = options;
     setHotkey(key, JPEGZIP);
 }
-exports.bindKeyToJPEGFrames = bindKeyToJPEGFrames;
+exports.bindKeyToJPEGFramesRecord = bindKeyToJPEGFramesRecord;
 // Snapshots just take a single shot.
 function bindKeyToPNGSnapshot(key, options) {
     hotkeyOptions.png = options;

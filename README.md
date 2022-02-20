@@ -154,7 +154,7 @@ pngOptions = {
   dpi: number, // Defaults to screen resolution (72 dpi).
   onExport: (blob: Blob, filename: string) => void, // Handle blob manually.
   // onExportProgress and onExportFinish gives zipping updates for
-  // recording PNG frames (only used by bindKeyToPNGFrames()
+  // recording PNG frames (only used by bindKeyToPNGFramesRecord()
   // and beginPNGFramesRecord()):
   onExportProgress: (progress: number) => void, // progress: range [0-1].
   onExportFinish: () => void, // Callback after successful export.
@@ -166,7 +166,7 @@ jpegOptions = {
   dpi: number, // Defaults to screen resolution (72 dpi).
   onExport: (blob: Blob, filename: string) => void, // Handle blob manually.
   // onExportProgress and onExportFinish gives zipping updates for
-  // recording JPEG frames (only used by bindKeyToJPEGFrames()
+  // recording JPEG frames (only used by bindKeyToJPEGFramesRecord()
   // and beginJPEGFramesRecord()):
   onExportProgress: (progress: number) => void, // progress: range [0-1].
   onExportFinish: () => void, // Callback after successful export.

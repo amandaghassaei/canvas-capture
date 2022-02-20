@@ -46,7 +46,7 @@ const PNG_OPTONS = {
 	onExportFinish: () => console.log(`Finished PNG frames zip.`),
 };
 CanvasCapture.bindKeyToPNGSnapshot('p', PNG_OPTONS);
-CanvasCapture.bindKeyToPNGFrames('o', PNG_OPTONS);
+CanvasCapture.bindKeyToPNGFramesRecord('o', PNG_OPTONS);
 const JPEG_OPTIONS = {
 	name: 'demo-jpg',
 	quality: 1,
@@ -55,7 +55,7 @@ const JPEG_OPTIONS = {
 	onExportFinish: () => console.log(`Finished JPEG frames zip.`),
 };
 CanvasCapture.bindKeyToJPEGSnapshot('j', JPEG_OPTIONS);
-CanvasCapture.bindKeyToJPEGFrames('h', JPEG_OPTIONS);
+CanvasCapture.bindKeyToJPEGFramesRecord('h', JPEG_OPTIONS);
 
 // Simple canvas draw setup.
 const context = canvas.getContext("2d")!;

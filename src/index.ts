@@ -194,11 +194,11 @@ export function bindKeyToGIFRecord(key: string, options?: GIF_OPTIONS) {
 	hotkeyOptions.gif = options;
 	setHotkey(key, GIF);
 }
-export function bindKeyToPNGFrames(key: string, options?: PNG_OPTIONS) {
+export function bindKeyToPNGFramesRecord(key: string, options?: PNG_OPTIONS) {
 	hotkeyOptions.pngzip = options;
 	setHotkey(key, PNGZIP);
 }
-export function bindKeyToJPEGFrames(key: string, options?: JPEG_OPTIONS) {
+export function bindKeyToJPEGFramesRecord(key: string, options?: JPEG_OPTIONS) {
 	hotkeyOptions.jpegzip = options;
 	setHotkey(key, JPEGZIP);
 }
