@@ -301,7 +301,7 @@ export function beginVideoRecord(options?: WEBM_OPTIONS | MP4_OPTIONS) {
 		// Create a capturer that exports a WebM video.
 		// @ts-ignore
 		const capturer = new (window.CCapture as CCapture)({
-			format: 'webm',
+			format: WEBM,
 			name,
 			framerate: options?.fps || 60,
 			quality: quality * 100, // CCapture seems to expect a quality between 0 and 100.
@@ -342,7 +342,7 @@ export function beginGIFRecord(options?: GIF_OPTIONS) {
 		// Create a capturer that exports a GIF.
 		// @ts-ignore
 		const capturer = new (window.CCapture as CCapture)({
-			format: 'gif',
+			format: GIF,
 			name,
 			framerate: options?.fps || 60,
 			workersPath: gifWorkersPath,

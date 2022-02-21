@@ -2359,7 +2359,7 @@ function beginVideoRecord(options) {
         // Create a capturer that exports a WebM video.
         // @ts-ignore
         var capturer = new window.CCapture({
-            format: 'webm',
+            format: exports.WEBM,
             name: name_1,
             framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
             quality: quality * 100,
@@ -2403,7 +2403,7 @@ function beginGIFRecord(options) {
         // Create a capturer that exports a GIF.
         // @ts-ignore
         var capturer = new window.CCapture({
-            format: 'gif',
+            format: GIF,
             name: name_2,
             framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
             workersPath: gifWorkersPath,
