@@ -2541,7 +2541,7 @@ function takePNGSnapshot(options) {
                     _a.trys.push([0, 2, , 3]);
                     name_5 = (options === null || options === void 0 ? void 0 : options.name) || 'PNG_Capture';
                     filename = name_5 + ".png";
-                    return [4 /*yield*/, takeImageSnapshot(filename, 'png', undefined, options)];
+                    return [4 /*yield*/, takeImageSnapshot(filename, PNG, undefined, options)];
                 case 1:
                     _a.sent();
                     return [3 /*break*/, 3];
@@ -2568,7 +2568,7 @@ function takeJPEGSnapshot(options) {
                     name_6 = (options === null || options === void 0 ? void 0 : options.name) || 'JPEG_Capture';
                     filename = name_6 + ".jpg";
                     // Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
-                    return [4 /*yield*/, takeImageSnapshot(filename, 'png', (options === null || options === void 0 ? void 0 : options.quality) || 1, options)];
+                    return [4 /*yield*/, takeImageSnapshot(filename, JPEG, (options === null || options === void 0 ? void 0 : options.quality) || 1, options)];
                 case 1:
                     // Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
                     _a.sent();
@@ -2696,9 +2696,9 @@ function stopRecordAtIndex(index) {
                     return [4 /*yield*/, convertWEBMtoMP4({
                             name: name,
                             blob: blob,
-                            onProgress: onExportProgress,
-                            onSave: onExport,
-                            onFinish: onExportFinish,
+                            onExportProgress: onExportProgress,
+                            onExport: onExport,
+                            onExportFinish: onExportFinish,
                             ffmpegOptions: ffmpegOptions,
                         })];
                 case 3:
@@ -2838,7 +2838,7 @@ exports.isRecording = isRecording;
 var ffmpegLoaded = false;
 function convertWEBMtoMP4(options) {
     return __awaiter(this, void 0, void 0, function () {
-        var name, blob, onProgress, onSave, onFinish, ffmpegOptions, data, defaultFFMPEGOptions, combinedOptions, _ffmpegOptions, filename, output, outputBlob;
+        var name, blob, onExportProgress, onExport, onExportFinish, ffmpegOptions, data, defaultFFMPEGOptions, combinedOptions, _ffmpegOptions, filename, output, outputBlob;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -2853,7 +2853,7 @@ function convertWEBMtoMP4(options) {
                     ffmpegLoaded = true;
                     _a.label = 2;
                 case 2:
-                    name = options.name, blob = options.blob, onProgress = options.onProgress, onSave = options.onSave, onFinish = options.onFinish, ffmpegOptions = options.ffmpegOptions;
+                    name = options.name, blob = options.blob, onExportProgress = options.onExportProgress, onExport = options.onExport, onExportFinish = options.onExportFinish, ffmpegOptions = options.ffmpegOptions;
                     return [4 /*yield*/, ffmpeg_1.fetchFile(blob)];
                 case 3:
                     data = _a.sent();
@@ -2862,10 +2862,10 @@ function convertWEBMtoMP4(options) {
                     // Convert to MP4.
                     // TODO: onProgress callback is not working quite right yet.
                     // https://github.com/ffmpegwasm/ffmpeg.wasm/issues/112
-                    if (onProgress)
+                    if (onExportProgress)
                         ffmpeg.setProgress(function (_a) {
                             var ratio = _a.ratio;
-                            onProgress(Math.max(0, Math.min(ratio, 1)));
+                            onExportProgress(Math.max(0, Math.min(ratio, 1)));
                         });
                     defaultFFMPEGOptions = {
                         '-c:v': 'libx264',
@@ -2888,8 +2888,8 @@ function convertWEBMtoMP4(options) {
                 case 5:
                     output = _a.sent();
                     outputBlob = new Blob([output], { type: 'video/mp4' });
-                    if (onSave) {
-                        onSave(blob, filename);
+                    if (onExport) {
+                        onExport(blob, filename);
                     }
                     else {
                         file_saver_1.saveAs(outputBlob, filename);
@@ -2897,8 +2897,8 @@ function convertWEBMtoMP4(options) {
                     // Delete files in MEMFS.
                     ffmpeg.FS('unlink', name + ".webm");
                     ffmpeg.FS('unlink', filename);
-                    if (onFinish)
-                        onFinish();
+                    if (onExportFinish)
+                        onExportFinish();
                     return [2 /*return*/];
             }
         });

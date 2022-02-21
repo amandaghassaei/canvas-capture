@@ -34,7 +34,7 @@ type CAPTURE_TYPE =
 	typeof JPEGZIP | typeof PNGZIP;
 
 // Save options for hotkey controls.
-type WEBM_OPTIONS = {
+export type WEBM_OPTIONS = {
 	format?: typeof WEBM,
 	fps?: number,
 	name?: string,
@@ -44,7 +44,7 @@ type WEBM_OPTIONS = {
 	onExportFinish?: () => void,
 	onError?: (error: any) => void,
 };
-type MP4_OPTIONS = {
+export type MP4_OPTIONS = {
 	format?: typeof MP4,
 	fps?: number,
 	name?: string,
@@ -55,7 +55,7 @@ type MP4_OPTIONS = {
 	onExportFinish?: () => void,
 	onError?: (error: any) => void,
 };
-type GIF_OPTIONS = {
+export type GIF_OPTIONS = {
 	fps?: number,
 	name?: string,
 	quality?: number // A number 0-1.
@@ -64,7 +64,7 @@ type GIF_OPTIONS = {
 	onExportFinish?: () => void,
 	onError?: (error: any) => void,
 };
-type PNG_OPTIONS = {
+export type PNG_OPTIONS = {
 	name?: string,
 	dpi?: number, // Default is screen dpi (72).
 	onExportProgress?: (progress: number) => void, // Zipping progress, only used for recording PNG frames, progress is a number between 0 and 1.
@@ -72,7 +72,7 @@ type PNG_OPTIONS = {
 	onExportFinish?: () => void,
 	onError?: (error: any) => void,
 };
-type JPEG_OPTIONS = {
+export type JPEG_OPTIONS = {
 	name?: string,
 	quality?: number, // A number 0-1.
 	dpi?: number, // Default is screen dpi (72).
@@ -415,7 +415,7 @@ export function beginJPEGFramesRecord(options?: JPEG_OPTIONS) {
 	}
 }
 
-async function canvasToBlobAsync(canvas: HTMLCanvasElement, type: 'png' | 'jpeg', quality?: number) {
+async function canvasToBlobAsync(canvas: HTMLCanvasElement, type: typeof PNG | typeof JPEG, quality?: number) {
 	return new Promise((resolve: (blob: Blob | null) => void) => {
 		canvas.toBlob((blob: Blob | null) => {
 			resolve(blob);
@@ -423,7 +423,7 @@ async function canvasToBlobAsync(canvas: HTMLCanvasElement, type: 'png' | 'jpeg'
 	});
 }
 
-async function takeImageSnapshot(filename: string, type: 'png' | 'jpeg', quality?: number, options?: JPEG_OPTIONS | PNG_OPTIONS) {
+async function takeImageSnapshot(filename: string, type: typeof PNG | typeof JPEG, quality?: number, options?: JPEG_OPTIONS | PNG_OPTIONS) {
 	checkCanvas();
 	const onExportFinish = options?.onExportFinish;
 	const blob = await canvasToBlobAsync(canvas!, type, quality);
@@ -448,7 +448,7 @@ export async function takePNGSnapshot(options?: PNG_OPTIONS) {
 	try {
 		const name = options?.name || 'PNG_Capture';
 		const filename = `${name}.png`;
-		await takeImageSnapshot(filename, 'png', undefined, options);
+		await takeImageSnapshot(filename, PNG, undefined, options);
 	} catch (error) {
 		if (options?.onError) options.onError(error);
 		else throw error;
@@ -460,7 +460,7 @@ export async function takeJPEGSnapshot(options?: JPEG_OPTIONS) {
 		const name = options?.name || 'JPEG_Capture';
 		const filename = `${name}.jpg`;
 		// Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
-		await takeImageSnapshot(filename, 'png', options?.quality || 1, options);
+		await takeImageSnapshot(filename, JPEG, options?.quality || 1, options);
 	} catch (error) {
 		if (options?.onError) options.onError(error);
 		else throw error;
@@ -569,9 +569,9 @@ async function stopRecordAtIndex(index: number) {
 				await convertWEBMtoMP4({
 					name,
 					blob,
-					onProgress: onExportProgress,
-					onSave: onExport,
-					onFinish: onExportFinish,
+					onExportProgress: onExportProgress,
+					onExport: onExport,
+					onExportFinish: onExportFinish,
 					ffmpegOptions,
 				});
 				break;
@@ -693,9 +693,9 @@ let ffmpegLoaded = false;
 async function convertWEBMtoMP4(options: {
 	name: string,
 	blob: Blob,
-	onProgress?: (progress: number) => void,
-	onSave?: onExport,
-	onFinish?: () => void,
+	onExportProgress?: (progress: number) => void,
+	onExport?: onExport,
+	onExportFinish?: () => void,
 	ffmpegOptions?: { [key: string]: string },
 }) {
 	if (!ffmpegLoaded) {
@@ -706,7 +706,7 @@ async function convertWEBMtoMP4(options: {
 		});
 		ffmpegLoaded = true;
 	}
-	const { name, blob, onProgress, onSave, onFinish, ffmpegOptions } = options;
+	const { name, blob, onExportProgress, onExport, onExportFinish, ffmpegOptions } = options;
 	// Convert blob to Uint8 array.
 	const data = await fetchFile(blob);
 	// Write data to MEMFS, need to use Uint8Array for binary data.
@@ -714,8 +714,8 @@ async function convertWEBMtoMP4(options: {
 	// Convert to MP4.
 	// TODO: onProgress callback is not working quite right yet.
 	// https://github.com/ffmpegwasm/ffmpeg.wasm/issues/112
-	if (onProgress) ffmpeg.setProgress(({ ratio }) => {
-		onProgress(Math.max(0, Math.min(ratio, 1)));
+	if (onExportProgress) ffmpeg.setProgress(({ ratio }) => {
+		onExportProgress(Math.max(0, Math.min(ratio, 1)));
 	});
 	// -vf "crop=trunc(iw/2)*2:trunc(ih/2)*2" ensures the dimensions of the mp4 are divisible by 2.
 	// -c:v libx264 -preset slow -crf 22 encodes as h.264 with better compression settings.
@@ -742,15 +742,15 @@ async function convertWEBMtoMP4(options: {
 	);
 	const output = await ffmpeg.FS('readFile', filename);
 	const outputBlob = new Blob([output], { type: 'video/mp4' });
-	if (onSave) {
-		onSave(blob, filename);
+	if (onExport) {
+		onExport(blob, filename);
 	} else {
 		saveAs(outputBlob, filename);
 	}
 	// Delete files in MEMFS.
 	ffmpeg.FS('unlink', `${name}.webm`);
 	ffmpeg.FS('unlink', filename);
-	if (onFinish) onFinish();
+	if (onExportFinish) onExportFinish();
 }
 
 function browserSupportsWEBP() {

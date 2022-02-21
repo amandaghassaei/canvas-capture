@@ -9,7 +9,7 @@ declare const JPEGZIP: "jpegzip";
 declare const PNGZIP: "pngzip";
 declare type onExport = (blob: Blob, filename: string) => void;
 declare type CAPTURE_TYPE = typeof GIF | typeof WEBM | typeof MP4 | typeof JPEGZIP | typeof PNGZIP;
-declare type WEBM_OPTIONS = {
+export declare type WEBM_OPTIONS = {
     format?: typeof WEBM;
     fps?: number;
     name?: string;
@@ -19,7 +19,7 @@ declare type WEBM_OPTIONS = {
     onExportFinish?: () => void;
     onError?: (error: any) => void;
 };
-declare type MP4_OPTIONS = {
+export declare type MP4_OPTIONS = {
     format?: typeof MP4;
     fps?: number;
     name?: string;
@@ -32,7 +32,7 @@ declare type MP4_OPTIONS = {
     onExportFinish?: () => void;
     onError?: (error: any) => void;
 };
-declare type GIF_OPTIONS = {
+export declare type GIF_OPTIONS = {
     fps?: number;
     name?: string;
     quality?: number;
@@ -41,7 +41,7 @@ declare type GIF_OPTIONS = {
     onExportFinish?: () => void;
     onError?: (error: any) => void;
 };
-declare type PNG_OPTIONS = {
+export declare type PNG_OPTIONS = {
     name?: string;
     dpi?: number;
     onExportProgress?: (progress: number) => void;
@@ -49,7 +49,7 @@ declare type PNG_OPTIONS = {
     onExportFinish?: () => void;
     onError?: (error: any) => void;
 };
-declare type JPEG_OPTIONS = {
+export declare type JPEG_OPTIONS = {
     name?: string;
     quality?: number;
     dpi?: number;

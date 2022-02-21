@@ -18,7 +18,7 @@ const MP4_OPTIONS = {
 	fps: 60,
 	onExportProgress: (progress: number) => console.log(`MP4 export progress: ${progress}.`),
 	onExportFinish: () => console.log(`Finished MP4 export.`),
-};
+} as CanvasCapture.MP4_OPTIONS;
 CanvasCapture.bindKeyToVideoRecord('v', MP4_OPTIONS);
 const WEBM_OPTIONS = {
 	name: 'demo-webm',
@@ -27,7 +27,7 @@ const WEBM_OPTIONS = {
 	fps: 60,
 	onExportProgress: (progress: number) => console.log(`WEBM export progress: ${progress}.`),
 	onExportFinish: () => console.log(`Finished WEBM export.`),
-};
+} as CanvasCapture.WEBM_OPTIONS;
 CanvasCapture.bindKeyToVideoRecord('w', WEBM_OPTIONS);
 const GIF_OPTIONS = {
 	name: 'demo-gif',
@@ -35,24 +35,24 @@ const GIF_OPTIONS = {
 	fps: 60,
 	onExportProgress: (progress: number) => console.log(`GIF export progress: ${progress}.`),
 	onExportFinish: () => console.log(`Finished GIF export.`),
-};
+} as CanvasCapture.GIF_OPTIONS;
 CanvasCapture.bindKeyToGIFRecord('g', GIF_OPTIONS);
 // These take a single snapshot.
-const PNG_OPTONS = {
+const PNG_OPTIONS = {
 	name: 'demo-png',
 	dpi: 72,
 	onExportProgress: (progress: number) => console.log(`PNG frames export progress: ${progress}.`),
 	onExportFinish: () => console.log(`Finished PNG frames zip.`),
-};
-CanvasCapture.bindKeyToPNGSnapshot('p', PNG_OPTONS);
-CanvasCapture.bindKeyToPNGFramesRecord('o', PNG_OPTONS);
+} as CanvasCapture.PNG_OPTIONS;
+CanvasCapture.bindKeyToPNGSnapshot('p', PNG_OPTIONS);
+CanvasCapture.bindKeyToPNGFramesRecord('o', PNG_OPTIONS);
 const JPEG_OPTIONS = {
 	name: 'demo-jpg',
 	quality: 1,
 	dpi: 72,
 	onExportProgress: (progress: number) => console.log(`JPEG frames export progress: ${progress}.`),
 	onExportFinish: () => console.log(`Finished JPEG frames zip.`),
-};
+} as CanvasCapture.JPEG_OPTIONS;
 CanvasCapture.bindKeyToJPEGSnapshot('j', JPEG_OPTIONS);
 CanvasCapture.bindKeyToJPEGFramesRecord('h', JPEG_OPTIONS);
 
@@ -92,13 +92,13 @@ loop();
 // Wire up ui.
 document.getElementById("savePNG")!.addEventListener('click', (e) => {
 	e.preventDefault();
-	CanvasCapture.takePNGSnapshot(PNG_OPTONS);
+	CanvasCapture.takePNGSnapshot(PNG_OPTIONS);
 });
 const startRecordPNGFrames = document.getElementById('startPNG')!;
 let pngFramesCapture: CanvasCapture.ACTIVE_CAPTURE | undefined;
 startRecordPNGFrames.addEventListener('click', (e) => {
 	e.preventDefault();
-	pngFramesCapture = CanvasCapture.beginPNGFramesRecord(PNG_OPTONS);
+	pngFramesCapture = CanvasCapture.beginPNGFramesRecord(PNG_OPTIONS);
 	startRecordPNGFrames.style.display = pngFramesCapture ? 'none' : 'inline';
 	stopRecordPNGFrames.style.display = pngFramesCapture ? 'inline' : 'none';
 });

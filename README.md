@@ -98,7 +98,7 @@ CanvasCapture.recordFrame();
 CanvasCapture.stopRecord();
 
 // Now you may start another recording.
-CanvasCapture.beginVideoRecord({ format: 'mp4' });
+CanvasCapture.beginVideoRecord({ format: CanvasCapture.MP4 });
 CanvasCapture.recordFrame();
 ....
 CanvasCapture.stopRecord();
@@ -120,7 +120,7 @@ Available options for each capture type - passed in as an optional argument to `
 
 ```ts
 videoOptions = {
-  format: 'mp4' | 'webm', // Defaults to 'mp4'.
+  format: CanvasCapture.MP4 | CanvasCapture.WEBM, // Defaults to 'CanvasCapture.MP4'.
   name: string, // Defaults to 'Video_Capture'.
   fps: number, // Frames per second of the output video, defaults to 60.
   quality: number, // A number between 0 and 1, defaults to 1.
