@@ -5814,10 +5814,6 @@ var MP4_OPTIONS = {
     format: CanvasCapture.MP4,
     quality: 1,
     fps: 60,
-    onMP4ConversionProgress: function (_a) {
-        var ratio = _a.ratio;
-        return console.log(ratio);
-    },
     onExportProgress: function (progress) { return console.log("MP4 export progress: " + progress + "."); },
     onExportFinish: function () { return console.log("Finished MP4 export."); },
 };
