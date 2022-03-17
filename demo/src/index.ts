@@ -1,4 +1,4 @@
-import * as CanvasCapture from '../../';
+import { CanvasCapture } from '../../';
 
 // Initialize and pass in canvas.
 const canvas = document.getElementById('my-canvas') as HTMLCanvasElement

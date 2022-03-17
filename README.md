@@ -37,7 +37,7 @@ You can also add [dist/canvas-capture.js](dist/canvas-capture.js) or [dist/canva
 There are a few ways to call canvas-capture. You can bind hotkeys to start/stop recording:
 
 ```js
-import * as CanvasCapture from 'canvas-capture';
+import { CanvasCapture } from 'canvas-capture';
 
 // Initialize and pass in canvas.
 CanvasCapture.init(
@@ -82,7 +82,7 @@ loop();
 Alternatively, you can call `beginXXXRecord` and `takeXXXSnapshot` directly:
 
 ```js
-import * as CanvasCapture from 'canvas-capture';
+import { CanvasCapture } from 'canvas-capture';
 
 // Initialize and pass in canvas.
 CanvasCapture.init(
@@ -179,7 +179,7 @@ Note that changing the dpi of png/jpeg does not change the amount of pixels capt
 You can initialize `CanvasCapture` with the following options:
 
 ```js
-import * as CanvasCapture from 'canvas-capture';
+import { CanvasCapture } from 'canvas-capture';
 
 CanvasCapture.init(document.getElementById('my-canvas'), {
   // Verbosity of console output.

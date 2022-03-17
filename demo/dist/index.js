@@ -2083,7 +2083,7 @@ void (function(root, factory) {
 
 /***/ }),
 
-/***/ 607:
+/***/ 914:
 /***/ (function(__unused_webpack_module, exports, __nested_webpack_require_172497__) {
 
 "use strict";
@@ -5747,12 +5747,21 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nested_webpack_require_327334__(607);
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+var exports = __webpack_exports__;
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CanvasCapture = void 0;
+// Default export.
+var CanvasCapture = __nested_webpack_require_327334__(914);
+exports.CanvasCapture = CanvasCapture;
+exports["default"] = CanvasCapture;
+
+})();
+
 /******/ 	return __webpack_exports__;
 /******/ })()
 ;
@@ -5798,10 +5807,10 @@ var exports = __webpack_exports__;
   \***************************/
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-var CanvasCapture = __webpack_require__(/*! ../../ */ "./dist/canvas-capture.js");
+var __1 = __webpack_require__(/*! ../../ */ "./dist/canvas-capture.js");
 // Initialize and pass in canvas.
 var canvas = document.getElementById('my-canvas');
-CanvasCapture.init(canvas, {
+__1.CanvasCapture.init(canvas, {
     showRecDot: true,
     showAlerts: true,
     showDialogs: true,
@@ -5811,22 +5820,22 @@ CanvasCapture.init(canvas, {
 // Bind key presses to begin/end recordings.
 var MP4_OPTIONS = {
     name: 'demo-mp4',
-    format: CanvasCapture.MP4,
+    format: __1.CanvasCapture.MP4,
     quality: 1,
     fps: 60,
     onExportProgress: function (progress) { return console.log("MP4 export progress: " + progress + "."); },
     onExportFinish: function () { return console.log("Finished MP4 export."); },
 };
-CanvasCapture.bindKeyToVideoRecord('v', MP4_OPTIONS);
+__1.CanvasCapture.bindKeyToVideoRecord('v', MP4_OPTIONS);
 var WEBM_OPTIONS = {
     name: 'demo-webm',
-    format: CanvasCapture.WEBM,
+    format: __1.CanvasCapture.WEBM,
     quality: 1,
     fps: 60,
     onExportProgress: function (progress) { return console.log("WEBM export progress: " + progress + "."); },
     onExportFinish: function () { return console.log("Finished WEBM export."); },
 };
-CanvasCapture.bindKeyToVideoRecord('w', WEBM_OPTIONS);
+__1.CanvasCapture.bindKeyToVideoRecord('w', WEBM_OPTIONS);
 var GIF_OPTIONS = {
     name: 'demo-gif',
     quality: 1,
@@ -5834,7 +5843,7 @@ var GIF_OPTIONS = {
     onExportProgress: function (progress) { return console.log("GIF export progress: " + progress + "."); },
     onExportFinish: function () { return console.log("Finished GIF export."); },
 };
-CanvasCapture.bindKeyToGIFRecord('g', GIF_OPTIONS);
+__1.CanvasCapture.bindKeyToGIFRecord('g', GIF_OPTIONS);
 // These take a single snapshot.
 var PNG_OPTIONS = {
     name: 'demo-png',
@@ -5842,8 +5851,8 @@ var PNG_OPTIONS = {
     onExportProgress: function (progress) { return console.log("PNG frames export progress: " + progress + "."); },
     onExportFinish: function () { return console.log("Finished PNG frames zip."); },
 };
-CanvasCapture.bindKeyToPNGSnapshot('p', PNG_OPTIONS);
-CanvasCapture.bindKeyToPNGFramesRecord('o', PNG_OPTIONS);
+__1.CanvasCapture.bindKeyToPNGSnapshot('p', PNG_OPTIONS);
+__1.CanvasCapture.bindKeyToPNGFramesRecord('o', PNG_OPTIONS);
 var JPEG_OPTIONS = {
     name: 'demo-jpg',
     quality: 1,
@@ -5851,8 +5860,8 @@ var JPEG_OPTIONS = {
     onExportProgress: function (progress) { return console.log("JPEG frames export progress: " + progress + "."); },
     onExportFinish: function () { return console.log("Finished JPEG frames zip."); },
 };
-CanvasCapture.bindKeyToJPEGSnapshot('j', JPEG_OPTIONS);
-CanvasCapture.bindKeyToJPEGFramesRecord('h', JPEG_OPTIONS);
+__1.CanvasCapture.bindKeyToJPEGSnapshot('j', JPEG_OPTIONS);
+__1.CanvasCapture.bindKeyToJPEGFramesRecord('h', JPEG_OPTIONS);
 // Simple canvas draw setup.
 var context = canvas.getContext("2d");
 var angle = 0;
@@ -5876,28 +5885,28 @@ function loop() {
         angle += 0.02;
     }
     // You need to do this only if you are recording a video or gif.
-    if (CanvasCapture.isRecording())
-        CanvasCapture.recordFrame();
+    if (__1.CanvasCapture.isRecording())
+        __1.CanvasCapture.recordFrame();
 }
 // Start animation loop.
 loop();
 // Wire up ui.
 document.getElementById("savePNG").addEventListener('click', function (e) {
     e.preventDefault();
-    CanvasCapture.takePNGSnapshot(PNG_OPTIONS);
+    __1.CanvasCapture.takePNGSnapshot(PNG_OPTIONS);
 });
 var startRecordPNGFrames = document.getElementById('startPNG');
 var pngFramesCapture;
 startRecordPNGFrames.addEventListener('click', function (e) {
     e.preventDefault();
-    pngFramesCapture = CanvasCapture.beginPNGFramesRecord(PNG_OPTIONS);
+    pngFramesCapture = __1.CanvasCapture.beginPNGFramesRecord(PNG_OPTIONS);
     startRecordPNGFrames.style.display = pngFramesCapture ? 'none' : 'inline';
     stopRecordPNGFrames.style.display = pngFramesCapture ? 'inline' : 'none';
 });
 var stopRecordPNGFrames = document.getElementById('stopPNG');
 stopRecordPNGFrames.addEventListener('click', function (e) {
     e.preventDefault();
-    CanvasCapture.stopRecord(pngFramesCapture);
+    __1.CanvasCapture.stopRecord(pngFramesCapture);
     pngFramesCapture = undefined;
     stopRecordPNGFrames.style.display = 'none';
     startRecordPNGFrames.style.display = 'inline';
@@ -5905,20 +5914,20 @@ stopRecordPNGFrames.addEventListener('click', function (e) {
 stopRecordPNGFrames.style.display = 'none';
 document.getElementById("saveJPG").addEventListener('click', function (e) {
     e.preventDefault();
-    CanvasCapture.takeJPEGSnapshot(JPEG_OPTIONS);
+    __1.CanvasCapture.takeJPEGSnapshot(JPEG_OPTIONS);
 });
 var startRecordJPGFrames = document.getElementById('startJPG');
 var jpgFramesCapture;
 startRecordJPGFrames.addEventListener('click', function (e) {
     e.preventDefault();
-    jpgFramesCapture = CanvasCapture.beginJPEGFramesRecord(JPEG_OPTIONS);
+    jpgFramesCapture = __1.CanvasCapture.beginJPEGFramesRecord(JPEG_OPTIONS);
     startRecordJPGFrames.style.display = jpgFramesCapture ? 'none' : 'inline';
     stopRecordJPGFrames.style.display = jpgFramesCapture ? 'inline' : 'none';
 });
 var stopRecordJPGFrames = document.getElementById('stopJPG');
 stopRecordJPGFrames.addEventListener('click', function (e) {
     e.preventDefault();
-    CanvasCapture.stopRecord(jpgFramesCapture);
+    __1.CanvasCapture.stopRecord(jpgFramesCapture);
     pngFramesCapture = undefined;
     stopRecordJPGFrames.style.display = 'none';
     startRecordJPGFrames.style.display = 'inline';
@@ -5928,14 +5937,14 @@ var startRecordMP4 = document.getElementById('startMP4');
 var mp4Capture;
 startRecordMP4.addEventListener('click', function (e) {
     e.preventDefault();
-    mp4Capture = CanvasCapture.beginVideoRecord(MP4_OPTIONS);
+    mp4Capture = __1.CanvasCapture.beginVideoRecord(MP4_OPTIONS);
     startRecordMP4.style.display = mp4Capture ? 'none' : 'inline';
     stopRecordMP4.style.display = mp4Capture ? 'inline' : 'none';
 });
 var stopRecordMP4 = document.getElementById('stopMP4');
 stopRecordMP4.addEventListener('click', function (e) {
     e.preventDefault();
-    CanvasCapture.stopRecord(mp4Capture);
+    __1.CanvasCapture.stopRecord(mp4Capture);
     mp4Capture = undefined;
     stopRecordMP4.style.display = 'none';
     startRecordMP4.style.display = 'inline';
@@ -5945,14 +5954,14 @@ var startRecordWEBM = document.getElementById('startWEBM');
 var webmCapture;
 startRecordWEBM.addEventListener('click', function (e) {
     e.preventDefault();
-    webmCapture = CanvasCapture.beginVideoRecord(WEBM_OPTIONS);
+    webmCapture = __1.CanvasCapture.beginVideoRecord(WEBM_OPTIONS);
     startRecordWEBM.style.display = webmCapture ? 'none' : 'inline';
     stopRecordWEBM.style.display = webmCapture ? 'inline' : 'none';
 });
 var stopRecordWEBM = document.getElementById('stopWEBM');
 stopRecordWEBM.addEventListener('click', function (e) {
     e.preventDefault();
-    CanvasCapture.stopRecord(webmCapture);
+    __1.CanvasCapture.stopRecord(webmCapture);
     webmCapture = undefined;
     stopRecordWEBM.style.display = 'none';
     startRecordWEBM.style.display = 'inline';
@@ -5962,22 +5971,22 @@ var startRecordGIF = document.getElementById('startGIF');
 var gifCapture;
 startRecordGIF.addEventListener('click', function (e) {
     e.preventDefault();
-    gifCapture = CanvasCapture.beginGIFRecord(GIF_OPTIONS);
+    gifCapture = __1.CanvasCapture.beginGIFRecord(GIF_OPTIONS);
     startRecordGIF.style.display = gifCapture ? 'none' : 'inline';
     stopRecordGIF.style.display = gifCapture ? 'inline' : 'none';
 });
 var stopRecordGIF = document.getElementById('stopGIF');
 stopRecordGIF.addEventListener('click', function (e) {
     e.preventDefault();
-    CanvasCapture.stopRecord(gifCapture);
+    __1.CanvasCapture.stopRecord(gifCapture);
     gifCapture = undefined;
     stopRecordGIF.style.display = 'none';
     startRecordGIF.style.display = 'inline';
 });
 stopRecordGIF.style.display = 'none';
-document.getElementById('WEBM-support').innerHTML = "(supported by this browser: " + CanvasCapture.browserSupportsWEBM() + ")";
-document.getElementById('MP4-support').innerHTML = "(supported by this browser: " + CanvasCapture.browserSupportsMP4() + ")";
-document.getElementById('GIF-support').innerHTML = "(supported by this browser: " + CanvasCapture.browserSupportsGIF() + ")";
+document.getElementById('WEBM-support').innerHTML = "(supported by this browser: " + __1.CanvasCapture.browserSupportsWEBM() + ")";
+document.getElementById('MP4-support').innerHTML = "(supported by this browser: " + __1.CanvasCapture.browserSupportsMP4() + ")";
+document.getElementById('GIF-support').innerHTML = "(supported by this browser: " + __1.CanvasCapture.browserSupportsGIF() + ")";
 
 })();
 

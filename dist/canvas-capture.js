@@ -2079,7 +2079,7 @@ void (function(root, factory) {
 
 /***/ }),
 
-/***/ 607:
+/***/ 914:
 /***/ (function(__unused_webpack_module, exports, __webpack_require__) {
 
 "use strict";
@@ -5743,12 +5743,21 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	})();
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __webpack_require__(607);
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+var exports = __webpack_exports__;
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.CanvasCapture = void 0;
+// Default export.
+var CanvasCapture = __webpack_require__(914);
+exports.CanvasCapture = CanvasCapture;
+exports["default"] = CanvasCapture;
+
+})();
+
 /******/ 	return __webpack_exports__;
 /******/ })()
 ;
