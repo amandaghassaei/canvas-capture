@@ -6,17 +6,17 @@ import 'mdn-polyfills/HTMLCanvasElement.prototype.toBlob';
 import { changeDpiBlob } from 'changedpi';
 import { PARAMS } from './params';
 import { initDotWithCSS, showWarning, showDialog, showDot } from './modals';
-import { createFFmpeg, fetchFile, FFmpeg } from '@ffmpeg/ffmpeg';
+import { FFmpeg } from '@ffmpeg/ffmpeg';
 
 // Make it so we don't have to specify workersPath for CCapture gif recorder.
 // This is not a large file, so no need to separate from lib.
 // @ts-ignore
 import gifWorkerString from 'raw-loader!./CCapture.js/gif.worker.js';
 import JSZip = require('jszip');
-import { rejects } from 'assert';
 const gifWorkersPath = URL.createObjectURL(new Blob([gifWorkerString]));
 
-let ffmpeg: FFmpeg;
+let ffmpegPath: string;
+let ffmpeg: FFmpeg | undefined = undefined;
 
 // Export showDialog method in case it is useful.
 export { showDialog } from './modals';
@@ -139,10 +139,8 @@ export function init(_canvas: HTMLCanvasElement, options?: {
 	recDotCSS?: {[key: string]: string},
 }) {
 	canvas = _canvas;
-	ffmpeg = createFFmpeg({
-		// Use public address if you don't want to host your own.
-		corePath: options?.ffmpegCorePath || 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
-	  });
+	// Use public address if you don't want to host your own.
+	ffmpegPath = options?.ffmpegCorePath || 'https://unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js'
 	if (options && options.verbose !== undefined) setVerbose(options.verbose);
 	if (options && options.showAlerts !== undefined) PARAMS.SHOW_ALERTS = options.showAlerts;
 	if (options && options.showDialogs !== undefined) PARAMS.SHOW_DIALOGS = options.showDialogs;
@@ -698,8 +696,14 @@ async function convertWEBMtoMP4(options: {
 	onExportFinish?: () => void,
 	ffmpegOptions?: { [key: string]: string },
 }) {
+	if (!ffmpeg) {
+		const createFFmpeg = require('@ffmpeg/ffmpeg/src/createFFmpeg');
+		ffmpeg = createFFmpeg({
+			corePath: ffmpegPath,
+		});
+	}
 	if (!ffmpegLoaded) {
-		await ffmpeg.load().catch(() => {
+		await ffmpeg!.load().catch(() => {
 			const errorMsg = 'MP4 export not supported in this browser, try again in the latest version of Chrome.';
 			showWarning(errorMsg);
 			throw new Error(errorMsg);
@@ -708,13 +712,14 @@ async function convertWEBMtoMP4(options: {
 	}
 	const { name, blob, onExportProgress, onExport, onExportFinish, ffmpegOptions } = options;
 	// Convert blob to Uint8 array.
-	const data = await fetchFile(blob);
+	const _data = await blob.arrayBuffer();
+	const data = new Uint8Array(_data);
 	// Write data to MEMFS, need to use Uint8Array for binary data.
-	ffmpeg.FS('writeFile', `${name}.webm`, data);
+	ffmpeg!.FS('writeFile', `${name}.webm`, data);
 	// Convert to MP4.
 	// TODO: onProgress callback is not working quite right yet.
 	// https://github.com/ffmpegwasm/ffmpeg.wasm/issues/112
-	if (onExportProgress) ffmpeg.setProgress(({ ratio }) => {
+	if (onExportProgress) ffmpeg!.setProgress(({ ratio }) => {
 		onExportProgress(Math.max(0, Math.min(ratio, 1)));
 	});
 	// -vf "crop=trunc(iw/2)*2:trunc(ih/2)*2" ensures the dimensions of the mp4 are divisible by 2.
@@ -733,14 +738,14 @@ async function convertWEBMtoMP4(options: {
 		_ffmpegOptions.push(key, combinedOptions[key]);
 	});
 	const filename = `${name}.mp4`;
-	await ffmpeg.run(
+	await ffmpeg!.run(
 		'-i', `${name}.webm`,
 		..._ffmpegOptions,
 		'-vf', 'crop=trunc(iw/2)*2:trunc(ih/2)*2',
 		'-an',
 		filename,
 	);
-	const output = await ffmpeg.FS('readFile', filename);
+	const output = await ffmpeg!.FS('readFile', filename);
 	const outputBlob = new Blob([output], { type: 'video/mp4' });
 	if (onExport) {
 		onExport(blob, filename);
@@ -748,8 +753,8 @@ async function convertWEBMtoMP4(options: {
 		saveAs(outputBlob, filename);
 	}
 	// Delete files in MEMFS.
-	ffmpeg.FS('unlink', `${name}.webm`);
-	ffmpeg.FS('unlink', filename);
+	ffmpeg!.FS('unlink', `${name}.webm`);
+	ffmpeg!.FS('unlink', filename);
 	if (onExportFinish) onExportFinish();
 }
 
