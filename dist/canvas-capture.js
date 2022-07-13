@@ -2091,7 +2091,7 @@ function convertWEBMtoMP4(options) {
                     output = _b.sent();
                     outputBlob = new Blob([output], { type: 'video/mp4' });
                     if (onExport) {
-                        onExport(blob, filename);
+                        onExport(outputBlob, filename);
                     }
                     else {
                         file_saver_1.saveAs(outputBlob, filename);

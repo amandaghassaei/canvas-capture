@@ -748,7 +748,7 @@ async function convertWEBMtoMP4(options: {
 	const output = await ffmpeg!.FS('readFile', filename);
 	const outputBlob = new Blob([output], { type: 'video/mp4' });
 	if (onExport) {
-		onExport(blob, filename);
+		onExport(outputBlob, filename);
 	} else {
 		saveAs(outputBlob, filename);
 	}
