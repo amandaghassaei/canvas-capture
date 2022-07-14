@@ -3,7 +3,7 @@
   "version": "2.0.2",
   "description": "Record the canvas as an image, mp4 video, or gif from the browser",
   "main": "dist/canvas-capture.js",
-  "types": "dist/types/index.d.ts",
+  "types": "dist/@types/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack && npm run build-demo",
