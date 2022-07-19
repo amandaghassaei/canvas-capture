@@ -6,13 +6,15 @@ import 'mdn-polyfills/HTMLCanvasElement.prototype.toBlob';
 import { changeDpiBlob } from 'changedpi';
 import { PARAMS } from './params';
 import { initDotWithCSS, showWarning, showDialog, showDot } from './modals';
+// @ts-ignore
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 
 // Make it so we don't have to specify workersPath for CCapture gif recorder.
 // This is not a large file, so no need to separate from lib.
 // @ts-ignore
 import gifWorkerString from 'raw-loader!./CCapture.js/gif.worker.js';
-import JSZip = require('jszip');
+// @ts-ignore
+import * as JSZip from 'jszip';
 const gifWorkersPath = URL.createObjectURL(new Blob([gifWorkerString]));
 
 let ffmpegPath: string;
@@ -106,6 +108,8 @@ type HOTKEY_TYPE =
 	typeof GIF | typeof WEBM | typeof MP4 |
 	typeof JPEGZIP | typeof PNGZIP |
 	typeof JPEG | typeof PNG;
+
+const hotkeysSinceLastCheck: { key: string}[] = [];
 
 const hotkeyOptions:
 {
@@ -210,54 +214,69 @@ export function bindKeyToJPEGSnapshot(key: string, options?: JPEG_OPTIONS) {
 	setHotkey(key, JPEG);
 }
 
+function applyHotkeys() {
+	for (let i = 0; i < hotkeysSinceLastCheck.length; i++) {
+		const { key } = hotkeysSinceLastCheck[i];
+		if (hotkeys.mp4 && key === hotkeys[MP4]) {
+			const MP4s = activeCapturesOfType(MP4);
+			if (MP4s.length) stopRecord(MP4s);
+			else {
+				if (!browserSupportsMP4()) {
+					const errorMsg = `This browser does not support MP4 video recording, please try again in Chrome.`;
+					const onError = hotkeyOptions[MP4]?.onError;
+					if (onError) onError(new Error(errorMsg));
+					showWarning(errorMsg);
+				}
+				beginVideoRecord(hotkeyOptions[MP4]);
+			}
+		}
+		if (hotkeys.webm && key === hotkeys[WEBM]) {
+			const WEBMs = activeCapturesOfType(WEBM);
+			if (WEBMs.length) stopRecord(WEBMs);
+			else {
+				if (!browserSupportsWEBM()) {
+					const errorMsg = `This browser does not support WEBM video recording, please try again in Chrome.`;
+					const onError = hotkeyOptions[WEBM]?.onError;
+					if (onError) onError(new Error(errorMsg));
+					showWarning(errorMsg);
+				}
+				beginVideoRecord(hotkeyOptions[WEBM]);
+			}
+		}
+		if (hotkeys.gif && key === hotkeys[GIF]) {
+			const GIFs = activeCapturesOfType(GIF);
+			if (GIFs.length) stopRecord(GIFs);
+			else beginGIFRecord(hotkeyOptions[GIF]);
+		}
+		if (hotkeys.pngzip && key === hotkeys[PNGZIP]) {
+			const pngzips = activeCapturesOfType(PNGZIP);
+			if (pngzips.length) stopRecord(pngzips);
+			else beginPNGFramesRecord(hotkeyOptions[PNGZIP]);
+		}
+		if (hotkeys.jpegzip && key === hotkeys[JPEGZIP]) {
+			const jpgzips = activeCapturesOfType(JPEGZIP);
+			if (jpgzips.length) stopRecord(jpgzips);
+			else beginJPEGFramesRecord(hotkeyOptions[JPEGZIP]);
+		}
+		if (hotkeys.png && key === hotkeys[PNG]) {
+			takePNGSnapshot(hotkeyOptions[PNG]);
+		}
+		if (hotkeys.jpeg && key === hotkeys[JPEG]) {
+			takeJPEGSnapshot(hotkeyOptions[JPEG]);
+		}
+	}
+	hotkeysSinceLastCheck.length = 0;
+}
+
 window.addEventListener('keydown', (e: KeyboardEvent) => {
-	if (hotkeys.mp4 && e.key === hotkeys[MP4]) {
-		const MP4s = activeCapturesOfType(MP4);
-		if (MP4s.length) stopRecord(MP4s);
-		else {
-			if (!browserSupportsMP4()) {
-				const errorMsg = `This browser does not support MP4 video recording, please try again in Chrome.`;
-				const onError = hotkeyOptions[MP4]?.onError;
-				if (onError) onError(new Error(errorMsg));
-				showWarning(errorMsg);
-			}
-			beginVideoRecord(hotkeyOptions[MP4]);
-		}
+	hotkeysSinceLastCheck.push({
+		key: e.key,
+	});
+	if (!PARAMS.IS_MANUALLY_CHECKING_HOTKEYS) {
+		// Apply hotkeys immediately.
+		applyHotkeys();
 	}
-	if (hotkeys.webm && e.key === hotkeys[WEBM]) {
-		const WEBMs = activeCapturesOfType(WEBM);
-		if (WEBMs.length) stopRecord(WEBMs);
-		else {
-			if (!browserSupportsWEBM()) {
-				const errorMsg = `This browser does not support WEBM video recording, please try again in Chrome.`;
-				const onError = hotkeyOptions[WEBM]?.onError;
-				if (onError) onError(new Error(errorMsg));
-				showWarning(errorMsg);
-			}
-			beginVideoRecord(hotkeyOptions[WEBM]);
-		}
-	}
-	if (hotkeys.gif && e.key === hotkeys[GIF]) {
-		const GIFs = activeCapturesOfType(GIF);
-		if (GIFs.length) stopRecord(GIFs);
-		else beginGIFRecord(hotkeyOptions[GIF]);
-	}
-	if (hotkeys.pngzip && e.key === hotkeys[PNGZIP]) {
-		const pngzips = activeCapturesOfType(PNGZIP);
-		if (pngzips.length) stopRecord(pngzips);
-		else beginPNGFramesRecord(hotkeyOptions[PNGZIP]);
-	}
-	if (hotkeys.jpegzip && e.key === hotkeys[JPEGZIP]) {
-		const jpgzips = activeCapturesOfType(JPEGZIP);
-		if (jpgzips.length) stopRecord(jpgzips);
-		else beginJPEGFramesRecord(hotkeyOptions[JPEGZIP]);
-	}
-	if (hotkeys.png && e.key === hotkeys[PNG]) {
-		takePNGSnapshot(hotkeyOptions[PNG]);
-	}
-	if (hotkeys.jpeg && e.key === hotkeys[JPEG]) {
-		takeJPEGSnapshot(hotkeyOptions[JPEG]);
-	}
+	// Otherwise wait until checkHotkeys() is called.
 });
 
 function startCapture(capture: ACTIVE_CAPTURE) {
@@ -618,9 +637,9 @@ async function stopRecordAtIndex(index: number) {
 					'Frames are being zipped and may take a minute to save.  You can close this dialog in the meantime.',
 					{ autoCloseDelay: 7000 },
 				);
-				await (capturer as JSZip).generateAsync({ type: 'blob' }, (metadata) => {
+				await (capturer as JSZip).generateAsync({ type: 'blob' }, (metadata: { percent: number }) => {
 					if (onExportProgress) onExportProgress(metadata.percent / 100);
-				}).then((blob) => {
+				}).then((blob: Blob) => {
 					const filename = `${name}.zip`;
 					if (onExport) {
 						onExport(blob, filename);
@@ -687,6 +706,11 @@ export function isRecording() {
 	return activeCaptures.length > 0;
 }
 
+export function checkHotkeys() {
+	PARAMS.IS_MANUALLY_CHECKING_HOTKEYS = true;
+	applyHotkeys();
+}
+
 let ffmpegLoaded = false;
 async function convertWEBMtoMP4(options: {
 	name: string,
@@ -719,8 +743,8 @@ async function convertWEBMtoMP4(options: {
 	// Convert to MP4.
 	// TODO: onProgress callback is not working quite right yet.
 	// https://github.com/ffmpegwasm/ffmpeg.wasm/issues/112
-	if (onExportProgress) ffmpeg!.setProgress(({ ratio }) => {
-		onExportProgress(Math.max(0, Math.min(ratio, 1)));
+	if (onExportProgress) ffmpeg!.setProgress((progress: { ratio: number }) => {
+		onExportProgress(Math.max(0, Math.min(progress.ratio, 1)));
 	});
 	// -vf "crop=trunc(iw/2)*2:trunc(ih/2)*2" ensures the dimensions of the mp4 are divisible by 2.
 	// -c:v libx264 -preset slow -crf 22 encodes as h.264 with better compression settings.

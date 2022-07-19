@@ -1,6 +1,6 @@
 import CCapture from './CCapture.js/CCapture';
 import 'mdn-polyfills/HTMLCanvasElement.prototype.toBlob';
-import JSZip = require('jszip');
+import * as JSZip from 'jszip';
 export { showDialog } from './modals';
 declare const GIF: "gif";
 export declare const WEBM: "webm";
@@ -146,6 +146,7 @@ export declare function takeJPEGSnapshot(options?: JPEG_OPTIONS): Promise<void>;
 export declare function recordFrame(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]): void;
 export declare function stopRecord(capture?: ACTIVE_CAPTURE | ACTIVE_CAPTURE[]): Promise<void>;
 export declare function isRecording(): boolean;
+export declare function checkHotkeys(): void;
 export declare function browserSupportsWEBM(): boolean;
 export declare function browserSupportsMP4(): boolean;
 export declare function browserSupportsGIF(): boolean;

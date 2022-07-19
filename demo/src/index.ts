@@ -82,6 +82,9 @@ function loop() {
 		angle += 0.02;
 	}
 
+	// Tell CanvasCapture where in the animation loop
+	// to check for hotkey presses.
+	CanvasCapture.checkHotkeys();
 	// You need to do this only if you are recording a video or gif.
 	if (CanvasCapture.isRecording()) CanvasCapture.recordFrame();
 }

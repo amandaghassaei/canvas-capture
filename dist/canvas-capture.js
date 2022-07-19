@@ -7,7 +7,7 @@
 		exports["CanvasCapture"] = factory();
 	else
 		root["CanvasCapture"] = factory();
-})(self, function() {
+})(self, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
@@ -1327,15 +1327,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.browserSupportsGIF = exports.browserSupportsMP4 = exports.browserSupportsWEBM = exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginJPEGFramesRecord = exports.beginPNGFramesRecord = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToJPEGFramesRecord = exports.bindKeyToPNGFramesRecord = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = exports.MP4 = exports.WEBM = exports.showDialog = void 0;
+exports.browserSupportsGIF = exports.browserSupportsMP4 = exports.browserSupportsWEBM = exports.checkHotkeys = exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginJPEGFramesRecord = exports.beginPNGFramesRecord = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToJPEGFramesRecord = exports.bindKeyToPNGFramesRecord = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = exports.MP4 = exports.WEBM = exports.showDialog = void 0;
 var CCapture_1 = __webpack_require__(886);
 var file_saver_1 = __webpack_require__(162);
 // Polyfill for canvas.toBlob needed for some browsers.
@@ -1348,6 +1350,7 @@ var modals_1 = __webpack_require__(330);
 // This is not a large file, so no need to separate from lib.
 // @ts-ignore
 var gif_worker_js_1 = __webpack_require__(57);
+// @ts-ignore
 var JSZip = __webpack_require__(733);
 var gifWorkersPath = URL.createObjectURL(new Blob([gif_worker_js_1.default]));
 var ffmpegPath;
@@ -1367,6 +1370,7 @@ var activeCaptures = [];
 // but needed for proper import of CCapture at the moment.
 // See https://github.com/spite/ccapture.js/issues/78
 var temp = CCapture_1.default;
+var hotkeysSinceLastCheck = [];
 var hotkeyOptions = {};
 var hotkeys = {};
 var canvas = null;
@@ -1383,12 +1387,12 @@ function init(_canvas, options) {
     if (options && options.showRecDot !== undefined)
         params_1.PARAMS.SHOW_REC_DOT = options.showRecDot;
     if (params_1.PARAMS.SHOW_REC_DOT) {
-        modals_1.initDotWithCSS(options === null || options === void 0 ? void 0 : options.recDotCSS);
+        (0, modals_1.initDotWithCSS)(options === null || options === void 0 ? void 0 : options.recDotCSS);
     }
     canvas.addEventListener('resize', function () {
         if (activeCaptures.length) {
             var warningMsg = "Don't resize while recording canvas!";
-            modals_1.showWarning(warningMsg);
+            (0, modals_1.showWarning)(warningMsg);
         }
     });
 }
@@ -1452,97 +1456,110 @@ function bindKeyToJPEGSnapshot(key, options) {
     setHotkey(key, JPEG);
 }
 exports.bindKeyToJPEGSnapshot = bindKeyToJPEGSnapshot;
-window.addEventListener('keydown', function (e) {
+function applyHotkeys() {
     var _a, _b;
-    if (hotkeys.mp4 && e.key === hotkeys[exports.MP4]) {
-        var MP4s = activeCapturesOfType(exports.MP4);
-        if (MP4s.length)
-            stopRecord(MP4s);
-        else {
-            if (!browserSupportsMP4()) {
-                var errorMsg = "This browser does not support MP4 video recording, please try again in Chrome.";
-                var onError = (_a = hotkeyOptions[exports.MP4]) === null || _a === void 0 ? void 0 : _a.onError;
-                if (onError)
-                    onError(new Error(errorMsg));
-                modals_1.showWarning(errorMsg);
+    for (var i = 0; i < hotkeysSinceLastCheck.length; i++) {
+        var key = hotkeysSinceLastCheck[i].key;
+        if (hotkeys.mp4 && key === hotkeys[exports.MP4]) {
+            var MP4s = activeCapturesOfType(exports.MP4);
+            if (MP4s.length)
+                stopRecord(MP4s);
+            else {
+                if (!browserSupportsMP4()) {
+                    var errorMsg = "This browser does not support MP4 video recording, please try again in Chrome.";
+                    var onError = (_a = hotkeyOptions[exports.MP4]) === null || _a === void 0 ? void 0 : _a.onError;
+                    if (onError)
+                        onError(new Error(errorMsg));
+                    (0, modals_1.showWarning)(errorMsg);
+                }
+                beginVideoRecord(hotkeyOptions[exports.MP4]);
             }
-            beginVideoRecord(hotkeyOptions[exports.MP4]);
+        }
+        if (hotkeys.webm && key === hotkeys[exports.WEBM]) {
+            var WEBMs = activeCapturesOfType(exports.WEBM);
+            if (WEBMs.length)
+                stopRecord(WEBMs);
+            else {
+                if (!browserSupportsWEBM()) {
+                    var errorMsg = "This browser does not support WEBM video recording, please try again in Chrome.";
+                    var onError = (_b = hotkeyOptions[exports.WEBM]) === null || _b === void 0 ? void 0 : _b.onError;
+                    if (onError)
+                        onError(new Error(errorMsg));
+                    (0, modals_1.showWarning)(errorMsg);
+                }
+                beginVideoRecord(hotkeyOptions[exports.WEBM]);
+            }
+        }
+        if (hotkeys.gif && key === hotkeys[GIF]) {
+            var GIFs = activeCapturesOfType(GIF);
+            if (GIFs.length)
+                stopRecord(GIFs);
+            else
+                beginGIFRecord(hotkeyOptions[GIF]);
+        }
+        if (hotkeys.pngzip && key === hotkeys[PNGZIP]) {
+            var pngzips = activeCapturesOfType(PNGZIP);
+            if (pngzips.length)
+                stopRecord(pngzips);
+            else
+                beginPNGFramesRecord(hotkeyOptions[PNGZIP]);
+        }
+        if (hotkeys.jpegzip && key === hotkeys[JPEGZIP]) {
+            var jpgzips = activeCapturesOfType(JPEGZIP);
+            if (jpgzips.length)
+                stopRecord(jpgzips);
+            else
+                beginJPEGFramesRecord(hotkeyOptions[JPEGZIP]);
+        }
+        if (hotkeys.png && key === hotkeys[PNG]) {
+            takePNGSnapshot(hotkeyOptions[PNG]);
+        }
+        if (hotkeys.jpeg && key === hotkeys[JPEG]) {
+            takeJPEGSnapshot(hotkeyOptions[JPEG]);
         }
     }
-    if (hotkeys.webm && e.key === hotkeys[exports.WEBM]) {
-        var WEBMs = activeCapturesOfType(exports.WEBM);
-        if (WEBMs.length)
-            stopRecord(WEBMs);
-        else {
-            if (!browserSupportsWEBM()) {
-                var errorMsg = "This browser does not support WEBM video recording, please try again in Chrome.";
-                var onError = (_b = hotkeyOptions[exports.WEBM]) === null || _b === void 0 ? void 0 : _b.onError;
-                if (onError)
-                    onError(new Error(errorMsg));
-                modals_1.showWarning(errorMsg);
-            }
-            beginVideoRecord(hotkeyOptions[exports.WEBM]);
-        }
+    hotkeysSinceLastCheck.length = 0;
+}
+window.addEventListener('keydown', function (e) {
+    hotkeysSinceLastCheck.push({
+        key: e.key,
+    });
+    if (!params_1.PARAMS.IS_MANUALLY_CHECKING_HOTKEYS) {
+        // Apply hotkeys immediately.
+        applyHotkeys();
     }
-    if (hotkeys.gif && e.key === hotkeys[GIF]) {
-        var GIFs = activeCapturesOfType(GIF);
-        if (GIFs.length)
-            stopRecord(GIFs);
-        else
-            beginGIFRecord(hotkeyOptions[GIF]);
-    }
-    if (hotkeys.pngzip && e.key === hotkeys[PNGZIP]) {
-        var pngzips = activeCapturesOfType(PNGZIP);
-        if (pngzips.length)
-            stopRecord(pngzips);
-        else
-            beginPNGFramesRecord(hotkeyOptions[PNGZIP]);
-    }
-    if (hotkeys.jpegzip && e.key === hotkeys[JPEGZIP]) {
-        var jpgzips = activeCapturesOfType(JPEGZIP);
-        if (jpgzips.length)
-            stopRecord(jpgzips);
-        else
-            beginJPEGFramesRecord(hotkeyOptions[JPEGZIP]);
-    }
-    if (hotkeys.png && e.key === hotkeys[PNG]) {
-        takePNGSnapshot(hotkeyOptions[PNG]);
-    }
-    if (hotkeys.jpeg && e.key === hotkeys[JPEG]) {
-        takeJPEGSnapshot(hotkeyOptions[JPEG]);
-    }
+    // Otherwise wait until checkHotkeys() is called.
 });
 function startCapture(capture) {
     activeCaptures.push(capture);
     if (capture.type !== PNGZIP && capture.type !== JPEGZIP)
         capture.capturer.start();
     // For multi-frame records, we should also throw up an indicator to show that we're in record mode.
-    modals_1.showDot(isRecording());
+    (0, modals_1.showDot)(isRecording());
 }
 function beginVideoRecord(options) {
-    var _a;
     try {
         var format = (options === null || options === void 0 ? void 0 : options.format) || exports.MP4; // Default to MP4 record.
         if (format === exports.MP4) {
             if (!browserSupportsMP4()) {
                 var errorMsg = "This browser does not support MP4 video recording, please try again in Chrome.";
-                modals_1.showWarning(errorMsg);
+                (0, modals_1.showWarning)(errorMsg);
                 throw new Error(errorMsg);
             }
         }
         else if (format === exports.WEBM) {
             if (!browserSupportsWEBM()) {
                 var errorMsg = "This browser does not support WEBM video recording, please try again in Chrome.";
-                modals_1.showWarning(errorMsg);
+                (0, modals_1.showWarning)(errorMsg);
                 throw new Error(errorMsg);
             }
         }
         else {
-            throw new Error("invalid video format " + format + ".");
+            throw new Error("invalid video format ".concat(format, "."));
         }
         if (activeVideoGifCaptures().length) {
             var errorMsg = "CCapture.js only supports one video/gif capture at a time.";
-            modals_1.showWarning(errorMsg);
+            (0, modals_1.showWarning)(errorMsg);
             throw new Error(errorMsg);
         }
         var quality = 1;
@@ -1564,7 +1581,7 @@ function beginVideoRecord(options) {
             capturer: capturer,
             numFrames: 0,
             type: format,
-            ffmpegOptions: (_a = options) === null || _a === void 0 ? void 0 : _a.ffmpegOptions,
+            ffmpegOptions: options === null || options === void 0 ? void 0 : options.ffmpegOptions,
             onExportProgress: options === null || options === void 0 ? void 0 : options.onExportProgress,
             onExport: options === null || options === void 0 ? void 0 : options.onExport,
             onExportFinish: options === null || options === void 0 ? void 0 : options.onExportFinish,
@@ -1585,7 +1602,7 @@ function beginGIFRecord(options) {
     try {
         if (activeVideoGifCaptures().length) {
             var errorMsg = "CCapture.js only supports one video/gif capture at a time.";
-            modals_1.showWarning(errorMsg);
+            (0, modals_1.showWarning)(errorMsg);
             throw new Error(errorMsg);
         }
         // CCapture seems to expect a quality between 0 and 100.
@@ -1685,7 +1702,7 @@ function canvasToBlobAsync(canvas, type, quality) {
             return [2 /*return*/, new Promise(function (resolve) {
                     canvas.toBlob(function (blob) {
                         resolve(blob);
-                    }, "image/" + type, quality);
+                    }, "image/".concat(type), quality);
                 })];
         });
     });
@@ -1702,13 +1719,13 @@ function takeImageSnapshot(filename, type, quality, options) {
                 case 1:
                     blob = _a.sent();
                     if (!blob) {
-                        errorMsg = "Problem saving " + type.toUpperCase() + ", please try again!";
-                        modals_1.showWarning(errorMsg);
+                        errorMsg = "Problem saving ".concat(type.toUpperCase(), ", please try again!");
+                        (0, modals_1.showWarning)(errorMsg);
                         throw new Error(errorMsg);
                     }
                     onExport = (options === null || options === void 0 ? void 0 : options.onExport) || file_saver_1.saveAs;
                     if (!(options === null || options === void 0 ? void 0 : options.dpi)) return [3 /*break*/, 3];
-                    return [4 /*yield*/, changedpi_1.changeDpiBlob(blob, options === null || options === void 0 ? void 0 : options.dpi).then(function (blob) {
+                    return [4 /*yield*/, (0, changedpi_1.changeDpiBlob)(blob, options === null || options === void 0 ? void 0 : options.dpi).then(function (blob) {
                             onExport(blob, filename);
                             if (onExportFinish)
                                 onExportFinish();
@@ -1734,7 +1751,7 @@ function takePNGSnapshot(options) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
                     name_5 = (options === null || options === void 0 ? void 0 : options.name) || 'PNG_Capture';
-                    filename = name_5 + ".png";
+                    filename = "".concat(name_5, ".png");
                     return [4 /*yield*/, takeImageSnapshot(filename, PNG, undefined, options)];
                 case 1:
                     _a.sent();
@@ -1760,7 +1777,7 @@ function takeJPEGSnapshot(options) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
                     name_6 = (options === null || options === void 0 ? void 0 : options.name) || 'JPEG_Capture';
-                    filename = name_6 + ".jpg";
+                    filename = "".concat(name_6, ".jpg");
                     // Quality is a number between 0 and 1 https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
                     return [4 /*yield*/, takeImageSnapshot(filename, JPEG, (options === null || options === void 0 ? void 0 : options.quality) || 1, options)];
                 case 1:
@@ -1794,14 +1811,14 @@ function recordFrame(capture) {
         checkCanvas();
         if (captures.length === 0) {
             var errorMsg = 'No valid capturer inited, please call CanvasCapture.beginVideoRecord(), CanvasCapture.beginGIFRecord(), CanvasCapture.beginPNGFramesRecord(), or CanvasCapture.beginJPEGFramesRecord() first.';
-            modals_1.showWarning(errorMsg);
+            (0, modals_1.showWarning)(errorMsg);
             throw new Error(errorMsg);
         }
         var _loop_1 = function (i) {
             var _a = captures[i], capturer = _a.capturer, type = _a.type, zipOptions = _a.zipOptions, zipPromises = _a.zipPromises, numFrames = _a.numFrames;
             if (type === JPEGZIP || type === PNGZIP) {
                 // Name should correspond to current frame.
-                var frameName_1 = "frame_" + (numFrames + 1);
+                var frameName_1 = "frame_".concat(numFrames + 1);
                 var promise = new Promise(function (resolve, reject) {
                     var options = {
                         dpi: zipOptions === null || zipOptions === void 0 ? void 0 : zipOptions.dpi,
@@ -1870,7 +1887,7 @@ function stopRecordAtIndex(index) {
                         capturer.stop();
                     if (numFrames === 0) {
                         errorMsg = 'No frames recorded, call CanvasCapture.recordFrame().';
-                        modals_1.showWarning(errorMsg);
+                        (0, modals_1.showWarning)(errorMsg);
                         throw new Error(errorMsg);
                     }
                     _b = type;
@@ -1886,7 +1903,7 @@ function stopRecordAtIndex(index) {
                 case 2:
                     blob = _c.sent();
                     // Tell the user that mp4s take a sec to process.
-                    modals_1.showDialog('Processing...', 'MP4 is processing and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
+                    (0, modals_1.showDialog)('Processing...', 'MP4 is processing and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
                     return [4 /*yield*/, convertWEBMtoMP4({
                             name: name,
                             blob: blob,
@@ -1906,28 +1923,28 @@ function stopRecordAtIndex(index) {
                     blob = _c.sent();
                     if (onExportProgress)
                         onExportProgress(1); // Save is nearly immediate.
-                    filename = name + ".webm";
+                    filename = "".concat(name, ".webm");
                     if (onExport) {
                         onExport(blob, filename);
                     }
                     else {
-                        file_saver_1.saveAs(blob, filename);
+                        (0, file_saver_1.saveAs)(blob, filename);
                     }
                     if (onExportFinish)
                         onExportFinish();
                     return [3 /*break*/, 12];
                 case 6:
                     // Tell the user that gifs take a sec to process.
-                    modals_1.showDialog('Processing...', 'GIF is processing and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
+                    (0, modals_1.showDialog)('Processing...', 'GIF is processing and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
                     return [4 /*yield*/, CCaptureSaveAsync(capturer)];
                 case 7:
                     blob = _c.sent();
-                    filename = name + ".gif";
+                    filename = "".concat(name, ".gif");
                     if (onExport) {
                         onExport(blob, filename);
                     }
                     else {
-                        file_saver_1.saveAs(blob, filename);
+                        (0, file_saver_1.saveAs)(blob, filename);
                     }
                     if (onExportFinish)
                         onExportFinish();
@@ -1939,17 +1956,17 @@ function stopRecordAtIndex(index) {
                     // Wait for all frames to finish saving.
                     _c.sent();
                     // Tell the user that frames take a sec to zip.
-                    modals_1.showDialog('Processing...', 'Frames are being zipped and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
+                    (0, modals_1.showDialog)('Processing...', 'Frames are being zipped and may take a minute to save.  You can close this dialog in the meantime.', { autoCloseDelay: 7000 });
                     return [4 /*yield*/, capturer.generateAsync({ type: 'blob' }, function (metadata) {
                             if (onExportProgress)
                                 onExportProgress(metadata.percent / 100);
                         }).then(function (blob) {
-                            var filename = name + ".zip";
+                            var filename = "".concat(name, ".zip");
                             if (onExport) {
                                 onExport(blob, filename);
                             }
                             else {
-                                file_saver_1.saveAs(blob, filename);
+                                (0, file_saver_1.saveAs)(blob, filename);
                             }
                             if (onExportFinish)
                                 onExportFinish();
@@ -1957,7 +1974,7 @@ function stopRecordAtIndex(index) {
                 case 10:
                     _c.sent();
                     return [3 /*break*/, 12];
-                case 11: throw new Error("Need to handle saving type " + type + ".");
+                case 11: throw new Error("Need to handle saving type ".concat(type, "."));
                 case 12: return [2 /*return*/];
             }
         });
@@ -1978,17 +1995,17 @@ function stopRecord(capture) {
                     _a.trys.push([1, 3, , 4]);
                     if (activeCaptures.length === 0) {
                         errorMsg = 'No valid capturer inited, please call CanvasCapture.beginVideoRecord(), CanvasCapture.beginGIFRecord(), CanvasCapture.beginPNGFramesRecord(), or CanvasCapture.beginJPEGFramesRecord() first.';
-                        modals_1.showWarning(errorMsg);
+                        (0, modals_1.showWarning)(errorMsg);
                         throw new Error(errorMsg);
                     }
                     promises = [];
                     for (i = 0; i < captures.length; i++) {
                         index = activeCaptures.indexOf(captures[i]);
                         if (index < 0)
-                            throw new Error("Invalid capture " + captures[i] + " \u2013 may have already been stopped.");
+                            throw new Error("Invalid capture ".concat(captures[i], " \u2013 may have already been stopped."));
                         promises.push(stopRecordAtIndex(index));
                     }
-                    modals_1.showDot(isRecording());
+                    (0, modals_1.showDot)(isRecording());
                     return [4 /*yield*/, Promise.all(promises)];
                 case 2:
                     _a.sent();
@@ -2029,6 +2046,11 @@ function isRecording() {
     return activeCaptures.length > 0;
 }
 exports.isRecording = isRecording;
+function checkHotkeys() {
+    params_1.PARAMS.IS_MANUALLY_CHECKING_HOTKEYS = true;
+    applyHotkeys();
+}
+exports.checkHotkeys = checkHotkeys;
 var ffmpegLoaded = false;
 function convertWEBMtoMP4(options) {
     return __awaiter(this, void 0, void 0, function () {
@@ -2046,7 +2068,7 @@ function convertWEBMtoMP4(options) {
                     if (!!ffmpegLoaded) return [3 /*break*/, 2];
                     return [4 /*yield*/, ffmpeg.load().catch(function () {
                             var errorMsg = 'MP4 export not supported in this browser, try again in the latest version of Chrome.';
-                            modals_1.showWarning(errorMsg);
+                            (0, modals_1.showWarning)(errorMsg);
                             throw new Error(errorMsg);
                         })];
                 case 1:
@@ -2060,14 +2082,13 @@ function convertWEBMtoMP4(options) {
                     _data = _b.sent();
                     data = new Uint8Array(_data);
                     // Write data to MEMFS, need to use Uint8Array for binary data.
-                    ffmpeg.FS('writeFile', name + ".webm", data);
+                    ffmpeg.FS('writeFile', "".concat(name, ".webm"), data);
                     // Convert to MP4.
                     // TODO: onProgress callback is not working quite right yet.
                     // https://github.com/ffmpegwasm/ffmpeg.wasm/issues/112
                     if (onExportProgress)
-                        ffmpeg.setProgress(function (_a) {
-                            var ratio = _a.ratio;
-                            onExportProgress(Math.max(0, Math.min(ratio, 1)));
+                        ffmpeg.setProgress(function (progress) {
+                            onExportProgress(Math.max(0, Math.min(progress.ratio, 1)));
                         });
                     defaultFFMPEGOptions = {
                         '-c:v': 'libx264',
@@ -2080,10 +2101,10 @@ function convertWEBMtoMP4(options) {
                     Object.keys(combinedOptions).forEach(function (key) {
                         _ffmpegOptions.push(key, combinedOptions[key]);
                     });
-                    filename = name + ".mp4";
-                    return [4 /*yield*/, (_a = ffmpeg).run.apply(_a, __spreadArrays(['-i', name + ".webm"], _ffmpegOptions, ['-vf', 'crop=trunc(iw/2)*2:trunc(ih/2)*2',
+                    filename = "".concat(name, ".mp4");
+                    return [4 /*yield*/, (_a = ffmpeg).run.apply(_a, __spreadArray(__spreadArray(['-i', "".concat(name, ".webm")], _ffmpegOptions, false), ['-vf', 'crop=trunc(iw/2)*2:trunc(ih/2)*2',
                             '-an',
-                            filename]))];
+                            filename], false))];
                 case 4:
                     _b.sent();
                     return [4 /*yield*/, ffmpeg.FS('readFile', filename)];
@@ -2094,10 +2115,10 @@ function convertWEBMtoMP4(options) {
                         onExport(outputBlob, filename);
                     }
                     else {
-                        file_saver_1.saveAs(outputBlob, filename);
+                        (0, file_saver_1.saveAs)(outputBlob, filename);
                     }
                     // Delete files in MEMFS.
-                    ffmpeg.FS('unlink', name + ".webm");
+                    ffmpeg.FS('unlink', "".concat(name, ".webm"));
                     ffmpeg.FS('unlink', filename);
                     if (onExportFinish)
                         onExportFinish();
@@ -2183,7 +2204,7 @@ style.textContent = micromodal_css_1.css;
 document.head.append(style);
 function initModalHTML(modalID, title, content) {
     if (content === void 0) { content = ''; }
-    var modalString = "<div class=\"modal micromodal-slide\" id=\"modal-" + modalID + "\" aria-hidden=\"true\">\n\t\t<div class=\"modal__overlay\" tabindex=\"-1\" data-micromodal-close>\n\t\t<div class=\"modal__container\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-" + modalID + "-title\">\n\t\t\t<header class=\"modal__header\">\n\t\t\t\t<h2 class=\"modal__title\" id=\"modal-" + modalID + "-title\">\n\t\t\t\t\t" + title + "\n\t\t\t\t</h2>\n\t\t\t\t<button class=\"modal__close\" aria-label=\"Close modal\" data-micromodal-close></button>\n\t\t\t</header>\n\t\t\t<main class=\"modal__content\">\n\t\t\t\t<p id=\"modal-" + modalID + "-content\">\n\t\t\t\t\t" + content + "\n\t\t\t\t</p>\n\t\t\t</main>\n\t\t</div>\n\t\t</div>\n\t</div>";
+    var modalString = "<div class=\"modal micromodal-slide\" id=\"modal-".concat(modalID, "\" aria-hidden=\"true\">\n\t\t<div class=\"modal__overlay\" tabindex=\"-1\" data-micromodal-close>\n\t\t<div class=\"modal__container\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-").concat(modalID, "-title\">\n\t\t\t<header class=\"modal__header\">\n\t\t\t\t<h2 class=\"modal__title\" id=\"modal-").concat(modalID, "-title\">\n\t\t\t\t\t").concat(title, "\n\t\t\t\t</h2>\n\t\t\t\t<button class=\"modal__close\" aria-label=\"Close modal\" data-micromodal-close></button>\n\t\t\t</header>\n\t\t\t<main class=\"modal__content\">\n\t\t\t\t<p id=\"modal-").concat(modalID, "-content\">\n\t\t\t\t\t").concat(content, "\n\t\t\t\t</p>\n\t\t\t</main>\n\t\t</div>\n\t\t</div>\n\t</div>");
     // This is a trick to create an element from string.
     var temp = document.createElement('div');
     temp.innerHTML = modalString;
@@ -2205,8 +2226,8 @@ function showWarning(message) {
         alertModalInited = true;
         document.getElementsByTagName('body')[0].appendChild(alertModal);
     }
-    document.getElementById("modal-" + ALERT_MODAL_ID + "-content").innerHTML = message;
-    micromodal_1.default.show("modal-" + ALERT_MODAL_ID);
+    document.getElementById("modal-".concat(ALERT_MODAL_ID, "-content")).innerHTML = message;
+    micromodal_1.default.show("modal-".concat(ALERT_MODAL_ID));
 }
 exports.showWarning = showWarning;
 function showDialog(title, message, options) {
@@ -2219,13 +2240,13 @@ function showDialog(title, message, options) {
         dialogModalInited = true;
         document.getElementsByTagName('body')[0].appendChild(dialogModal);
     }
-    document.getElementById("modal-" + DIALOG_MODAL_ID + "-title").innerHTML = title;
-    document.getElementById("modal-" + DIALOG_MODAL_ID + "-content").innerHTML = message;
-    micromodal_1.default.show("modal-" + DIALOG_MODAL_ID);
+    document.getElementById("modal-".concat(DIALOG_MODAL_ID, "-title")).innerHTML = title;
+    document.getElementById("modal-".concat(DIALOG_MODAL_ID, "-content")).innerHTML = message;
+    micromodal_1.default.show("modal-".concat(DIALOG_MODAL_ID));
     var autoCloseDelay = (options === null || options === void 0 ? void 0 : options.autoCloseDelay) !== undefined ? options.autoCloseDelay : -1;
     if (autoCloseDelay > 0) {
         setTimeout(function () {
-            micromodal_1.default.close("modal-" + DIALOG_MODAL_ID);
+            micromodal_1.default.close("modal-".concat(DIALOG_MODAL_ID));
         }, autoCloseDelay);
     }
 }
@@ -2267,6 +2288,7 @@ exports.PARAMS = {
     SHOW_ALERTS: false,
     SHOW_DIALOGS: false,
     SHOW_REC_DOT: false,
+    IS_MANUALLY_CHECKING_HOTKEYS: false,
 };
 
 

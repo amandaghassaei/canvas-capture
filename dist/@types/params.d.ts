@@ -3,4 +3,5 @@ export declare const PARAMS: {
     SHOW_ALERTS: boolean;
     SHOW_DIALOGS: boolean;
     SHOW_REC_DOT: boolean;
+    IS_MANUALLY_CHECKING_HOTKEYS: boolean;
 };
