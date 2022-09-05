@@ -8,6 +8,7 @@
 A small wrapper around [CCapture.js](https://github.com/spite/ccapture.js) and [ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm) to record the canvas as an image (png/jpeg), video (mp4/webm), or gif – all from the browser!
 
 Demo at: [apps.amandaghassaei.com/canvas-capture/demo/](https://apps.amandaghassaei.com/canvas-capture/demo/)  
+
 All media formats are currently supported by both Chrome and Firefox (see [Caveats](#caveats) for more details about browser support and server header requirements).
 
 - [Installation](#installation)
