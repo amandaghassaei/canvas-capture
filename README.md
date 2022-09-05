@@ -3,6 +3,7 @@
 [![NPM Package](https://img.shields.io/npm/v/canvas-capture)](https://www.npmjs.com/package/canvas-capture)
 [![Build Size](https://badgen.net/bundlephobia/minzip/canvas-capture)](https://bundlephobia.com/result?p=canvas-capture)
 [![NPM Downloads](https://img.shields.io/npm/dw/canvas-capture)](https://www.npmtrends.com/canvas-capture)
+[![License](https://badgen.net/github/license/amandaghassaei/canvas-capture)](https://github.com/amandaghassaei/canvas-capture/blob/main/LICENSE)
 
 A small wrapper around [CCapture.js](https://github.com/spite/ccapture.js) and [ffmpeg.wasm](https://github.com/ffmpegwasm/ffmpeg.wasm) to record the canvas as an image (png/jpeg), video (mp4/webm), or gif – all from the browser!
 
