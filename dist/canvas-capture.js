@@ -7,7 +7,7 @@
 		exports["CanvasCapture"] = factory();
 	else
 		root["CanvasCapture"] = factory();
-})(self, () => {
+})(this, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
