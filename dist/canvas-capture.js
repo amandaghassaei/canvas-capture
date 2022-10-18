@@ -1390,8 +1390,19 @@ function init(_canvas, options) {
         (0, modals_1.initDotWithCSS)(options === null || options === void 0 ? void 0 : options.recDotCSS);
     }
     canvas.addEventListener('resize', onResize);
+    window.addEventListener('keydown', onKeydown);
 }
 exports.init = init;
+function onKeydown(e) {
+    hotkeysSinceLastCheck.push({
+        key: e.key,
+    });
+    if (!params_1.PARAMS.IS_MANUALLY_CHECKING_HOTKEYS) {
+        // Apply hotkeys immediately.
+        applyHotkeys();
+    }
+    // Otherwise wait until checkHotkeys() is called.
+}
 function onResize() {
     if (activeCaptures.length) {
         var warningMsg = "Don't resize while recording canvas!";
@@ -1401,6 +1412,7 @@ function onResize() {
 function dispose() {
     canvas === null || canvas === void 0 ? void 0 : canvas.removeEventListener('resize', onResize);
     canvas = null;
+    window.removeEventListener('keydown', onKeydown);
 }
 exports.dispose = dispose;
 function setVerbose(state) {
@@ -1526,16 +1538,6 @@ function applyHotkeys() {
     }
     hotkeysSinceLastCheck.length = 0;
 }
-window.addEventListener('keydown', function (e) {
-    hotkeysSinceLastCheck.push({
-        key: e.key,
-    });
-    if (!params_1.PARAMS.IS_MANUALLY_CHECKING_HOTKEYS) {
-        // Apply hotkeys immediately.
-        applyHotkeys();
-    }
-    // Otherwise wait until checkHotkeys() is called.
-});
 function startCapture(capture) {
     activeCaptures.push(capture);
     if (capture.type !== PNGZIP && capture.type !== JPEGZIP)

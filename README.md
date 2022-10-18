@@ -36,7 +36,7 @@ To install this package:
 
 ```npm install canvas-capture```
 
-You can also add [dist/canvas-capture.js](dist/canvas-capture.js) or [dist/canvas-capture.min.js](dist/canvas-capture.min.js) to your project and it will be available as `window.CanvasCapture` or globally as `CanvasCapture`.
+You can also add [dist/canvas-capture.js](dist/canvas-capture.js) or [dist/canvas-capture.min.js](dist/canvas-capture.min.js) to your project and it will be available as `window.CanvasCapture.CanvasCapture` or globally as `CanvasCapture.CanvasCapture`.  Sorry that's kind of ugly, hopefully this will be fixed later.
 
 
 ## Use
@@ -252,6 +252,13 @@ const options = {
 // title and message are strings, options are optional.
 CanvasCapture.showDialog(title, message, options);
 ```
+
+Additionally, if you want to unbind all events from CanvasCapture:
+
+```js
+CanvasCapture.dispose();
+```
+
 
 ## Caveats
 

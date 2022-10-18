@@ -153,6 +153,18 @@ export function init(_canvas: HTMLCanvasElement, options?: {
 		initDotWithCSS(options?.recDotCSS);
 	}
 	canvas.addEventListener('resize', onResize);
+	window.addEventListener('keydown', onKeydown);
+}
+
+function onKeydown(e: KeyboardEvent) {
+	hotkeysSinceLastCheck.push({
+		key: e.key,
+	});
+	if (!PARAMS.IS_MANUALLY_CHECKING_HOTKEYS) {
+		// Apply hotkeys immediately.
+		applyHotkeys();
+	}
+	// Otherwise wait until checkHotkeys() is called.
 }
 
 function onResize() {
@@ -165,6 +177,7 @@ function onResize() {
 export function dispose(){
 	canvas?.removeEventListener('resize', onResize);
 	canvas = null;
+	window.removeEventListener('keydown', onKeydown);
 }
 
 export function setVerbose(state: boolean) {
@@ -274,17 +287,6 @@ function applyHotkeys() {
 	}
 	hotkeysSinceLastCheck.length = 0;
 }
-
-window.addEventListener('keydown', (e: KeyboardEvent) => {
-	hotkeysSinceLastCheck.push({
-		key: e.key,
-	});
-	if (!PARAMS.IS_MANUALLY_CHECKING_HOTKEYS) {
-		// Apply hotkeys immediately.
-		applyHotkeys();
-	}
-	// Otherwise wait until checkHotkeys() is called.
-});
 
 function startCapture(capture: ACTIVE_CAPTURE) {
 	activeCaptures.push(capture);
