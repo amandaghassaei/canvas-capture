@@ -1341,7 +1341,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.browserSupportsGIF = exports.browserSupportsMP4 = exports.browserSupportsWEBM = exports.checkHotkeys = exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginJPEGFramesRecord = exports.beginPNGFramesRecord = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToJPEGFramesRecord = exports.bindKeyToPNGFramesRecord = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = exports.MP4 = exports.WEBM = exports.showDialog = void 0;
+exports.browserSupportsGIF = exports.browserSupportsMP4 = exports.browserSupportsWEBM = exports.checkHotkeys = exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginJPEGFramesRecord = exports.beginPNGFramesRecord = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToJPEGFramesRecord = exports.bindKeyToPNGFramesRecord = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.dispose = exports.init = exports.MP4 = exports.WEBM = exports.showDialog = void 0;
 var CCapture_1 = __nested_webpack_require_146661__(886);
 var file_saver_1 = __nested_webpack_require_146661__(162);
 // Polyfill for canvas.toBlob needed for some browsers.
@@ -1393,14 +1393,20 @@ function init(_canvas, options) {
     if (params_1.PARAMS.SHOW_REC_DOT) {
         (0, modals_1.initDotWithCSS)(options === null || options === void 0 ? void 0 : options.recDotCSS);
     }
-    canvas.addEventListener('resize', function () {
-        if (activeCaptures.length) {
-            var warningMsg = "Don't resize while recording canvas!";
-            (0, modals_1.showWarning)(warningMsg);
-        }
-    });
+    canvas.addEventListener('resize', onResize);
 }
 exports.init = init;
+function onResize() {
+    if (activeCaptures.length) {
+        var warningMsg = "Don't resize while recording canvas!";
+        (0, modals_1.showWarning)(warningMsg);
+    }
+}
+function dispose() {
+    canvas === null || canvas === void 0 ? void 0 : canvas.removeEventListener('resize', onResize);
+    canvas = null;
+}
+exports.dispose = dispose;
 function setVerbose(state) {
     params_1.PARAMS.VERBOSE = !!state;
     if (ffmpeg)
@@ -2182,7 +2188,7 @@ exports.css = "\n/**************************  Basic Modal Styles\n**************
 /***/ }),
 
 /***/ 330:
-/***/ (function(__unused_webpack_module, exports, __nested_webpack_require_189762__) {
+/***/ (function(__unused_webpack_module, exports, __nested_webpack_require_189946__) {
 
 "use strict";
 
@@ -2199,9 +2205,9 @@ var __assign = (this && this.__assign) || function () {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.showDot = exports.initDotWithCSS = exports.showDialog = exports.showWarning = void 0;
-var micromodal_1 = __nested_webpack_require_189762__(650);
-var micromodal_css_1 = __nested_webpack_require_189762__(713);
-var params_1 = __nested_webpack_require_189762__(848);
+var micromodal_1 = __nested_webpack_require_189946__(650);
+var micromodal_css_1 = __nested_webpack_require_189946__(713);
+var params_1 = __nested_webpack_require_189946__(848);
 // Add modal styling.
 var style = document.createElement('style');
 style.textContent = micromodal_css_1.css;
@@ -2299,16 +2305,16 @@ exports.PARAMS = {
 /***/ }),
 
 /***/ 886:
-/***/ ((module, exports, __nested_webpack_require_194444__) => {
+/***/ ((module, exports, __nested_webpack_require_194628__) => {
 
-/* module decorator */ module = __nested_webpack_require_194444__.nmd(module);
+/* module decorator */ module = __nested_webpack_require_194628__.nmd(module);
 var __WEBPACK_AMD_DEFINE_RESULT__;;(function() {
 
 if (  true && typeof module.exports !== 'undefined') {
-  var Tar = __nested_webpack_require_194444__(846);
-  var download = __nested_webpack_require_194444__(173);
-  var GIF = __nested_webpack_require_194444__(769);
-  var WebMWriter = __nested_webpack_require_194444__(166);
+  var Tar = __nested_webpack_require_194628__(846);
+  var download = __nested_webpack_require_194628__(173);
+  var GIF = __nested_webpack_require_194628__(769);
+  var WebMWriter = __nested_webpack_require_194628__(166);
 }
 
 "use strict";
@@ -2342,7 +2348,7 @@ var moduleExports = (freeModule && freeModule.exports === freeExports)
 : undefined;
 
 /** Detect free variable `global` from Node.js. */
-var freeGlobal = checkGlobal(freeExports && freeModule && typeof __nested_webpack_require_194444__.g == 'object' && __nested_webpack_require_194444__.g);
+var freeGlobal = checkGlobal(freeExports && freeModule && typeof __nested_webpack_require_194628__.g == 'object' && __nested_webpack_require_194628__.g);
 
 /** Detect free variable `self`. */
 var freeSelf = checkGlobal(objectTypes[typeof self] && self);
@@ -3267,7 +3273,7 @@ function CCapture( settings ) {
     // referenced as the "underscore" module.
     !(__WEBPACK_AMD_DEFINE_RESULT__ = (function() {
     	return CCapture;
-    }).call(exports, __nested_webpack_require_194444__, exports, module),
+    }).call(exports, __nested_webpack_require_194628__, exports, module),
 		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 }
   // Check for `exports` after `define` in case a build optimizer adds an `exports` object.
@@ -4897,7 +4903,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	var __webpack_module_cache__ = {};
 /******/ 	
 /******/ 	// The require function
-/******/ 	function __nested_webpack_require_302997__(moduleId) {
+/******/ 	function __nested_webpack_require_303181__(moduleId) {
 /******/ 		// Check if module is in cache
 /******/ 		var cachedModule = __webpack_module_cache__[moduleId];
 /******/ 		if (cachedModule !== undefined) {
@@ -4911,7 +4917,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 		};
 /******/ 	
 /******/ 		// Execute the module function
-/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_302997__);
+/******/ 		__webpack_modules__[moduleId].call(module.exports, module, module.exports, __nested_webpack_require_303181__);
 /******/ 	
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
@@ -4924,9 +4930,9 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	/* webpack/runtime/define property getters */
 /******/ 	(() => {
 /******/ 		// define getter functions for harmony exports
-/******/ 		__nested_webpack_require_302997__.d = (exports, definition) => {
+/******/ 		__nested_webpack_require_303181__.d = (exports, definition) => {
 /******/ 			for(var key in definition) {
-/******/ 				if(__nested_webpack_require_302997__.o(definition, key) && !__nested_webpack_require_302997__.o(exports, key)) {
+/******/ 				if(__nested_webpack_require_303181__.o(definition, key) && !__nested_webpack_require_303181__.o(exports, key)) {
 /******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
 /******/ 				}
 /******/ 			}
@@ -4935,7 +4941,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/global */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_302997__.g = (function() {
+/******/ 		__nested_webpack_require_303181__.g = (function() {
 /******/ 			if (typeof globalThis === 'object') return globalThis;
 /******/ 			try {
 /******/ 				return this || new Function('return this')();
@@ -4947,13 +4953,13 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_302997__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 		__nested_webpack_require_303181__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/make namespace object */
 /******/ 	(() => {
 /******/ 		// define __esModule on exports
-/******/ 		__nested_webpack_require_302997__.r = (exports) => {
+/******/ 		__nested_webpack_require_303181__.r = (exports) => {
 /******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
 /******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
 /******/ 			}
@@ -4963,7 +4969,7 @@ module.exports = JSON.parse('{"_from":"@ffmpeg/ffmpeg","_id":"@ffmpeg/ffmpeg@0.1
 /******/ 	
 /******/ 	/* webpack/runtime/node module decorator */
 /******/ 	(() => {
-/******/ 		__nested_webpack_require_302997__.nmd = (module) => {
+/******/ 		__nested_webpack_require_303181__.nmd = (module) => {
 /******/ 			module.paths = [];
 /******/ 			if (!module.children) module.children = [];
 /******/ 			return module;
@@ -4980,7 +4986,7 @@ var exports = __webpack_exports__;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CanvasCapture = void 0;
 // Default export.
-var CanvasCapture = __nested_webpack_require_302997__(914);
+var CanvasCapture = __nested_webpack_require_303181__(914);
 exports.CanvasCapture = CanvasCapture;
 exports["default"] = CanvasCapture;
 

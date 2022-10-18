@@ -83,6 +83,7 @@ export declare function init(_canvas: HTMLCanvasElement, options?: {
         [key: string]: string;
     };
 }): void;
+export declare function dispose(): void;
 export declare function setVerbose(state: boolean): void;
 export declare function bindKeyToVideoRecord(key: string, options?: WEBM_OPTIONS | MP4_OPTIONS): void;
 export declare function bindKeyToGIFRecord(key: string, options?: GIF_OPTIONS): void;

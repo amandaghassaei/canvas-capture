@@ -152,12 +152,19 @@ export function init(_canvas: HTMLCanvasElement, options?: {
 	if (PARAMS.SHOW_REC_DOT) {
 		initDotWithCSS(options?.recDotCSS);
 	}
-	canvas.addEventListener('resize', function(){
-		if (activeCaptures.length) {
-			const warningMsg = "Don't resize while recording canvas!";
-			showWarning(warningMsg);
-		}
-	});
+	canvas.addEventListener('resize', onResize);
+}
+
+function onResize() {
+	if (activeCaptures.length) {
+		const warningMsg = "Don't resize while recording canvas!";
+		showWarning(warningMsg);
+	}
+}
+
+export function dispose(){
+	canvas?.removeEventListener('resize', onResize);
+	canvas = null;
 }
 
 export function setVerbose(state: boolean) {

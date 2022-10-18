@@ -1337,7 +1337,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.browserSupportsGIF = exports.browserSupportsMP4 = exports.browserSupportsWEBM = exports.checkHotkeys = exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginJPEGFramesRecord = exports.beginPNGFramesRecord = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToJPEGFramesRecord = exports.bindKeyToPNGFramesRecord = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.init = exports.MP4 = exports.WEBM = exports.showDialog = void 0;
+exports.browserSupportsGIF = exports.browserSupportsMP4 = exports.browserSupportsWEBM = exports.checkHotkeys = exports.isRecording = exports.stopRecord = exports.recordFrame = exports.takeJPEGSnapshot = exports.takePNGSnapshot = exports.beginJPEGFramesRecord = exports.beginPNGFramesRecord = exports.beginGIFRecord = exports.beginVideoRecord = exports.bindKeyToJPEGSnapshot = exports.bindKeyToPNGSnapshot = exports.bindKeyToJPEGFramesRecord = exports.bindKeyToPNGFramesRecord = exports.bindKeyToGIFRecord = exports.bindKeyToVideoRecord = exports.setVerbose = exports.dispose = exports.init = exports.MP4 = exports.WEBM = exports.showDialog = void 0;
 var CCapture_1 = __webpack_require__(886);
 var file_saver_1 = __webpack_require__(162);
 // Polyfill for canvas.toBlob needed for some browsers.
@@ -1389,14 +1389,20 @@ function init(_canvas, options) {
     if (params_1.PARAMS.SHOW_REC_DOT) {
         (0, modals_1.initDotWithCSS)(options === null || options === void 0 ? void 0 : options.recDotCSS);
     }
-    canvas.addEventListener('resize', function () {
-        if (activeCaptures.length) {
-            var warningMsg = "Don't resize while recording canvas!";
-            (0, modals_1.showWarning)(warningMsg);
-        }
-    });
+    canvas.addEventListener('resize', onResize);
 }
 exports.init = init;
+function onResize() {
+    if (activeCaptures.length) {
+        var warningMsg = "Don't resize while recording canvas!";
+        (0, modals_1.showWarning)(warningMsg);
+    }
+}
+function dispose() {
+    canvas === null || canvas === void 0 ? void 0 : canvas.removeEventListener('resize', onResize);
+    canvas = null;
+}
+exports.dispose = dispose;
 function setVerbose(state) {
     params_1.PARAMS.VERBOSE = !!state;
     if (ffmpeg)
