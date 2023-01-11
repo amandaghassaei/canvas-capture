@@ -48,6 +48,7 @@
     "@types/file-saver": "^2.0.1",
     "@types/micromodal": "^0.3.2",
     "@types/node": "^14.14.22",
+    "copy-webpack-plugin": "^11.0.0",
     "express": "^4.17.2",
     "raw-loader": "^4.0.2",
     "ts-loader": "^9.3.1",

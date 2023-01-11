@@ -1,5 +1,6 @@
 const path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
 	mode: 'production',
@@ -16,6 +17,13 @@ module.exports = {
 			include: /\.min\.js$/,
 		})],
 	},
+	plugins: [
+		new CopyPlugin({
+		  patterns: [
+			{ from: "src/CCapture.js/CCapture.d.ts", to: "@types/CCapture.js/" },
+		  ],
+		}),
+	],
 	devtool: 'source-map',
 	module: {
 		rules: [
