@@ -19,8 +19,7 @@
   "license": "MIT",
   "private": false,
   "files": [
-    "dist/*",
-    "src/*"
+    "dist/*"
   ],
   "keywords": [
     "mp4",
