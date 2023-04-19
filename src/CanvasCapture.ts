@@ -45,6 +45,10 @@ export type WEBM_OPTIONS = {
 	onExport?: onExport,
 	onExportFinish?: () => void,
 	onError?: (error: any) => void,
+  /**
+   * Number of intermediary frames used to calculate motion blur for each frame
+   */
+  motionBlurFrames?: number;
 };
 export type MP4_OPTIONS = {
 	format?: typeof MP4,
@@ -56,6 +60,10 @@ export type MP4_OPTIONS = {
 	onExport?: onExport,
 	onExportFinish?: () => void,
 	onError?: (error: any) => void,
+  /**
+   * Number of intermediary frames used to calculate motion blur for each frame
+   */
+  motionBlurFrames?: number;
 };
 export type GIF_OPTIONS = {
 	fps?: number,
@@ -65,6 +73,10 @@ export type GIF_OPTIONS = {
 	onExport?: onExport,
 	onExportFinish?: () => void,
 	onError?: (error: any) => void,
+  /**
+   * Number of intermediary frames used to calculate motion blur for each frame
+   */
+  motionBlurFrames?: number;
 };
 export type PNG_OPTIONS = {
 	name?: string,
@@ -332,6 +344,7 @@ export function beginVideoRecord(options?: WEBM_OPTIONS | MP4_OPTIONS) {
 			framerate: options?.fps || 60,
 			quality: quality * 100, // CCapture seems to expect a quality between 0 and 100.
 			verbose: PARAMS.VERBOSE,
+			motionBlurFrames: options?.motionBlurFrames,
 		});
 		const capture = {
 			name,
@@ -375,6 +388,7 @@ export function beginGIFRecord(options?: GIF_OPTIONS) {
 			quality,
 			verbose: PARAMS.VERBOSE,
 			onProgress: options?.onExportProgress,
+			motionBlurFrames: options?.motionBlurFrames,
 		});
 		const capture = {
 			name,
