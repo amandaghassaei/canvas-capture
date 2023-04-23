@@ -41,14 +41,11 @@ export type WEBM_OPTIONS = {
 	fps?: number,
 	name?: string,
 	quality?: number, // A number 0-1.
-	onExportProgress?: (progress: number) => void, // Download is immediate, so this isn't very informative.\tprogress is a number between 0 and 1.
+	onExportProgress?: (progress: number) => void, // Download is immediate, so this isn't very informative. progress is a number between 0 and 1.
 	onExport?: onExport,
 	onExportFinish?: () => void,
 	onError?: (error: any) => void,
-\t/**
-\t * Number of intermediary frames used to calculate motion blur for each frame
-\t */
-\tmotionBlurFrames?: number;
+	motionBlurFrames?: number; // Number of intermediary frames used to calculate motion blur for each frame.
 };
 export type MP4_OPTIONS = {
 	format?: typeof MP4,
@@ -60,10 +57,7 @@ export type MP4_OPTIONS = {
 	onExport?: onExport,
 	onExportFinish?: () => void,
 	onError?: (error: any) => void,
-	/**
-	 * Number of intermediary frames used to calculate motion blur for each frame
-	 */
-	motionBlurFrames?: number;
+	motionBlurFrames?: number; // Number of intermediary frames used to calculate motion blur for each frame.
 };
 export type GIF_OPTIONS = {
 	fps?: number,
@@ -73,10 +67,7 @@ export type GIF_OPTIONS = {
 	onExport?: onExport,
 	onExportFinish?: () => void,
 	onError?: (error: any) => void,
-	/**
-	 * Number of intermediary frames used to calculate motion blur for each frame
-	 */
-	motionBlurFrames?: number;
+	motionBlurFrames?: number; //Number of intermediary frames used to calculate motion blur for each frame.
 };
 export type PNG_OPTIONS = {
 	name?: string,

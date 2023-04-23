@@ -18,6 +18,7 @@ export declare type WEBM_OPTIONS = {
     onExport?: onExport;
     onExportFinish?: () => void;
     onError?: (error: any) => void;
+    motionBlurFrames?: number;
 };
 export declare type MP4_OPTIONS = {
     format?: typeof MP4;
@@ -31,6 +32,7 @@ export declare type MP4_OPTIONS = {
     onExport?: onExport;
     onExportFinish?: () => void;
     onError?: (error: any) => void;
+    motionBlurFrames?: number;
 };
 export declare type GIF_OPTIONS = {
     fps?: number;
@@ -40,6 +42,7 @@ export declare type GIF_OPTIONS = {
     onExport?: onExport;
     onExportFinish?: () => void;
     onError?: (error: any) => void;
+    motionBlurFrames?: number;
 };
 export declare type PNG_OPTIONS = {
     name?: string;
