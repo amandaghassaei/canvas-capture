@@ -1,7 +1,7 @@
-import { CanvasCapture } from '../../';
+const { CanvasCapture } = CanvasCaptureLib;
 
 // Initialize and pass in canvas.
-const canvas = document.getElementById('my-canvas') as HTMLCanvasElement;
+const canvas = document.getElementById('my-canvas');
 CanvasCapture.init(canvas, {
 	showRecDot: true,
 	showAlerts: true,
@@ -16,48 +16,48 @@ const MP4_OPTIONS = {
 	format: CanvasCapture.MP4,
 	quality: 1,
 	fps: 60,
-	onExportProgress: (progress: number) => console.log(`MP4 export progress: ${progress}.`),
+	onExportProgress: (progress) => console.log(`MP4 export progress: ${progress}.`),
 	onExportFinish: () => console.log(`Finished MP4 export.`),
-} as CanvasCapture.MP4_OPTIONS;
+};
 CanvasCapture.bindKeyToVideoRecord('v', MP4_OPTIONS);
 const WEBM_OPTIONS = {
 	name: 'demo-webm',
 	format: CanvasCapture.WEBM,
 	quality: 1,
 	fps: 60,
-	onExportProgress: (progress: number) => console.log(`WEBM export progress: ${progress}.`),
+	onExportProgress: (progress) => console.log(`WEBM export progress: ${progress}.`),
 	onExportFinish: () => console.log(`Finished WEBM export.`),
-} as CanvasCapture.WEBM_OPTIONS;
+};
 CanvasCapture.bindKeyToVideoRecord('w', WEBM_OPTIONS);
 const GIF_OPTIONS = {
 	name: 'demo-gif',
 	quality: 1,
 	fps: 60,
-	onExportProgress: (progress: number) => console.log(`GIF export progress: ${progress}.`),
+	onExportProgress: (progress) => console.log(`GIF export progress: ${progress}.`),
 	onExportFinish: () => console.log(`Finished GIF export.`),
-} as CanvasCapture.GIF_OPTIONS;
+};
 CanvasCapture.bindKeyToGIFRecord('g', GIF_OPTIONS);
 // These take a single snapshot.
 const PNG_OPTIONS = {
 	name: 'demo-png',
 	dpi: 72,
-	onExportProgress: (progress: number) => console.log(`PNG frames export progress: ${progress}.`),
+	onExportProgress: (progress) => console.log(`PNG frames export progress: ${progress}.`),
 	onExportFinish: () => console.log(`Finished PNG frames zip.`),
-} as CanvasCapture.PNG_OPTIONS;
+};
 CanvasCapture.bindKeyToPNGSnapshot('p', PNG_OPTIONS);
 CanvasCapture.bindKeyToPNGFramesRecord('o', PNG_OPTIONS);
 const JPEG_OPTIONS = {
 	name: 'demo-jpg',
 	quality: 1,
 	dpi: 72,
-	onExportProgress: (progress: number) => console.log(`JPEG frames export progress: ${progress}.`),
+	onExportProgress: (progress) => console.log(`JPEG frames export progress: ${progress}.`),
 	onExportFinish: () => console.log(`Finished JPEG frames zip.`),
-} as CanvasCapture.JPEG_OPTIONS;
+};
 CanvasCapture.bindKeyToJPEGSnapshot('j', JPEG_OPTIONS);
 CanvasCapture.bindKeyToJPEGFramesRecord('h', JPEG_OPTIONS);
 
 // Simple canvas draw setup.
-const context = canvas.getContext("2d")!;
+const context = canvas.getContext("2d");
 let angle = 0;
 
 const image = document.createElement("img");
@@ -93,19 +93,19 @@ function loop() {
 loop();
 
 // Wire up ui.
-document.getElementById("savePNG")!.addEventListener('click', (e) => {
+document.getElementById("savePNG").addEventListener('click', (e) => {
 	e.preventDefault();
 	CanvasCapture.takePNGSnapshot(PNG_OPTIONS);
 });
-const startRecordPNGFrames = document.getElementById('startPNG')!;
-let pngFramesCapture: CanvasCapture.ACTIVE_CAPTURE | undefined;
+const startRecordPNGFrames = document.getElementById('startPNG');
+let pngFramesCapture;
 startRecordPNGFrames.addEventListener('click', (e) => {
 	e.preventDefault();
 	pngFramesCapture = CanvasCapture.beginPNGFramesRecord(PNG_OPTIONS);
 	startRecordPNGFrames.style.display = pngFramesCapture ? 'none' : 'inline';
 	stopRecordPNGFrames.style.display = pngFramesCapture ? 'inline' : 'none';
 });
-const stopRecordPNGFrames = document.getElementById('stopPNG')!;
+const stopRecordPNGFrames = document.getElementById('stopPNG');
 stopRecordPNGFrames.addEventListener('click', (e) => {
 	e.preventDefault();
 	CanvasCapture.stopRecord(pngFramesCapture);
@@ -115,19 +115,19 @@ stopRecordPNGFrames.addEventListener('click', (e) => {
 });
 stopRecordPNGFrames.style.display = 'none';
 
-document.getElementById("saveJPG")!.addEventListener('click', (e) => {
+document.getElementById("saveJPG").addEventListener('click', (e) => {
 	e.preventDefault();
 	CanvasCapture.takeJPEGSnapshot(JPEG_OPTIONS);
 });
-const startRecordJPGFrames = document.getElementById('startJPG')!;
-let jpgFramesCapture: CanvasCapture.ACTIVE_CAPTURE | undefined;
+const startRecordJPGFrames = document.getElementById('startJPG');
+let jpgFramesCapture;
 startRecordJPGFrames.addEventListener('click', (e) => {
 	e.preventDefault();
 	jpgFramesCapture = CanvasCapture.beginJPEGFramesRecord(JPEG_OPTIONS);
 	startRecordJPGFrames.style.display = jpgFramesCapture ? 'none' : 'inline';
 	stopRecordJPGFrames.style.display = jpgFramesCapture ? 'inline' : 'none';
 });
-const stopRecordJPGFrames = document.getElementById('stopJPG')!;
+const stopRecordJPGFrames = document.getElementById('stopJPG');
 stopRecordJPGFrames.addEventListener('click', (e) => {
 	e.preventDefault();
 	CanvasCapture.stopRecord(jpgFramesCapture);
@@ -137,15 +137,15 @@ stopRecordJPGFrames.addEventListener('click', (e) => {
 });
 stopRecordJPGFrames.style.display = 'none';
 
-const startRecordMP4 = document.getElementById('startMP4')!;
-let mp4Capture: CanvasCapture.ACTIVE_CAPTURE | undefined;
+const startRecordMP4 = document.getElementById('startMP4');
+let mp4Capture;
 startRecordMP4.addEventListener('click', (e) => {
 	e.preventDefault();
 	mp4Capture = CanvasCapture.beginVideoRecord(MP4_OPTIONS);
 	startRecordMP4.style.display = mp4Capture ? 'none' : 'inline';
 	stopRecordMP4.style.display = mp4Capture ? 'inline' : 'none';
 });
-const stopRecordMP4 = document.getElementById('stopMP4')!;
+const stopRecordMP4 = document.getElementById('stopMP4');
 stopRecordMP4.addEventListener('click', (e) => {
 	e.preventDefault();
 	CanvasCapture.stopRecord(mp4Capture);
@@ -155,15 +155,15 @@ stopRecordMP4.addEventListener('click', (e) => {
 });
 stopRecordMP4.style.display = 'none';
 
-const startRecordWEBM = document.getElementById('startWEBM')!;
-let webmCapture: CanvasCapture.ACTIVE_CAPTURE | undefined;
+const startRecordWEBM = document.getElementById('startWEBM');
+let webmCapture;
 startRecordWEBM.addEventListener('click', (e) => {
 	e.preventDefault();
 	webmCapture = CanvasCapture.beginVideoRecord(WEBM_OPTIONS);
 	startRecordWEBM.style.display = webmCapture ? 'none' : 'inline';
 	stopRecordWEBM.style.display = webmCapture ? 'inline' : 'none';
 });
-const stopRecordWEBM = document.getElementById('stopWEBM')!;
+const stopRecordWEBM = document.getElementById('stopWEBM');
 stopRecordWEBM.addEventListener('click', (e) => {
 	e.preventDefault();
 	CanvasCapture.stopRecord(webmCapture);
@@ -173,15 +173,15 @@ stopRecordWEBM.addEventListener('click', (e) => {
 });
 stopRecordWEBM.style.display = 'none';
 
-const startRecordGIF = document.getElementById('startGIF')!;
-let gifCapture: CanvasCapture.ACTIVE_CAPTURE | undefined;
+const startRecordGIF = document.getElementById('startGIF');
+let gifCapture;
 startRecordGIF.addEventListener('click', (e) => {
 	e.preventDefault();
 	gifCapture = CanvasCapture.beginGIFRecord(GIF_OPTIONS);
 	startRecordGIF.style.display = gifCapture ? 'none' : 'inline';
 	stopRecordGIF.style.display = gifCapture ? 'inline' : 'none';
 });
-const stopRecordGIF = document.getElementById('stopGIF')!;
+const stopRecordGIF = document.getElementById('stopGIF');
 stopRecordGIF.addEventListener('click', (e) => {
 	e.preventDefault();
 	CanvasCapture.stopRecord(gifCapture);
@@ -191,6 +191,6 @@ stopRecordGIF.addEventListener('click', (e) => {
 });
 stopRecordGIF.style.display = 'none';
 
-document.getElementById('WEBM-support')!.innerHTML = `(supported by this browser: ${CanvasCapture.browserSupportsWEBM()})`;
-document.getElementById('MP4-support')!.innerHTML = `(supported by this browser: ${CanvasCapture.browserSupportsMP4()})`;
-document.getElementById('GIF-support')!.innerHTML = `(supported by this browser: ${CanvasCapture.browserSupportsGIF()})`;
+document.getElementById('WEBM-support').innerHTML = `(supported by this browser: ${CanvasCapture.browserSupportsWEBM()})`;
+document.getElementById('MP4-support').innerHTML = `(supported by this browser: ${CanvasCapture.browserSupportsMP4()})`;
+document.getElementById('GIF-support').innerHTML = `(supported by this browser: ${CanvasCapture.browserSupportsGIF()})`;

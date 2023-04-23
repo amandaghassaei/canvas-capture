@@ -32,11 +32,37 @@ This project doesn't expose *all* the features of either CCapture.js or ffmpeg.w
 
 ## Installation
 
-To install this package:
+### Install via NPM
 
-```npm install canvas-capture```
+```sh
+npm install canvas-capture
+```
 
-You can also add [dist/canvas-capture.js](dist/canvas-capture.js) or [dist/canvas-capture.min.js](dist/canvas-capture.min.js) to your project and it will be available as `window.CanvasCapture.CanvasCapture` or globally as `CanvasCapture.CanvasCapture`.  Sorry that's kind of ugly, hopefully this will be fixed later.
+Then import via:
+```js
+import { CanvasCapture } from 'canvas-capture';
+```
+
+### Install as JS
+
+*OR* in the browser you can add [canvas-capture.js](https://raw.githubusercontent.com/amandaghassaei/canvas-capture/main/dist/canvas-capture.js) or [canvas-capture.min.js](https://raw.githubusercontent.com/amandaghassaei/canvas-capture/main/dist/canvas-capture.min.js) to your html:
+```html
+<html>
+    <head>
+        ....
+        <script src="canvas-capture.js"></script>
+    </head>
+    <body>
+    </body>
+</html>
+```
+Then in your js files, you can access the global variable `CanvasCaptureLib`:
+
+```js
+const { CanvasCapture } = CanvasCaptureLib;
+```
+
+See a demo importing canvas-capture via html at [apps.amandaghassaei.com/canvas-capture/demo-simple/](https://apps.amandaghassaei.com/canvas-capture/demo-simple/)
 
 
 ## Use
@@ -398,7 +424,7 @@ https://github.com/spite/ccapture.js/issues/78
 
 ### Demo
 
-This repo also includes a demo for testing, currently hosted at [apps.amandaghassaei.com/canvas-capture/demo/](https://apps.amandaghassaei.com/canvas-capture/demo/).  You can find the demo source code at [demo/src/index.ts](demo/src/index.ts).
+This repo also includes a demo for testing, currently hosted at [apps.amandaghassaei.com/canvas-capture/demo/](https://apps.amandaghassaei.com/canvas-capture/demo/).  You can find the demo source code at [demo/src/index.ts](demo/src/index.ts).  An even simpler demo (no webpack, no compilation, import canvas-capture directly in HTML) can be found at [apps.amandaghassaei.com/canvas-capture/demo-simple/](https://apps.amandaghassaei.com/canvas-capture/demo-simple/).
 
 To build the `demo` folder, run:
 

@@ -4,9 +4,9 @@
 	else if(typeof define === 'function' && define.amd)
 		define([], factory);
 	else if(typeof exports === 'object')
-		exports["CanvasCapture"] = factory();
+		exports["CanvasCaptureLib"] = factory();
 	else
-		root["CanvasCapture"] = factory();
+		root["CanvasCaptureLib"] = factory();
 })(self, () => {
 return /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({

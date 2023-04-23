@@ -1,0 +1,32 @@
+<head>
+	<meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Simple Demo: Canvas Capture</title>
+	<link rel="stylesheet" type="text/css" href="main.css">
+</head>
+<body>
+	<canvas width="350px" height="350px" id="my-canvas"></canvas>
+	<div id="controls">
+		<p>Hotkeys indicated in brackets [ ]</p>
+		<a id="savePNG" href="#">Save PNG screenshot [p]</a><br/>
+		<a id="startPNG" href="#">Start Recording PNG frames [o]</a>
+		<a id="stopPNG" href="#">Stop Recording PNG frames [o]</a><br/><br/>
+		<a id="saveJPG" href="#">Save JPG screenshot [j]</a><br/>
+		<a id="startJPG" href="#">Start Recording JPG frames [h]</a>
+		<a id="stopJPG" href="#">Stop Recording JPG frames [h]</a><br/><br/>
+		<a id="startMP4" href="#">Start Recording MP4 video [v]</a>
+		<a id="stopMP4" href="#">Stop Recording MP4 video [v]</a>
+		<span id="MP4-support" class="supportInfo"></span><br/>
+		<a id="startWEBM" href="#">Start Recording WEBM video [w]</a>
+		<a id="stopWEBM" href="#">Stop Recording WEBM video [w]</a>
+		<span id="WEBM-support" class="supportInfo"></span><br/><br/>
+		<a id="startGIF" href="#">Start Recording GIF [g]</a>
+		<a id="stopGIF" href="#">Stop Recording GIF [g]</a>
+		<span id="GIF-support" class="supportInfo"></span><br/>
+	</div>
+	<!-- Set the correct server headers for gh-pages to support SharedArrayBuffer -->
+	<!-- https://github.com/gzuidhof/coi-serviceworker -->
+	<script src="coi-serviceworker.min.js"></script>
+	<script src="../dist/canvas-capture.js"></script>
+	<script src="index.js"></script>
+</body>
