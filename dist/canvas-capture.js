@@ -1583,6 +1583,7 @@ function beginVideoRecord(options) {
             framerate: (options === null || options === void 0 ? void 0 : options.fps) || 60,
             quality: quality * 100,
             verbose: params_1.PARAMS.VERBOSE,
+            motionBlurFrames: options === null || options === void 0 ? void 0 : options.motionBlurFrames,
         });
         var capture = {
             name: name_1,
@@ -1629,6 +1630,7 @@ function beginGIFRecord(options) {
             quality: quality,
             verbose: params_1.PARAMS.VERBOSE,
             onProgress: options === null || options === void 0 ? void 0 : options.onExportProgress,
+            motionBlurFrames: options === null || options === void 0 ? void 0 : options.motionBlurFrames,
         });
         var capture = {
             name: name_2,

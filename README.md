@@ -164,6 +164,7 @@ videoOptions = {
   name: string, // Defaults to 'Video_Capture'.
   fps: number, // Frames per second of the output video, defaults to 60.
   quality: number, // A number between 0 and 1, defaults to 1.
+  motionBlurFrames: number, // Number of intermediary frames used to calculate motion blur.
   onExportProgress: (progress: number) => void, // progress: range [0-1].
   onExport: (blob: Blob, filename: string) => void, // Handle blob manually.
   onExportFinish: () => void, // Callback after successful export.
@@ -184,6 +185,7 @@ gifOptions = {
   name: string, // Defaults to 'GIF_Capture'.
   fps: number, // The frames per second of the output gif, defaults to 60.
   quality: number, // A number between 0 and 1, defaults to 1.
+  motionBlurFrames: number, // Number of intermediary frames used to calculate motion blur.
   onExportProgress: (progress: number) => void, // progress: range [0-1].
   onExport: (blob: Blob, filename: string) => void, // Handle blob manually.
   onExportFinish: () => void, // Callback after successful export.
