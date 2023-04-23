@@ -1484,7 +1484,7 @@ function applyHotkeys() {
                 stopRecord(MP4s);
             else {
                 if (!browserSupportsMP4()) {
-                    var errorMsg = "This browser does not support MP4 video recording, please try again in Chrome.";
+                    var errorMsg = "This browser does not support MP4 video recording, please try again in Chrome as be sure to set the correct server headers: https://github.com/amandaghassaei/canvas-capture#caveats.";
                     var onError = (_a = hotkeyOptions[exports.MP4]) === null || _a === void 0 ? void 0 : _a.onError;
                     if (onError)
                         onError(new Error(errorMsg));
